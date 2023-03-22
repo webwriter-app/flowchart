@@ -1,0 +1,22 @@
+{
+  "scripts": {
+    "dev": "vite --open",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "lit": "^2.4.0",
+    "@webwriter/lit": "latest"
+  },
+  "devDependencies": {
+    "typescript": "^4.8.4",
+    "vite": "^3.1.6"
+  },
+  "name": "pap-widget",
+  "version": "0.1.0",
+  "description": "",
+  "keywords": [
+    "webwriter"
+  ],
+  "author": "Kevin Lu",
+  "license": "MIT"
+}
