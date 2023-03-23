@@ -75,7 +75,7 @@ export class PAPWidget extends LitElementWw {
     }
   `;
 
-  protected render() {
+  render() {
     return html`
       <div class="sidebar">
         <button @click="${() => this.addGraphElement('start', 'Start')}">
@@ -103,10 +103,44 @@ export class PAPWidget extends LitElementWw {
     `;
   }
 
+  firstUpdated() {
+    this.canvas = this.shadowRoot?.querySelector('canvas') as HTMLCanvasElement;
+    this.ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D;
+
+    // Zeichne bereits hinzugefügte Elemente erneut
+    this.graphElements.forEach((element) => {
+      this.drawGraphElement(element);
+    });
+  }
+
+  private redrawCanvas() {
+    // Bereinige das Canvas
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+    // Zeichne alle Knoten 
+    this.graphElements.forEach((element) => {
+      this.drawGraphElement(element);
+    });
+
+    // Zeichne alle Verbindungen 
+    this.arrows.forEach((arrow) => {
+      const from = this.getArrowEndpoint(arrow.from, arrow.to);
+      const to = this.getArrowEndpoint(arrow.to, arrow.from);
+      this.drawArrow(from, to);
+    });
+
+    //Zeichne eine temporäre Verbindung beim ziehen zwischen zwei Elementen
+    if (this.isDrawingArrow && this.arrowStart && this.tempArrowEnd) {
+      const positions = this.getPositions(this.arrowStart.element);
+      this.drawArrow(positions[this.arrowStart.position], this.tempArrowEnd);
+    }
+  }
+
   // Lösche alle Elemente vom Canvas 
   private clearAll() {
     this.graphElements = [];
     this.arrows = [];
+    this.arrowStart = undefined;
     this.redrawCanvas();
   }
 
@@ -252,26 +286,7 @@ export class PAPWidget extends LitElementWw {
 
   }
   
-  private redrawCanvas() {
-    // Zeichne alle Knoten 
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.graphElements.forEach((element) => {
-      this.drawGraphElement(element);
-    });
 
-    // Zeichne alle Verbindungen 
-    this.arrows.forEach((arrow) => {
-      const from = this.getArrowEndpoint(arrow.from, arrow.to);
-      const to = this.getArrowEndpoint(arrow.to, arrow.from);
-      this.drawArrow(from, to);
-    });
-
-    //Zeichne eine temporäre Verbindung beim ziehen zwischen zwei Elementen
-    if (this.isDrawingArrow && this.arrowStart && this.tempArrowEnd) {
-      const positions = this.getPositions(this.arrowStart.element);
-      this.drawArrow(positions[this.arrowStart.position], this.tempArrowEnd);
-    }
-  }
 
   // ------------ Hilfsfunktionen ------------
 
@@ -283,13 +298,46 @@ export class PAPWidget extends LitElementWw {
     return { width, height };
   }
 
-  private findGraphElement(x:number, y:number) {
-    return this.graphElements.find((element) =>
+  // Finde das letzte Element von den Graphelement-Array anhand der x und y Koordinate und gibt dieses zurück
+  private findLastGraphElement(x:number, y:number) {
+    return this.findLast(this.graphElements, (element) =>
       x >= element.x &&
       x <= element.x + this.measureTextSize(element.text).width &&
       y >= element.y &&
       y <= element.y + this.measureTextSize(element.text).height
     );
+    
+  }
+
+  // Finde das letzte Element von den Graphelement-Array anhand der x und y Koordinate und gibt den Index zurück 
+  private findGraphElementLastIndex(x:number, y:number) {
+    return this.findLastIndex(this.graphElements, (element) =>
+      x >= element.x &&
+      x <= element.x + this.measureTextSize(element.text).width &&
+      y >= element.y &&
+      y <= element.y + this.measureTextSize(element.text).height
+    );
+  }
+  
+  // Hilfsfunktionen, da diese nicht verfügbar waren für graphElements
+  private findLast<T>(arr: T[], predicate: (element: T) => boolean): T | undefined {
+    for (let i = arr.length - 1; i >= 0; i--) {
+      const element = arr[i];
+      if (predicate(element)) {
+        return element;
+      }
+    }
+    return undefined;
+  }
+
+  private findLastIndex<T>(arr: T[], predicate: (element: T) => boolean): number {
+    for (let i = arr.length - 1; i >= 0; i--) {
+      const element = arr[i];
+      if (predicate(element)) {
+        return i;
+      }
+    }
+    return -1;
   }
 
   // Gibt das Positionen Array einen Knotens zurück
@@ -345,7 +393,7 @@ export class PAPWidget extends LitElementWw {
     const x = event.clientX - this.canvas.offsetLeft;
     const y = event.clientY - this.canvas.offsetTop;
 
-    this.draggedElement = this.findGraphElement(x, y);
+    this.draggedElement = this.findLastGraphElement(x, y);
 
 
     if (this.draggedElement) {
@@ -361,12 +409,7 @@ export class PAPWidget extends LitElementWw {
       const x = event.clientX - this.canvas.offsetLeft;
       const y = event.clientY - this.canvas.offsetTop;
   
-      const targetElement = this.graphElements.find((element) =>
-        x >= element.x - 10 &&
-        x <= element.x + this.measureTextSize(element.text).width + 10 &&
-        y >= element.y - 10 &&
-        y <= element.y + this.measureTextSize(element.text).height + 10
-      );
+      const targetElement = this.findLastGraphElement(x, y);
   
       if (this.arrowStart && targetElement) {
         
@@ -389,10 +432,12 @@ export class PAPWidget extends LitElementWw {
         this.redrawCanvas();
       }
 
-  
       this.isDrawingArrow = false;
     }
+
+    // Resete die Informationen
     this.tempArrowEnd = undefined;
+    this.arrowStart = undefined;
   }
 
 
@@ -401,7 +446,14 @@ export class PAPWidget extends LitElementWw {
     const y = event.clientY - this.canvas.offsetTop;
 
     // Setze das ausgewählte Element, oder entferne die Auswahl, wenn kein Element angeklickt wurde
-    this.selectedElement = this.findGraphElement(x, y);
+    //this.selectedElement = this.findGraphElement(x, y);
+    this.selectedElement = this.findLastGraphElement(x, y);
+    const selectedElementIndex = this.graphElements.lastIndexOf(this.selectedElement);
+
+    if(this.selectedElement && !this.isDragging) {
+      this.graphElements.splice(selectedElementIndex, 1);
+      this.graphElements.push(this.selectedElement);
+    }
 
     // Zeichne den Canvas neu, um die aktualisierte Auswahl anzuzeigen
     this.redrawCanvas();
@@ -416,7 +468,7 @@ export class PAPWidget extends LitElementWw {
       this.draggedElement.y = y;
 
       this.redrawCanvas();
-    } else if (this.isDrawingArrow && this.arrowStart) {
+    } else if (this.isDrawingArrow && this.arrowStart && this.selectedElement) {
       const x = event.clientX - this.canvas.offsetLeft;
       const y = event.clientY - this.canvas.offsetTop;
 
@@ -431,12 +483,8 @@ export class PAPWidget extends LitElementWw {
     const y = event.offsetY;
 
     // Ermittle, ob das Doppelklick-Event auf einem der Rechtecke stattgefunden hat
-    const clickedElementIndex = this.graphElements.findIndex((element) =>
-      x >= element.x &&
-      x <= element.x + this.measureTextSize(element.text).width &&
-      y >= element.y &&
-      y <= element.y + this.measureTextSize(element.text).height
-    );
+    const clickedElementIndex = this.findGraphElementLastIndex(x, y);
+    
 
     if (clickedElementIndex !== -1) {
       // Fordere den Benutzer auf, neuen Text einzugeben
@@ -457,16 +505,23 @@ export class PAPWidget extends LitElementWw {
     this.isDrawingArrow = true;
     this.arrowStart = { element, position };
   }
-
-  
-  firstUpdated() {
-    this.canvas = this.shadowRoot?.querySelector('canvas') as HTMLCanvasElement;
-    this.ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D;
-
-    // Zeichne bereits hinzugefügte Elemente erneut
-    this.graphElements.forEach((element) => {
-      this.drawGraphElement(element);
-    });
-  }
   
 }
+
+/*
+TODO Liste
+
+- Text ändern: Textarea vs prompt()? 
+- Linien sollen rechteckig gezeichnet werden 
+- Hervorheben der Lininen durch anklicken. -> Durch 2 Kreise an Start- und Endpunkt, um die Linie zu versetzen. 
+- Rechtklick soll fenster öffnen mit Menü zum löschen einzelner Elemente
+
+
+Design Entscheidungen:
+- Canvasgröße? Gesamtfläche - Sidebar?
+- Outline an den jeweiligen Elementen für mehr Tiefe
+- Start- und Endknoten runde Ecken anpassen
+- Buttons durch Buttons mit der richtigen Form ersetzen
+
+
+*/
