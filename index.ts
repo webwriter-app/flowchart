@@ -1,25 +1,18 @@
-import {LitElementWw} from "@webwriter/lit"
-import {html, css} from "lit"
-import {customElement, property, query} from "lit/decorators.js"
+import { LitElementWw } from "@webwriter/lit"
+import { html, css}  from "lit"
+import { customElement, property } from "lit/decorators.js"
 
-interface GraphNodeData {
-  node: 'start' | 'op' | 'case' ;
-  text?: string;
-  x: number;
-  y: number;
-  connections?: { position: number; connectedTo: GraphNodeData }[];
-}
+import { GraphNodeData, Arrow } from "./src/definitions"
+import { drawArrow } from "./src/drawer"
+import { measureTextSize, getAnchors, findLast, findLastIndex } from "./src/helper"
 
 
 @customElement('pap-widget')
 export class PAPWidget extends LitElementWw {
   @property({ type: Array }) graphElements: GraphNodeData[] = [];
   @property({ type: Object }) selectedElement?: GraphNodeData;
-  @property({ type: Array }) arrows: { 
-    from: GraphNodeData; 
-    to: GraphNodeData 
-  }[] = [];
-
+  @property({ type: Array }) arrows: Arrow[] = [];
+  
 
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
@@ -29,7 +22,7 @@ export class PAPWidget extends LitElementWw {
   private dragOffset = { x: 0, y: 0 };
 
   private isDrawingArrow = false;
-  private arrowStart?: { element: GraphNodeData; position: number };
+  private arrowStart?: { element: GraphNodeData; anchor: number };
   private tempArrowEnd?: { x: number; y: number };
 
   static styles = css`
@@ -81,6 +74,9 @@ export class PAPWidget extends LitElementWw {
         <button @click="${() => this.addGraphElement('start', 'Start')}">
           Füge Start-Knoten hinzu
         </button>
+        <button @click="${() => this.addGraphElement('end', 'Ende')}">
+          Füge Ende-Knoten hinzu
+        </button>
         <button @click="${() => this.addGraphElement('op', 'Operation')}">
           Füge Operations-Knoten hinzu
         </button>
@@ -114,6 +110,7 @@ export class PAPWidget extends LitElementWw {
   }
 
   private redrawCanvas() {
+    
     // Bereinige das Canvas
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -124,15 +121,17 @@ export class PAPWidget extends LitElementWw {
 
     // Zeichne alle Verbindungen 
     this.arrows.forEach((arrow) => {
-      const from = this.getArrowEndpoint(arrow.from, arrow.to);
-      const to = this.getArrowEndpoint(arrow.to, arrow.from);
-      this.drawArrow(from, to);
+      const from = this.getArrowInformation(arrow.from, arrow.to);
+      const to = this.getArrowInformation(arrow.to, arrow.from);
+      //this.drawArrow(from, to, arrow.isSelected);
+      drawArrow(this.ctx, from, to, arrow.isSelected);
     });
 
     //Zeichne eine temporäre Verbindung beim ziehen zwischen zwei Elementen
     if (this.isDrawingArrow && this.arrowStart && this.tempArrowEnd) {
-      const positions = this.getPositions(this.arrowStart.element);
-      this.drawArrow(positions[this.arrowStart.position], this.tempArrowEnd);
+      const anchors = getAnchors(this.ctx, this.arrowStart.element);
+      //this.drawArrow(anchors[this.arrowStart.anchor], this.tempArrowEnd);
+      drawArrow(this.ctx, anchors[this.arrowStart.anchor], this.tempArrowEnd);
     }
   }
 
@@ -144,7 +143,7 @@ export class PAPWidget extends LitElementWw {
     this.redrawCanvas();
   }
 
-  private addGraphElement(node: 'start' | 'op' | 'case', text: 'Start' | 'Operation' | 'Verzweigung') {
+  private addGraphElement(node: 'start' | 'end' | 'op' | 'case', text: 'Start' | 'Ende' | 'Operation' | 'Verzweigung') {
     const x = Math.floor(Math.random() * this.canvas.width * 0.8);
     const y = Math.floor(Math.random() * this.canvas.height * 0.8);
     // const x = this.canvas.width * 0.5;
@@ -173,12 +172,13 @@ export class PAPWidget extends LitElementWw {
     }
 
     const { node, text, x, y} = element;
-    const { width, height } = this.measureTextSize(text);
+    const { width, height } = measureTextSize(this.ctx, text);
 
     // Zeichne die passenden Knoten je nach Typ
     switch (node) {
       case 'start':
-          this.ctx.fillStyle = "green";
+      case 'end':
+          this.ctx.fillStyle = "#4F94CD";
           // Zeichne ein abgerundetes Rechteck
           const radius = 25; // Radius der abgerundeten Ecken
           this.ctx.beginPath();
@@ -195,11 +195,11 @@ export class PAPWidget extends LitElementWw {
           this.ctx.fill();
           break;
       case 'op':
-          this.ctx.fillStyle = "yellow";
+          this.ctx.fillStyle = "#43cd80";
           this.ctx.fillRect(x, y, width, height);
           break;
       case 'case':
-          this.ctx.fillStyle = "red";
+          this.ctx.fillStyle = "#FF3030";
           // Zeichne einen Diamanten
           this.ctx.beginPath();
           this.ctx.moveTo(x + width / 2, y);
@@ -218,17 +218,18 @@ export class PAPWidget extends LitElementWw {
     this.ctx.font = 'bold 16px Courier New';
     this.ctx.fillText(text, x + 10, y + (height / 2) + 5);
 
-    // Zeichne den Rand, wenn das Element ausgewählt ist
+    // Hervorhebung eines ausgewählten Knoten
     if (this.selectedElement === element) {
-      this.ctx.strokeStyle = 'blue';
+      this.ctx.strokeStyle = '#87cefa';
+      this.ctx.setLineDash([5, 10]);
       this.ctx.lineWidth = 2;
       this.ctx.strokeRect(x, y, width, height);
 
       // Zeichne die kleinen Kreise an den Rändern
-      this.ctx.fillStyle = 'blue';
+      this.ctx.fillStyle = '#87cefa';
       const circleRadius = 4;
       const d = 10;   //Abstand zu den Element
-      const positions = [
+      const anchors = [
         { x: x + width / 2, y: y - d },
         { x: x + width + d, y: y + height / 2 },
         { x: x + width / 2, y: y + height + d },
@@ -236,7 +237,7 @@ export class PAPWidget extends LitElementWw {
       ];
 
       // Index: 0: oben, 1: rechts, 2: unten, 3: links 
-      positions.forEach((position, index) => {
+      anchors.forEach((position, index) => {
         this.ctx.beginPath();
         this.ctx.arc(position.x, position.y, circleRadius, 0, 2 * Math.PI);
         this.ctx.fill();
@@ -254,138 +255,7 @@ export class PAPWidget extends LitElementWw {
       });
     }
   }
-
-
-  private drawArrow(from: { x: number; y: number }, to: { x: number; y: number }) {
-
-    let dx = to.x - from.x;
-    let dy = to.y - from.y;
-    let angle = Math.atan2(dy, dx);
-    
-    const arrowHeadLength = 10; // Passe die Länge der Pfeilspitze an
-    const arrowHeadAngle = 80 * (Math.PI / 180); // Passe den Winkel der Pfeilspitze an 
-    
-    this.ctx.fillStyle = "black";
-    this.ctx.strokeStyle = 'black';
-    this.ctx.lineWidth = 2;
-    
-    // Zeichne die Hauptlinie des Pfeils
-    this.ctx.beginPath();
-    this.ctx.moveTo(from.x, from.y);
-    this.ctx.lineTo(to.x, to.y);
-    this.ctx.stroke();
-    
-    // Zeichne die Pfeilspitze
-    this.ctx.beginPath();
-    this.ctx.moveTo(to.x, to.y);
-    this.ctx.lineTo(to.x - arrowHeadLength * Math.cos(angle - arrowHeadAngle / 2), to.y - arrowHeadLength * Math.sin(angle - arrowHeadAngle / 2));
-    this.ctx.lineTo(to.x - arrowHeadLength * Math.cos(angle + arrowHeadAngle / 2), to.y - arrowHeadLength * Math.sin(angle + arrowHeadAngle / 2));
-    this.ctx.closePath();
-    this.ctx.stroke();
-    this.ctx.fill();
-
-  }
   
-
-
-  // ------------ Hilfsfunktionen ------------
-
-  // Bestimme die Maße der Knoten anhand der Textgrößen
-  private measureTextSize(text: string): { width: number; height: number } {
-    const metrics = this.ctx.measureText(text);
-    const width = Math.max(metrics.width + 20, 80);
-    const height = Math.max(metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent + 20, 60);
-    return { width, height };
-  }
-
-  // Finde das letzte Element von den Graphelement-Array anhand der x und y Koordinate und gibt dieses zurück
-  private findLastGraphElement(x:number, y:number) {
-    return this.findLast(this.graphElements, (element) =>
-      x >= element.x &&
-      x <= element.x + this.measureTextSize(element.text).width &&
-      y >= element.y &&
-      y <= element.y + this.measureTextSize(element.text).height
-    );
-    
-  }
-
-  // Finde das letzte Element von den Graphelement-Array anhand der x und y Koordinate und gibt den Index zurück 
-  private findGraphElementLastIndex(x:number, y:number) {
-    return this.findLastIndex(this.graphElements, (element) =>
-      x >= element.x &&
-      x <= element.x + this.measureTextSize(element.text).width &&
-      y >= element.y &&
-      y <= element.y + this.measureTextSize(element.text).height
-    );
-  }
-  
-  // Hilfsfunktionen, da diese nicht verfügbar waren für graphElements
-  private findLast<T>(arr: T[], predicate: (element: T) => boolean): T | undefined {
-    for (let i = arr.length - 1; i >= 0; i--) {
-      const element = arr[i];
-      if (predicate(element)) {
-        return element;
-      }
-    }
-    return undefined;
-  }
-
-  private findLastIndex<T>(arr: T[], predicate: (element: T) => boolean): number {
-    for (let i = arr.length - 1; i >= 0; i--) {
-      const element = arr[i];
-      if (predicate(element)) {
-        return i;
-      }
-    }
-    return -1;
-  }
-
-  // Gibt das Positionen Array einen Knotens zurück
-  private getPositions(element: GraphNodeData) {
-    const positions = [
-      { x: element.x + this.measureTextSize(element.text).width / 2, y: element.y },
-      { x: element.x + this.measureTextSize(element.text).width, y: element.y + this.measureTextSize(element.text).height / 2 },
-      { x: element.x + this.measureTextSize(element.text).width / 2, y: element.y + this.measureTextSize(element.text).height },
-      { x: element.x, y: element.y + this.measureTextSize(element.text).height / 2 },
-    ];
-
-    return positions;
-  }
-
-  // Sucht den nähstgelegenten Ankerpunkt und gibt den Index zurück 
-  private getNearestCircle(from: { x: number; y: number }, element: GraphNodeData) {
-    const positions = this.getPositions(element);
-  
-    let minDistance = Infinity;
-    let nearestCircleIndex = 0;
-  
-    positions.forEach((position, index) => {
-      const distance = Math.sqrt((position.x - from.x) ** 2 + (position.y - from.y) ** 2);
-      if (distance < minDistance) {
-        minDistance = distance;
-        nearestCircleIndex = index;
-      }
-    });
-
-    return nearestCircleIndex;
-  }
-
-
-  private getArrowEndpoint(from: GraphNodeData, to: GraphNodeData) {
-
-    const positions = this.getPositions(from);
-  
-    if (!from.connections) {
-      return positions[0];
-    }
-  
-    const connection = from.connections.find( x => x.connectedTo === to);
-    if (connection) {
-      return positions[connection.position];
-    }
-  
-    return positions[0];
-  }
 
   // ------------ Mouse-Events ------------
 
@@ -418,14 +288,14 @@ export class PAPWidget extends LitElementWw {
         if (!this.arrowStart.element.connections) {
           this.arrowStart.element.connections = [];
         }
-        this.arrowStart.element.connections.push({ position: this.arrowStart.position, connectedTo: targetElement });
+        this.arrowStart.element.connections.push({ anchor: this.arrowStart.anchor, connectedTo: targetElement });
 
         // Speichere die Pfeilverbindung am Ziel-Element
         if (!targetElement.connections) {
           targetElement.connections = [];
         }
         const nearestCircleIndex = this.getNearestCircle( {x, y}, targetElement);
-        targetElement.connections.push({ position: nearestCircleIndex, connectedTo: this.arrowStart.element });
+        targetElement.connections.push({ anchor: nearestCircleIndex, connectedTo: this.arrowStart.element });
 
         this.arrows.push({ from: this.arrowStart.element, to: targetElement });
 
@@ -444,9 +314,12 @@ export class PAPWidget extends LitElementWw {
   private handleClick(event: MouseEvent) {
     const x = event.clientX - this.canvas.offsetLeft;
     const y = event.clientY - this.canvas.offsetTop;
+    // console.log( "Mit Offset: x: " + x +" y:"+ y);
+    // console.log( "Ohne Offset: x: " + event.clientX +" y:"+ event.clientY);
+    // //const clickPosition = { x: event.clientX, y: event.clientY};
+    // const clickPosition = { x: x, y: y};
 
     // Setze das ausgewählte Element, oder entferne die Auswahl, wenn kein Element angeklickt wurde
-    //this.selectedElement = this.findGraphElement(x, y);
     this.selectedElement = this.findLastGraphElement(x, y);
     const selectedElementIndex = this.graphElements.lastIndexOf(this.selectedElement);
 
@@ -454,6 +327,18 @@ export class PAPWidget extends LitElementWw {
       this.graphElements.splice(selectedElementIndex, 1);
       this.graphElements.push(this.selectedElement);
     }
+
+
+    // // Finde den angeklickten Pfeil
+    // const clickedArrowIndex = this.arrows.findIndex((arrow) => this.isPointOnArrow(clickPosition, arrow));
+    // console.log("Index: " + clickedArrowIndex);
+    // // Wenn ein Pfeil angeklickt wurde, ändere den isSelected-Wert und zeichne das Canvas neu
+    // if (clickedArrowIndex !== -1) {
+    //   //this.arrows[clickedArrowIndex].isSelected = !this.arrows[clickedArrowIndex].isSelected;
+    //   this.arrows[clickedArrowIndex].isSelected = true; //Pfeil muss noch abgewählt werden
+    //   console.log("Pfeil anklickt");
+    //   this.redrawCanvas();
+    // } 
 
     // Zeichne den Canvas neu, um die aktualisierte Auswahl anzuzeigen
     this.redrawCanvas();
@@ -500,19 +385,115 @@ export class PAPWidget extends LitElementWw {
     }
   }
 
-  private handleCircleClick(event: MouseEvent, element: GraphNodeData, position: number) {
+  private handleCircleClick(event: MouseEvent, element: GraphNodeData, anchor: number) {
     event.stopPropagation();
     this.isDrawingArrow = true;
-    this.arrowStart = { element, position };
+    this.arrowStart = { element, anchor };
   }
+
+    // ------------ Hilfsfunktionen ------------
+
+  // Finde das letzte Element von den Graphelement-Array anhand der x und y Koordinate und gibt dieses zurück
+  private findLastGraphElement(x:number, y:number) {
+    return findLast(this.graphElements, (element) =>
+      x >= element.x &&
+      x <= element.x + measureTextSize(this.ctx, element.text).width &&
+      y >= element.y &&
+      y <= element.y + measureTextSize(this.ctx, element.text).height
+    );
+    
+  }
+
+  // Finde das letzte Element von den Graphelement-Array anhand der x und y Koordinate und gibt den Index zurück 
+  private findGraphElementLastIndex(x:number, y:number) {
+    return findLastIndex(this.graphElements, (element) =>
+      x >= element.x &&
+      x <= element.x + measureTextSize(this.ctx, element.text).width &&
+      y >= element.y &&
+      y <= element.y + measureTextSize(this.ctx, element.text).height
+    );
+  }
+
+
+  // Sucht den nähstgelegenten Ankerpunkt und gibt den Index zurück 
+  private getNearestCircle(from: { x: number; y: number }, element: GraphNodeData) {
+    const anchors = getAnchors(this.ctx, element);
+  
+    let minDistance = Infinity;
+    let nearestCircleIndex = 0;
+  
+    anchors.forEach((position, index) => {
+      const distance = Math.sqrt((position.x - from.x) ** 2 + (position.y - from.y) ** 2);
+      if (distance < minDistance) {
+        minDistance = distance;
+        nearestCircleIndex = index;
+      }
+    });
+
+    return nearestCircleIndex;
+  }
+
+
+  private getArrowInformation(from: GraphNodeData, to: GraphNodeData) {
+    
+    let arrowInformation = {
+      x: 0,
+      y: 0,
+      anchor: 0
+    }; 
+
+    const anchors = getAnchors(this.ctx, from);
+  
+    if (!from.connections) {
+      console.log("Keine Verbindung gefunden.");
+      return arrowInformation;
+    }
+  
+    const connection = from.connections.find( x => x.connectedTo === to);
+    if (connection) {
+      arrowInformation.x = anchors[connection.anchor].x;
+      arrowInformation.y = anchors[connection.anchor].y;
+      arrowInformation.anchor = connection.anchor;
+      return arrowInformation;
+    }
+  
+    return arrowInformation;
+  }
+
+  // private isPointOnArrow(point: { x: number; y: number }, arrow: Arrow, threshold: number = 5): boolean {
+  //   // Berechne die Vektoren
+  //   const vectorPF: { x: number; y: number } = { x: point.x - arrow.from.x, y: point.y - arrow.from.y };
+  //   const vectorTF: { x: number; y: number } = { x: arrow.to.x - arrow.from.x, y: arrow.to.y - arrow.from.y };
+  //   console.log("Pfeilkoordinaten: " + arrow.from.x + " y:" + arrow.from.y)
+  //   console.log("VektorPF:" + vectorPF);
+  //   console.log("Orginale Koordinate: " + arrow.from.x);
+  //   // Berechne das Skalarprodukt der beiden Vektoren
+  //   const dotProduct = vectorPF.x * vectorTF.x + vectorPF.y * vectorTF.y;
+  //   console.log("Skalarprodukt: " + dotProduct);
+  //   // Prüfe, ob der Punkt vor dem Anfang des Pfeils liegt
+  //   if (dotProduct < 0) return false;
+  
+  //   // Berechne das Quadrat der Länge des Vektors TF
+  //   const squareLengthTF = vectorTF.x * vectorTF.x + vectorTF.y * vectorTF.y;
+  //   console.log("Quadrat: " + squareLengthTF);
+  //   // Prüfe, ob der Punkt hinter dem Ende des Pfeils liegt
+  //   if (dotProduct > squareLengthTF) return false;
+  
+  //   // Berechne die vektorielle Distanz vom Punkt zum Pfeil
+  //   const crossProduct = vectorPF.x * vectorTF.y - vectorPF.y * vectorTF.x;
+  //   const distance = Math.abs(crossProduct) / Math.sqrt(squareLengthTF);
+  //   console.log("distance: "+ distance);
+  //   // Prüfe, ob die vektorielle Distanz innerhalb des Schwellenwerts liegt
+  //   return distance <= threshold;
+  // }
   
 }
 
 /*
+
 TODO Liste
 
 - Text ändern: Textarea vs prompt()? 
-- Linien sollen rechteckig gezeichnet werden 
 - Hervorheben der Lininen durch anklicken. -> Durch 2 Kreise an Start- und Endpunkt, um die Linie zu versetzen. 
 - Rechtklick soll fenster öffnen mit Menü zum löschen einzelner Elemente
 
