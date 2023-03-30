@@ -4,7 +4,7 @@ import { customElement, property } from "lit/decorators.js"
 
 import { GraphNodeData, Arrow } from "./src/definitions"
 import { drawArrow } from "./src/drawer"
-import { measureTextSize, getAnchors, findLast, findLastIndex } from "./src/helper"
+import { measureTextSize, getAnchors, getArrowInformation, getNearestCircle, findLast, findLastIndex } from "./src/helper"
 
 
 @customElement('pap-widget')
@@ -12,6 +12,7 @@ export class PAPWidget extends LitElementWw {
   @property({ type: Array }) graphElements: GraphNodeData[] = [];
   @property({ type: Object }) selectedElement?: GraphNodeData;
   @property({ type: Array }) arrows: Arrow[] = [];
+  @property({ type: Object }) selectedArrow?: Arrow;
   
 
   private canvas: HTMLCanvasElement;
@@ -24,13 +25,13 @@ export class PAPWidget extends LitElementWw {
   private isDrawingArrow = false;
   private arrowStart?: { element: GraphNodeData; anchor: number };
   private tempArrowEnd?: { x: number; y: number };
-
+  
   static styles = css`
    :host {
       --offset-x: 0;
       --offset-y: 0;
       --grid-background-color: white;
-      --grid-color: lightgrey;
+      --grid-color: #104E8B;
       --grid-size: 50px;
       --grid-dot-size: 1px;
     }
@@ -54,8 +55,8 @@ export class PAPWidget extends LitElementWw {
     canvas {
       position: relative;
       margin-left: 210px;
-      width: 800px;
-      height: 600px;
+      width: calc(100% - 210);
+      height: 100%;
       border: 1px solid black;
       background-size: var(--grid-size) var(--grid-size);
       background-image: radial-gradient(
@@ -88,8 +89,8 @@ export class PAPWidget extends LitElementWw {
         </button>
       </div>
       <canvas
-        width="800"
-        height="600"
+        width="${window.innerWidth - 400}"
+        height="${window.innerHeight}"
         @mousedown="${this.handleMouseDown}"
         @mouseup="${this.handleMouseUp}"
         @mousemove="${this.handleMouseMove}"
@@ -101,6 +102,8 @@ export class PAPWidget extends LitElementWw {
 
   firstUpdated() {
     this.canvas = this.shadowRoot?.querySelector('canvas') as HTMLCanvasElement;
+    this.canvas.width = window.innerWidth - 400;
+    this.canvas.height = window.innerHeight;
     this.ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D;
 
     // Zeichne bereits hinzugefügte Elemente erneut
@@ -108,6 +111,23 @@ export class PAPWidget extends LitElementWw {
       this.drawGraphElement(element);
     });
   }
+
+  // Passt die Canvasgröße an die aktuelle Größe des Fenster an
+  connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener('resize', this.updateCanvasSize);
+  }
+  
+  disconnectedCallback() {
+    window.removeEventListener('resize', this.updateCanvasSize);
+    super.disconnectedCallback();
+  }
+  
+  updateCanvasSize = () => {
+    this.canvas.width = window.innerWidth - 400;
+    this.canvas.height = window.innerHeight;
+    this.redrawCanvas();
+  };
 
   private redrawCanvas() {
     
@@ -121,16 +141,15 @@ export class PAPWidget extends LitElementWw {
 
     // Zeichne alle Verbindungen 
     this.arrows.forEach((arrow) => {
-      const from = this.getArrowInformation(arrow.from, arrow.to);
-      const to = this.getArrowInformation(arrow.to, arrow.from);
-      //this.drawArrow(from, to, arrow.isSelected);
-      drawArrow(this.ctx, from, to, arrow.isSelected);
+      const fromCoordination = getArrowInformation(this.ctx, arrow.from, arrow.to);
+      const toCoordination = getArrowInformation(this.ctx, arrow.to, arrow.from);
+      const updatedArrowPoints = drawArrow(this.ctx, fromCoordination, toCoordination, arrow.isSelected, true); 
+      arrow.points = updatedArrowPoints;
     });
-
+   
     //Zeichne eine temporäre Verbindung beim ziehen zwischen zwei Elementen
     if (this.isDrawingArrow && this.arrowStart && this.tempArrowEnd) {
       const anchors = getAnchors(this.ctx, this.arrowStart.element);
-      //this.drawArrow(anchors[this.arrowStart.anchor], this.tempArrowEnd);
       drawArrow(this.ctx, anchors[this.arrowStart.anchor], this.tempArrowEnd);
     }
   }
@@ -282,8 +301,7 @@ export class PAPWidget extends LitElementWw {
       const targetElement = this.findLastGraphElement(x, y);
   
       if (this.arrowStart && targetElement) {
-        
-  
+      
         // Speichere die Pfeilverbindung am Startelement
         if (!this.arrowStart.element.connections) {
           this.arrowStart.element.connections = [];
@@ -294,10 +312,14 @@ export class PAPWidget extends LitElementWw {
         if (!targetElement.connections) {
           targetElement.connections = [];
         }
-        const nearestCircleIndex = this.getNearestCircle( {x, y}, targetElement);
+        const nearestCircleIndex = getNearestCircle(this.ctx, {x, y}, targetElement);
         targetElement.connections.push({ anchor: nearestCircleIndex, connectedTo: this.arrowStart.element });
-
-        this.arrows.push({ from: this.arrowStart.element, to: targetElement });
+        
+        // Hole die Eckpunkte zum Zeichnen des Pfeils, um sie im arrows-Array abzuspeichern
+        const fromCoordination = getArrowInformation(this.ctx, this.arrowStart.element, targetElement);
+        const toCoordination = getArrowInformation(this.ctx, targetElement, this.arrowStart.element);
+        const points = drawArrow(this.ctx, fromCoordination, toCoordination, false, true); 
+        this.arrows.push({ from: this.arrowStart.element, to: targetElement, points });
 
         this.redrawCanvas();
       }
@@ -308,40 +330,6 @@ export class PAPWidget extends LitElementWw {
     // Resete die Informationen
     this.tempArrowEnd = undefined;
     this.arrowStart = undefined;
-  }
-
-
-  private handleClick(event: MouseEvent) {
-    const x = event.clientX - this.canvas.offsetLeft;
-    const y = event.clientY - this.canvas.offsetTop;
-    // console.log( "Mit Offset: x: " + x +" y:"+ y);
-    // console.log( "Ohne Offset: x: " + event.clientX +" y:"+ event.clientY);
-    // //const clickPosition = { x: event.clientX, y: event.clientY};
-    // const clickPosition = { x: x, y: y};
-
-    // Setze das ausgewählte Element, oder entferne die Auswahl, wenn kein Element angeklickt wurde
-    this.selectedElement = this.findLastGraphElement(x, y);
-    const selectedElementIndex = this.graphElements.lastIndexOf(this.selectedElement);
-
-    if(this.selectedElement && !this.isDragging) {
-      this.graphElements.splice(selectedElementIndex, 1);
-      this.graphElements.push(this.selectedElement);
-    }
-
-
-    // // Finde den angeklickten Pfeil
-    // const clickedArrowIndex = this.arrows.findIndex((arrow) => this.isPointOnArrow(clickPosition, arrow));
-    // console.log("Index: " + clickedArrowIndex);
-    // // Wenn ein Pfeil angeklickt wurde, ändere den isSelected-Wert und zeichne das Canvas neu
-    // if (clickedArrowIndex !== -1) {
-    //   //this.arrows[clickedArrowIndex].isSelected = !this.arrows[clickedArrowIndex].isSelected;
-    //   this.arrows[clickedArrowIndex].isSelected = true; //Pfeil muss noch abgewählt werden
-    //   console.log("Pfeil anklickt");
-    //   this.redrawCanvas();
-    // } 
-
-    // Zeichne den Canvas neu, um die aktualisierte Auswahl anzuzeigen
-    this.redrawCanvas();
   }
 
   private handleMouseMove(event: MouseEvent) {
@@ -363,14 +351,47 @@ export class PAPWidget extends LitElementWw {
     }
   }
 
-  private async handleDoubleClick(event: MouseEvent) {
+  private handleClick(event: MouseEvent) {
+    const x = event.clientX - this.canvas.offsetLeft;
+    const y = event.clientY - this.canvas.offsetTop;
+    
+    // Setze das ausgewählte Element, oder entferne die Auswahl, wenn kein Element angeklickt wurde
+    this.selectedElement = this.findLastGraphElement(x, y);
+    const selectedElementIndex = this.graphElements.lastIndexOf(this.selectedElement);
+    // Packe das ausgewählte Element ans Ende des Arrays, damit es über den anderen Elementen erscheint
+    if(this.selectedElement && !this.isDragging) {
+      this.graphElements.splice(selectedElementIndex, 1);
+      this.graphElements.push(this.selectedElement);
+    }
+
+    // Finde den angeklickten Pfeil
+    const clickedArrowIndex = this.arrows.findIndex((arrow) => this.isArrowClicked(x, y, arrow.points));
+    // Wenn ein Pfeil angeklickt wurde, ändere den isSelected-Wert und zeichne das Canvas neu
+    if (clickedArrowIndex !== -1) {
+      // this.selectedArrow = this.arrows[clickedArrowIndex];
+      // this.selectedArrow.isSelected = true;
+      this.arrows[clickedArrowIndex].isSelected = true; //Pfeil muss noch abgewählt werden
+      console.log("Pfeil anklickt");
+      this.redrawCanvas();
+    } 
+
+    // if(this.selectedArrow && !this.isDragging) {
+    //   this.arrows.splice(clickedArrowIndex, 1);
+    //   this.arrows.push(this.selectedElement);
+    // }
+ 
+
+    // Zeichne den Canvas neu, um die aktualisierte Auswahl anzuzeigen
+    this.redrawCanvas();
+  }
+
+  private handleDoubleClick(event: MouseEvent) {
     const x = event.offsetX;
     const y = event.offsetY;
 
     // Ermittle, ob das Doppelklick-Event auf einem der Rechtecke stattgefunden hat
     const clickedElementIndex = this.findGraphElementLastIndex(x, y);
     
-
     if (clickedElementIndex !== -1) {
       // Fordere den Benutzer auf, neuen Text einzugeben
       const newText = prompt('Bitte geben Sie den neuen Text ein:');
@@ -415,77 +436,30 @@ export class PAPWidget extends LitElementWw {
   }
 
 
-  // Sucht den nähstgelegenten Ankerpunkt und gibt den Index zurück 
-  private getNearestCircle(from: { x: number; y: number }, element: GraphNodeData) {
-    const anchors = getAnchors(this.ctx, element);
+  private isArrowClicked(mouseX: number, mouseY: number, points: { x: number; y: number }[]): boolean {
+    const clickTolerance = 8;
   
-    let minDistance = Infinity;
-    let nearestCircleIndex = 0;
+    for (let i = 0; i < points.length - 1; i++) {
+      const startPoint = points[i];
+      const endPoint = points[i + 1];
   
-    anchors.forEach((position, index) => {
-      const distance = Math.sqrt((position.x - from.x) ** 2 + (position.y - from.y) ** 2);
-      if (distance < minDistance) {
-        minDistance = distance;
-        nearestCircleIndex = index;
+      const dx = endPoint.x - startPoint.x;
+      const dy = endPoint.y - startPoint.y;
+      const length = Math.sqrt(dx * dx + dy * dy);
+  
+      const dot = ((mouseX - startPoint.x) * dx + (mouseY - startPoint.y) * dy) / (length * length);
+      const closestX = startPoint.x + dot * dx;
+      const closestY = startPoint.y + dot * dy;
+  
+      if (dot >= 0 && dot <= 1) {
+        const distance = Math.sqrt(Math.pow(closestX - mouseX, 2) + Math.pow(closestY - mouseY, 2));
+        if (distance <= clickTolerance) {
+          return true;
+        }
       }
-    });
-
-    return nearestCircleIndex;
-  }
-
-
-  private getArrowInformation(from: GraphNodeData, to: GraphNodeData) {
-    
-    let arrowInformation = {
-      x: 0,
-      y: 0,
-      anchor: 0
-    }; 
-
-    const anchors = getAnchors(this.ctx, from);
-  
-    if (!from.connections) {
-      console.log("Keine Verbindung gefunden.");
-      return arrowInformation;
     }
-  
-    const connection = from.connections.find( x => x.connectedTo === to);
-    if (connection) {
-      arrowInformation.x = anchors[connection.anchor].x;
-      arrowInformation.y = anchors[connection.anchor].y;
-      arrowInformation.anchor = connection.anchor;
-      return arrowInformation;
-    }
-  
-    return arrowInformation;
+    return false;
   }
-
-  // private isPointOnArrow(point: { x: number; y: number }, arrow: Arrow, threshold: number = 5): boolean {
-  //   // Berechne die Vektoren
-  //   const vectorPF: { x: number; y: number } = { x: point.x - arrow.from.x, y: point.y - arrow.from.y };
-  //   const vectorTF: { x: number; y: number } = { x: arrow.to.x - arrow.from.x, y: arrow.to.y - arrow.from.y };
-  //   console.log("Pfeilkoordinaten: " + arrow.from.x + " y:" + arrow.from.y)
-  //   console.log("VektorPF:" + vectorPF);
-  //   console.log("Orginale Koordinate: " + arrow.from.x);
-  //   // Berechne das Skalarprodukt der beiden Vektoren
-  //   const dotProduct = vectorPF.x * vectorTF.x + vectorPF.y * vectorTF.y;
-  //   console.log("Skalarprodukt: " + dotProduct);
-  //   // Prüfe, ob der Punkt vor dem Anfang des Pfeils liegt
-  //   if (dotProduct < 0) return false;
-  
-  //   // Berechne das Quadrat der Länge des Vektors TF
-  //   const squareLengthTF = vectorTF.x * vectorTF.x + vectorTF.y * vectorTF.y;
-  //   console.log("Quadrat: " + squareLengthTF);
-  //   // Prüfe, ob der Punkt hinter dem Ende des Pfeils liegt
-  //   if (dotProduct > squareLengthTF) return false;
-  
-  //   // Berechne die vektorielle Distanz vom Punkt zum Pfeil
-  //   const crossProduct = vectorPF.x * vectorTF.y - vectorPF.y * vectorTF.x;
-  //   const distance = Math.abs(crossProduct) / Math.sqrt(squareLengthTF);
-  //   console.log("distance: "+ distance);
-  //   // Prüfe, ob die vektorielle Distanz innerhalb des Schwellenwerts liegt
-  //   return distance <= threshold;
-  // }
   
 }
 
@@ -493,9 +467,16 @@ export class PAPWidget extends LitElementWw {
 
 TODO Liste
 
+Funktionalitäten des PAP
 - Text ändern: Textarea vs prompt()? 
 - Hervorheben der Lininen durch anklicken. -> Durch 2 Kreise an Start- und Endpunkt, um die Linie zu versetzen. 
 - Rechtklick soll fenster öffnen mit Menü zum löschen einzelner Elemente
+- Canvas per drag and drop verschieben
+- Textelemente für Verbindungen 
+- Select All, verschieben mehrere Elemente durch drag and drop
+
+Aufgaben
+- Aufgabenfeld damit Aufgabentexten angegeben werden können. zB Konstruiere zu folgendem Text ein PAP
 
 
 Design Entscheidungen:

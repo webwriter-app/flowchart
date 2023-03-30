@@ -21,6 +21,51 @@ export function getAnchors(ctx: CanvasRenderingContext2D, element: GraphNodeData
     return anchors;
 }
 
+// Gibt die Koordinaten und Ankerpunkt eines Pfeils zurück 
+export function getArrowInformation(ctx: CanvasRenderingContext2D, from: GraphNodeData, to: GraphNodeData) {
+    
+    let arrowInformation = {
+      x: 0,
+      y: 0,
+      anchor: 0
+    }; 
+
+    const anchors = getAnchors(ctx, from);
+  
+    if (!from.connections) {
+      console.log("Keine Verbindung gefunden.");
+      return arrowInformation;
+    }
+  
+    const connection = from.connections.find( x => x.connectedTo === to);
+    if (connection) {
+      arrowInformation.x = anchors[connection.anchor].x;
+      arrowInformation.y = anchors[connection.anchor].y;
+      arrowInformation.anchor = connection.anchor;
+      return arrowInformation;
+    }
+  
+    return arrowInformation;
+}
+
+// Sucht den nähstgelegenten Ankerpunkt und gibt den Index zurück 
+export function getNearestCircle(ctx: CanvasRenderingContext2D, from: { x: number; y: number }, element: GraphNodeData) {
+    const anchors = getAnchors(ctx, element);
+  
+    let minDistance = Infinity;
+    let nearestCircleIndex = 0;
+  
+    anchors.forEach((position, index) => {
+      const distance = Math.sqrt((position.x - from.x) ** 2 + (position.y - from.y) ** 2);
+      if (distance < minDistance) {
+        minDistance = distance;
+        nearestCircleIndex = index;
+      }
+    });
+
+    return nearestCircleIndex;
+}
+
 // Gibt das letzte gesuchte Element zurück, ansonsten undefined
 export function findLast<T>(arr: T[], predicate: (element: T) => boolean): T | undefined {
     for (let i = arr.length - 1; i >= 0; i--) {

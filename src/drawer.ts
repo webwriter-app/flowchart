@@ -1,7 +1,7 @@
 // --------------- Funktionen zum Zeichnen der Elemente ---------------
 
 // Zeichnet die Verbindungspfeile zwischen den Elementen
-export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: number; anchor?: number }, to: { x: number; y: number; anchor?: number }, isSelected: boolean = false) {
+export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: number; anchor?: number }, to: { x: number; y: number; anchor?: number }, isSelected = false, returnPoints = false) {
 
     const headLength = 8;
     const padding = 15; // Raum zwischen Elementen und Pfeil
@@ -164,8 +164,14 @@ export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: n
                 }
             } else if (to.anchor === 3) {   // SA unten -> ZA links
                 if (isLeft) {
-                    points.push({ x: to.x - padding, y: from.y + padding });
-                    points.push({ x: to.x - padding, y: to.y });
+                    if (isAbove) {
+                        points.push({ x: to.x - padding, y: from.y + padding });
+                        points.push({ x: to.x - padding, y: to.y });
+                    } else {
+                        points.push({ x: from.x, y: (from.y + to.y) / 2 });
+                        points.push({ x: to.x - padding, y: (from.y + to.y) / 2 });
+                        points.push({ x: to.x - padding, y: to.y });
+                    }
                 } else {
                     if (isAbove) {
                         points.push({ x: (from.x + to.x) / 2, y: from.y + padding });
@@ -239,9 +245,10 @@ export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: n
     points.push(to);
 
      // Setze den Stil und zeichne die Verbindung
-    //ctx.strokeStyle = isSelected ? 'blue' : 'black';
-    ctx.strokeStyle = 'black';
-    ctx.fillStyle = 'black';
+    ctx.strokeStyle = isSelected ? '87cefa' : 'black';
+    //ctx.strokeStyle = 'black';
+    //ctx.fillStyle = 'black';
+    ctx.fillStyle = isSelected ? '87cefa' : 'black';
     ctx.lineWidth = 2;
 
     ctx.beginPath();
@@ -263,4 +270,9 @@ export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: n
     ctx.fill();
     ctx.closePath();
 
-  }
+    // Gib die Eckpunkte des Pfeils zum abspeichern zurück, falls returnPoints auf true gesetzt wurde
+    if (returnPoints) {
+        return points;
+    }
+}
+

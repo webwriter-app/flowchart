@@ -11,5 +11,6 @@ export interface GraphNodeData {
  export interface Arrow {
     from: GraphNodeData;
     to: GraphNodeData;
+    points?: { x: number; y: number }[];
     isSelected?: boolean;
   }
