@@ -1,7 +1,7 @@
 // --------------- Funktionen zum Zeichnen der Elemente ---------------
 
 // Zeichnet die Verbindungspfeile zwischen den Elementen
-export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: number; anchor?: number }, to: { x: number; y: number; anchor?: number }, isSelected = false, returnPoints = false) {
+export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: number; anchor?: number }, to: { x: number; y: number; anchor?: number }, isSelected: boolean = false, returnPoints = false) {
 
     const headLength = 8;
     const padding = 15; // Raum zwischen Elementen und Pfeil
@@ -243,12 +243,10 @@ export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: n
     }
   
     points.push(to);
-
+   
      // Setze den Stil und zeichne die Verbindung
-    ctx.strokeStyle = isSelected ? '87cefa' : 'black';
-    //ctx.strokeStyle = 'black';
-    //ctx.fillStyle = 'black';
-    ctx.fillStyle = isSelected ? '87cefa' : 'black';
+    ctx.strokeStyle = isSelected ? '#87cefa' : 'black';
+    ctx.fillStyle = isSelected ? '#87cefa' : 'black';
     ctx.lineWidth = 2;
 
     ctx.beginPath();
@@ -270,9 +268,43 @@ export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: n
     ctx.fill();
     ctx.closePath();
 
-    // Gib die Eckpunkte des Pfeils zum abspeichern zurück, falls returnPoints auf true gesetzt wurde
-    if (returnPoints) {
+ 
+    // Zeichne Ankerpunkte des Pfeils, wenn dieser angeklickt wurde
+    if (isSelected) {
+        drawAnchorArrow(ctx, from.anchor, points[0].x, points[0].y);
+        drawAnchorArrow(ctx, to.anchor, points[points.length - 1].x, points[points.length - 1].y);
+    }
+
+     // Gib die Eckpunkte des Pfeils zum abspeichern zurück, falls returnPoints auf true gesetzt wurde
+     if (returnPoints) {
         return points;
     }
 }
 
+// Zeichne die Ankerpunkte einer Verbindung
+export function drawAnchorArrow (ctx: CanvasRenderingContext2D, anchor: number, x: number, y: number) {
+    const drawAnchor = (x: number, y: number, radius: number, color: string) => {
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, 2 * Math.PI);
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.closePath();
+    };
+    
+    const offSetAnchor = 0;
+
+    switch (anchor) {
+        case 0:
+            drawAnchor(x, y - offSetAnchor, 5, 'red');
+            break;
+        case 1:
+            drawAnchor(x + offSetAnchor, y, 5, 'red');
+            break;
+        case 2:
+            drawAnchor(x, y + offSetAnchor, 5, 'red');
+            break;
+        case 3:
+            drawAnchor(x - offSetAnchor, y, 5, 'red');
+            break;
+    }
+};

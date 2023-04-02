@@ -4,7 +4,7 @@ import { customElement, property } from "lit/decorators.js"
 
 import { GraphNodeData, Arrow } from "./src/definitions"
 import { drawArrow } from "./src/drawer"
-import { measureTextSize, getAnchors, getArrowInformation, getNearestCircle, findLast, findLastIndex } from "./src/helper"
+import { measureTextSize, getAnchors, getArrowInformation, getNearestCircle, isArrowClicked, findLast, findLastIndex } from "./src/helper"
 
 
 @customElement('pap-widget')
@@ -143,8 +143,13 @@ export class PAPWidget extends LitElementWw {
     this.arrows.forEach((arrow) => {
       const fromCoordination = getArrowInformation(this.ctx, arrow.from, arrow.to);
       const toCoordination = getArrowInformation(this.ctx, arrow.to, arrow.from);
-      const updatedArrowPoints = drawArrow(this.ctx, fromCoordination, toCoordination, arrow.isSelected, true); 
+      const updatedArrowPoints = drawArrow(this.ctx, fromCoordination, toCoordination, arrow.isSelected, true);
       arrow.points = updatedArrowPoints;
+      if (this.selectedArrow === arrow) {
+        arrow.isSelected = true;
+      } else {
+        arrow.isSelected = false;
+      }
     });
    
     //Zeichne eine temporäre Verbindung beim ziehen zwischen zwei Elementen
@@ -175,7 +180,6 @@ export class PAPWidget extends LitElementWw {
       y: y
     };
 
-    
     this.graphElements = [...this.graphElements, element];
     this.drawGraphElement(element);
   }
@@ -266,10 +270,8 @@ export class PAPWidget extends LitElementWw {
           const x = event.clientX - this.canvas.offsetLeft;
           const y = event.clientY - this.canvas.offsetTop;
           const distance = Math.sqrt((position.x - x) ** 2 + (position.y - y) ** 2);
-
-          if (distance <= 5) {
-            this.handleCircleClick(event, element, index);
-          }
+          if (distance <= 6) {
+            this.handleCircleClick(event, element, index);          }
         });
       });
     }
@@ -284,10 +286,39 @@ export class PAPWidget extends LitElementWw {
 
     this.draggedElement = this.findLastGraphElement(x, y);
 
-
-    if (this.draggedElement) {
+    if (this.draggedElement && !this.selectedArrow) {
       this.isDragging = true;
       this.dragOffset = { x: x - this.draggedElement.x, y: y - this.draggedElement.y };
+    }
+
+    if (this.selectedArrow) {
+      const { points } = this.selectedArrow;
+      console.log(this.selectedArrow);
+      const isWithinCircle = (x: number, y: number, circleX: number, circleY: number, radius: number) =>
+        Math.sqrt(Math.pow(x - circleX, 2) + Math.pow(y - circleY, 2)) <= radius;
+      
+      // Überprüfe ob einer der Ankerpunkte berührt wurde, wenn ja setze die Variablen zum ziehen.
+      if (isWithinCircle(x, y, points[0].x, points[0].y, 5) || isWithinCircle(x, y, points[points.length - 1].x, points[points.length - 1].y, 5)) {
+        
+        console.log ("Ankerpunktkreis");
+        // Rufe handleCircleClick auf um einen temporären Pfeil zu zeichnen.
+        let tempElement: GraphNodeData;
+        let tempAnchor: number;
+        const nearestElement = this.findLastGraphElement(x, y);
+     
+        // Bestimme das Startelement von dem der temporäre Pfeil gesetzt werden soll
+        if (nearestElement) {
+          nearestElement === this.selectedArrow.from ? tempElement = this.selectedArrow.to : tempElement = this.selectedArrow.from
+          for (let i = 0; i < tempElement.connections.length; i++ ) {
+            if (tempElement.connections[i].connectedTo === nearestElement) { tempAnchor = tempElement.connections[i].anchor }
+          }
+          console.log('Richtiger Anker ' + tempAnchor);
+          console.log('Startelement '+ tempElement.node);
+          this.handleCircleClick(event, tempElement, tempAnchor);
+          this.arrows = this.arrows.filter((arrow) => arrow.from !== this.selectedArrow.from || arrow.to !== this.selectedArrow.to);
+        }
+
+      }
     }
   }
 
@@ -299,8 +330,9 @@ export class PAPWidget extends LitElementWw {
       const y = event.clientY - this.canvas.offsetTop;
   
       const targetElement = this.findLastGraphElement(x, y);
-  
-      if (this.arrowStart && targetElement) {
+      
+      // Überprüft ob ein Zielelement gefunden wurde und dieser ungleich dem Startelement
+      if (this.arrowStart && targetElement && (this.arrowStart.element !== targetElement)) {
       
         // Speichere die Pfeilverbindung am Startelement
         if (!this.arrowStart.element.connections) {
@@ -330,7 +362,10 @@ export class PAPWidget extends LitElementWw {
     // Resete die Informationen
     this.tempArrowEnd = undefined;
     this.arrowStart = undefined;
+    //this.selectedArrow = undefined;
   }
+
+  
 
   private handleMouseMove(event: MouseEvent) {
     if (this.isDragging && this.draggedElement) {
@@ -341,7 +376,8 @@ export class PAPWidget extends LitElementWw {
       this.draggedElement.y = y;
 
       this.redrawCanvas();
-    } else if (this.isDrawingArrow && this.arrowStart && this.selectedElement) {
+    } else if (this.isDrawingArrow && this.arrowStart && (this.selectedElement || this.selectedArrow) ) {
+
       const x = event.clientX - this.canvas.offsetLeft;
       const y = event.clientY - this.canvas.offsetTop;
 
@@ -355,31 +391,30 @@ export class PAPWidget extends LitElementWw {
     const x = event.clientX - this.canvas.offsetLeft;
     const y = event.clientY - this.canvas.offsetTop;
     
-    // Setze das ausgewählte Element, oder entferne die Auswahl, wenn kein Element angeklickt wurde
+    // Setze das angeklickte Element, oder entferne die Auswahl, wenn kein Element angeklickt wurde
     this.selectedElement = this.findLastGraphElement(x, y);
     const selectedElementIndex = this.graphElements.lastIndexOf(this.selectedElement);
     // Packe das ausgewählte Element ans Ende des Arrays, damit es über den anderen Elementen erscheint
-    if(this.selectedElement && !this.isDragging) {
+    if(this.selectedElement && !this.isDragging ) {
       this.graphElements.splice(selectedElementIndex, 1);
       this.graphElements.push(this.selectedElement);
     }
 
-    // Finde den angeklickten Pfeil
-    const clickedArrowIndex = this.arrows.findIndex((arrow) => this.isArrowClicked(x, y, arrow.points));
-    // Wenn ein Pfeil angeklickt wurde, ändere den isSelected-Wert und zeichne das Canvas neu
-    if (clickedArrowIndex !== -1) {
-      // this.selectedArrow = this.arrows[clickedArrowIndex];
-      // this.selectedArrow.isSelected = true;
-      this.arrows[clickedArrowIndex].isSelected = true; //Pfeil muss noch abgewählt werden
-      console.log("Pfeil anklickt");
+    // Finde den angeklickte Pfeilindex, oder entferne die Auswahl, wenn kein Pfeil angeklickt wurde
+    const selectedArrowIndex = this.arrows.findIndex((arrow) => isArrowClicked(x, y, arrow.points));
+    // Wenn ein Pfeil angeklickt wurde, setze die property selectedArrow auf den angeklickten Pfeil 
+    // und verändere die Reihenfolge im Array, damit der angeklickte Pfeil immer vollständig gefärbt angezeigt wird
+    if (selectedArrowIndex !== -1) {
+      this.selectedArrow = this.arrows[selectedArrowIndex];
+      this.selectedArrow.isSelected = true;
+      this.arrows.splice(selectedArrowIndex, 1);
+      this.arrows.push(this.selectedArrow);
       this.redrawCanvas();
-    } 
-
-    // if(this.selectedArrow && !this.isDragging) {
-    //   this.arrows.splice(clickedArrowIndex, 1);
-    //   this.arrows.push(this.selectedElement);
-    // }
- 
+    } else if (this.selectedArrow) {
+      this.selectedArrow.isSelected = false;
+      this.selectedArrow = undefined;
+      this.redrawCanvas();
+    }
 
     // Zeichne den Canvas neu, um die aktualisierte Auswahl anzuzeigen
     this.redrawCanvas();
@@ -410,55 +445,32 @@ export class PAPWidget extends LitElementWw {
     event.stopPropagation();
     this.isDrawingArrow = true;
     this.arrowStart = { element, anchor };
+
   }
 
     // ------------ Hilfsfunktionen ------------
 
   // Finde das letzte Element von den Graphelement-Array anhand der x und y Koordinate und gibt dieses zurück
   private findLastGraphElement(x:number, y:number) {
+    const d = 5;  // Toleranzbereich
     return findLast(this.graphElements, (element) =>
-      x >= element.x &&
-      x <= element.x + measureTextSize(this.ctx, element.text).width &&
-      y >= element.y &&
-      y <= element.y + measureTextSize(this.ctx, element.text).height
+      x >= element.x - d &&
+      x <= element.x + measureTextSize(this.ctx, element.text).width + d &&
+      y >= element.y - d &&
+      y <= element.y + measureTextSize(this.ctx, element.text).height + d
     );
     
   }
 
   // Finde das letzte Element von den Graphelement-Array anhand der x und y Koordinate und gibt den Index zurück 
   private findGraphElementLastIndex(x:number, y:number) {
+    const d = 5;  // Toleranzbereich
     return findLastIndex(this.graphElements, (element) =>
-      x >= element.x &&
-      x <= element.x + measureTextSize(this.ctx, element.text).width &&
-      y >= element.y &&
-      y <= element.y + measureTextSize(this.ctx, element.text).height
+      x >= element.x - d &&
+      x <= element.x + measureTextSize(this.ctx, element.text).width + d &&
+      y >= element.y - d &&
+      y <= element.y + measureTextSize(this.ctx, element.text).height + d
     );
-  }
-
-
-  private isArrowClicked(mouseX: number, mouseY: number, points: { x: number; y: number }[]): boolean {
-    const clickTolerance = 8;
-  
-    for (let i = 0; i < points.length - 1; i++) {
-      const startPoint = points[i];
-      const endPoint = points[i + 1];
-  
-      const dx = endPoint.x - startPoint.x;
-      const dy = endPoint.y - startPoint.y;
-      const length = Math.sqrt(dx * dx + dy * dy);
-  
-      const dot = ((mouseX - startPoint.x) * dx + (mouseY - startPoint.y) * dy) / (length * length);
-      const closestX = startPoint.x + dot * dx;
-      const closestY = startPoint.y + dot * dy;
-  
-      if (dot >= 0 && dot <= 1) {
-        const distance = Math.sqrt(Math.pow(closestX - mouseX, 2) + Math.pow(closestY - mouseY, 2));
-        if (distance <= clickTolerance) {
-          return true;
-        }
-      }
-    }
-    return false;
   }
   
 }
@@ -471,8 +483,9 @@ Funktionalitäten des PAP
 - Text ändern: Textarea vs prompt()? 
 - Hervorheben der Lininen durch anklicken. -> Durch 2 Kreise an Start- und Endpunkt, um die Linie zu versetzen. 
 - Rechtklick soll fenster öffnen mit Menü zum löschen einzelner Elemente
-- Canvas per drag and drop verschieben
+- (Canvas per drag and drop verschieben)
 - Textelemente für Verbindungen 
+- Zwischenpunkte für Loops 
 - Select All, verschieben mehrere Elemente durch drag and drop
 
 Aufgaben
@@ -486,4 +499,13 @@ Design Entscheidungen:
 - Buttons durch Buttons mit der richtigen Form ersetzen
 
 
+Pfeil umsetzen TODO
+- wenn ein ausgewählter Pfeil angeklickt wurde, blockiere die Maus interaktion für die darunterliegenden Elemente
+- Was muss als nächstes gemacht werden?
+  - Ankerpunkt des Pfeils muss gespeichert werden
+  - alter Pfeil muss aus dem Array gelöscht werden
+  - falls kein gültiges target Elemetn gefunden wurde füge den alten Pfeil wieder hinzu
+  - falls gültiges Target gefunden wurde, setzte den Pfeil korrekt und füge ihm dem Array hinzu
+  - Richtung des Pfeils beachten, dieser muss gegebenfalls vertauscht werden 
+  - Interaktionen mit drag Element beachten 
 */

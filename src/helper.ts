@@ -49,7 +49,7 @@ export function getArrowInformation(ctx: CanvasRenderingContext2D, from: GraphNo
 }
 
 // Sucht den nähstgelegenten Ankerpunkt und gibt den Index zurück 
-export function getNearestCircle(ctx: CanvasRenderingContext2D, from: { x: number; y: number }, element: GraphNodeData) {
+export function getNearestCircle(ctx: CanvasRenderingContext2D, from: { x: number; y: number }, element: GraphNodeData): number {
     const anchors = getAnchors(ctx, element);
   
     let minDistance = Infinity;
@@ -64,6 +64,32 @@ export function getNearestCircle(ctx: CanvasRenderingContext2D, from: { x: numbe
     });
 
     return nearestCircleIndex;
+}
+
+// Überprüft ob ein Klick eine Verbindung/Pfeil berührt hat, 
+export function isArrowClicked(mouseX: number, mouseY: number, points: { x: number; y: number }[]): boolean {
+  const clickTolerance = 8;
+
+  for (let i = 0; i < points.length - 1; i++) {
+    const startPoint = points[i];
+    const endPoint = points[i + 1];
+
+    const dx = endPoint.x - startPoint.x;
+    const dy = endPoint.y - startPoint.y;
+    const length = Math.sqrt(dx * dx + dy * dy);
+
+    const dot = ((mouseX - startPoint.x) * dx + (mouseY - startPoint.y) * dy) / (length * length);
+    const closestX = startPoint.x + dot * dx;
+    const closestY = startPoint.y + dot * dy;
+
+    if (dot >= 0 && dot <= 1) {
+      const distance = Math.sqrt(Math.pow(closestX - mouseX, 2) + Math.pow(closestY - mouseY, 2));
+      if (distance <= clickTolerance) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 // Gibt das letzte gesuchte Element zurück, ansonsten undefined
