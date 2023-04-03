@@ -4,7 +4,7 @@ import { customElement, property } from "lit/decorators.js"
 
 import { GraphNodeData, Arrow } from "./src/definitions"
 import { drawArrow } from "./src/drawer"
-import { measureTextSize, getAnchors, getArrowInformation, getNearestCircle, isArrowClicked, findLast, findLastIndex } from "./src/helper"
+import { measureTextSize, getAnchors, getArrowInformation, getNearestCircle, isArrowClicked, removeOldConnection, findLast, findLastIndex } from "./src/helper"
 
 
 @customElement('pap-widget')
@@ -251,7 +251,7 @@ export class PAPWidget extends LitElementWw {
       // Zeichne die kleinen Kreise an den Rändern
       this.ctx.fillStyle = '#87cefa';
       const circleRadius = 4;
-      const d = 10;   //Abstand zu den Element
+      const d = 15;   //Abstand zu den Element
       const anchors = [
         { x: x + width / 2, y: y - d },
         { x: x + width + d, y: y + height / 2 },
@@ -293,28 +293,32 @@ export class PAPWidget extends LitElementWw {
 
     if (this.selectedArrow) {
       const { points } = this.selectedArrow;
-      console.log(this.selectedArrow);
+      
       const isWithinCircle = (x: number, y: number, circleX: number, circleY: number, radius: number) =>
         Math.sqrt(Math.pow(x - circleX, 2) + Math.pow(y - circleY, 2)) <= radius;
       
       // Überprüfe ob einer der Ankerpunkte berührt wurde, wenn ja setze die Variablen zum ziehen.
-      if (isWithinCircle(x, y, points[0].x, points[0].y, 5) || isWithinCircle(x, y, points[points.length - 1].x, points[points.length - 1].y, 5)) {
-        
-        console.log ("Ankerpunktkreis");
-        // Rufe handleCircleClick auf um einen temporären Pfeil zu zeichnen.
+      //if (isWithinCircle(x, y, points[0].x, points[0].y, 5) || isWithinCircle(x, y, points[points.length - 1].x, points[points.length - 1].y, 5)) {
+      if (isWithinCircle(x, y, points[points.length - 1].x, points[points.length - 1].y, 5)) {  
         let tempElement: GraphNodeData;
         let tempAnchor: number;
         const nearestElement = this.findLastGraphElement(x, y);
      
         // Bestimme das Startelement von dem der temporäre Pfeil gesetzt werden soll
         if (nearestElement) {
-          nearestElement === this.selectedArrow.from ? tempElement = this.selectedArrow.to : tempElement = this.selectedArrow.from
+          // Auskommentierten Code sind für den Fall das an beiden Start- und Endpositionen der Pfeil verschoben werden kann
+          //nearestElement === this.selectedArrow.from ? tempElement = this.selectedArrow.to : tempElement = this.selectedArrow.from
+          tempElement = this.selectedArrow.from;
           for (let i = 0; i < tempElement.connections.length; i++ ) {
             if (tempElement.connections[i].connectedTo === nearestElement) { tempAnchor = tempElement.connections[i].anchor }
           }
-          console.log('Richtiger Anker ' + tempAnchor);
-          console.log('Startelement '+ tempElement.node);
+          
+          // Rufe handleCircleClick auf um einen temporären Pfeil zu zeichnen.
           this.handleCircleClick(event, tempElement, tempAnchor);
+          
+          // Lösche die alten Verbindungsinformationen innerhalb der Knoten und die Verbindung
+          removeOldConnection(this.selectedArrow.from, this.selectedArrow.to);
+          // Entferne den alte Verbindung 
           this.arrows = this.arrows.filter((arrow) => arrow.from !== this.selectedArrow.from || arrow.to !== this.selectedArrow.to);
         }
 
@@ -352,7 +356,7 @@ export class PAPWidget extends LitElementWw {
         const toCoordination = getArrowInformation(this.ctx, targetElement, this.arrowStart.element);
         const points = drawArrow(this.ctx, fromCoordination, toCoordination, false, true); 
         this.arrows.push({ from: this.arrowStart.element, to: targetElement, points });
-
+        console.log(this.arrows);
         this.redrawCanvas();
       }
 
@@ -445,7 +449,6 @@ export class PAPWidget extends LitElementWw {
     event.stopPropagation();
     this.isDrawingArrow = true;
     this.arrowStart = { element, anchor };
-
   }
 
     // ------------ Hilfsfunktionen ------------
@@ -500,12 +503,6 @@ Design Entscheidungen:
 
 
 Pfeil umsetzen TODO
-- wenn ein ausgewählter Pfeil angeklickt wurde, blockiere die Maus interaktion für die darunterliegenden Elemente
-- Was muss als nächstes gemacht werden?
-  - Ankerpunkt des Pfeils muss gespeichert werden
-  - alter Pfeil muss aus dem Array gelöscht werden
-  - falls kein gültiges target Elemetn gefunden wurde füge den alten Pfeil wieder hinzu
-  - falls gültiges Target gefunden wurde, setzte den Pfeil korrekt und füge ihm dem Array hinzu
   - Richtung des Pfeils beachten, dieser muss gegebenfalls vertauscht werden 
   - Interaktionen mit drag Element beachten 
 */

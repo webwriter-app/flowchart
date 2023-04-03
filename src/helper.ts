@@ -92,7 +92,26 @@ export function isArrowClicked(mouseX: number, mouseY: number, points: { x: numb
   return false;
 }
 
-// Gibt das letzte gesuchte Element zurück, ansonsten undefined
+// Entfernt die alten Verbindungsinformationen innerhalb der Knoten 
+export function removeOldConnection(fromNode: GraphNodeData, toNode: GraphNodeData) {
+
+  // Entferne die Verbindungsinformation vom Startknoten 
+  if (fromNode.connections) {
+    fromNode.connections = fromNode.connections.filter(
+      (connection) => connection.connectedTo !== toNode
+    );
+  }
+
+  // Entferne die Verbindungsinformation vom Zielknoten
+  if (toNode.connections) {
+    toNode.connections = toNode.connections.filter(
+      (connection) => connection.connectedTo !== fromNode
+    );
+  }
+
+}
+
+// Gib das letzte gesuchte Element zurück, ansonsten undefined
 export function findLast<T>(arr: T[], predicate: (element: T) => boolean): T | undefined {
     for (let i = arr.length - 1; i >= 0; i--) {
         const element = arr[i];

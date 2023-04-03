@@ -271,7 +271,7 @@ export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: n
  
     // Zeichne Ankerpunkte des Pfeils, wenn dieser angeklickt wurde
     if (isSelected) {
-        drawAnchorArrow(ctx, from.anchor, points[0].x, points[0].y);
+        // drawAnchorArrow(ctx, from.anchor, points[0].x, points[0].y); // Anfangspunkt nötig? Dafür benötigt man noch eine reverse drawArrow Function
         drawAnchorArrow(ctx, to.anchor, points[points.length - 1].x, points[points.length - 1].y);
     }
 
