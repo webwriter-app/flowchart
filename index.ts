@@ -4,7 +4,7 @@ import { customElement, property } from "lit/decorators.js"
 
 import { GraphNodeData, Arrow } from "./src/definitions"
 import { drawArrow } from "./src/drawer"
-import { measureTextSize, getAnchors, getArrowInformation, getNearestCircle, isArrowClicked, removeOldConnection, findLast, findLastIndex } from "./src/helper"
+import { measureTextSize, findLastGraphElement, findGraphElementLastIndex, getAnchors, getArrowInformation, getNearestCircle, isArrowClicked, removeOldConnection } from "./src/helper"
 
 
 @customElement('pap-widget')
@@ -47,6 +47,27 @@ export class PAPWidget extends LitElementWw {
       flex-direction: column;
       gap: 10px;
     }
+    .context-menu {
+    background-color: #5C5C5C;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    color: #ffffff;
+    display: none;
+    font-family: 'Courier New';
+    font-size: 12px;
+    font-weight: bold;
+    padding: 8px 0;
+    position: absolute;
+    z-index: 1000;
+  }
+  .context-menu-item {
+    cursor: pointer;
+    display: block;
+    padding: 4px 16px;
+  }
+  .context-menu-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
     button {
       font-size: 16px;
       padding: 10px;
@@ -88,46 +109,27 @@ export class PAPWidget extends LitElementWw {
           Lösche alles
         </button>
       </div>
+
+      <div id="context-menu" class="context-menu">
+        <div class="context-menu-item" @click="${() => this.deleteSelectedObject()}">
+          Löschen
+        </div>
+      </div>
+
       <canvas
         width="${window.innerWidth - 400}"
         height="${window.innerHeight}"
         @mousedown="${this.handleMouseDown}"
         @mouseup="${this.handleMouseUp}"
         @mousemove="${this.handleMouseMove}"
-        @click="${this.handleClick}"
         @dblclick="${this.handleDoubleClick}"
+        @click="${(event: MouseEvent) => { this.handleClick(event); this.hideContextMenu();}}"
+        @contextmenu="${(event: MouseEvent) => { event.preventDefault(); this.showContextMenu(event);}}"
       ></canvas>
     `;
   }
 
-  firstUpdated() {
-    this.canvas = this.shadowRoot?.querySelector('canvas') as HTMLCanvasElement;
-    this.canvas.width = window.innerWidth - 400;
-    this.canvas.height = window.innerHeight;
-    this.ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D;
-
-    // Zeichne bereits hinzugefügte Elemente erneut
-    this.graphElements.forEach((element) => {
-      this.drawGraphElement(element);
-    });
-  }
-
-  // Passt die Canvasgröße an die aktuelle Größe des Fenster an
-  connectedCallback() {
-    super.connectedCallback();
-    window.addEventListener('resize', this.updateCanvasSize);
-  }
-  
-  disconnectedCallback() {
-    window.removeEventListener('resize', this.updateCanvasSize);
-    super.disconnectedCallback();
-  }
-  
-  updateCanvasSize = () => {
-    this.canvas.width = window.innerWidth - 400;
-    this.canvas.height = window.innerHeight;
-    this.redrawCanvas();
-  };
+  // ------------------------ Drawer Funktion ------------------------
 
   private redrawCanvas() {
     
@@ -157,14 +159,6 @@ export class PAPWidget extends LitElementWw {
       const anchors = getAnchors(this.ctx, this.arrowStart.element);
       drawArrow(this.ctx, anchors[this.arrowStart.anchor], this.tempArrowEnd);
     }
-  }
-
-  // Lösche alle Elemente vom Canvas 
-  private clearAll() {
-    this.graphElements = [];
-    this.arrows = [];
-    this.arrowStart = undefined;
-    this.redrawCanvas();
   }
 
   private addGraphElement(node: 'start' | 'end' | 'op' | 'case', text: 'Start' | 'Ende' | 'Operation' | 'Verzweigung') {
@@ -278,13 +272,13 @@ export class PAPWidget extends LitElementWw {
   }
   
 
-  // ------------ Mouse-Events ------------
+  // ------------------------ Mouse-Events ------------------------
 
   private handleMouseDown(event: MouseEvent) {
     const x = event.clientX - this.canvas.offsetLeft;
     const y = event.clientY - this.canvas.offsetTop;
 
-    this.draggedElement = this.findLastGraphElement(x, y);
+    this.draggedElement = findLastGraphElement(this.ctx, this.graphElements, x, y);
 
     if (this.draggedElement && !this.selectedArrow) {
       this.isDragging = true;
@@ -302,7 +296,7 @@ export class PAPWidget extends LitElementWw {
       if (isWithinCircle(x, y, points[points.length - 1].x, points[points.length - 1].y, 5)) {  
         let tempElement: GraphNodeData;
         let tempAnchor: number;
-        const nearestElement = this.findLastGraphElement(x, y);
+        const nearestElement = findLastGraphElement(this.ctx, this.graphElements, x, y);
      
         // Bestimme das Startelement von dem der temporäre Pfeil gesetzt werden soll
         if (nearestElement) {
@@ -333,7 +327,7 @@ export class PAPWidget extends LitElementWw {
       const x = event.clientX - this.canvas.offsetLeft;
       const y = event.clientY - this.canvas.offsetTop;
   
-      const targetElement = this.findLastGraphElement(x, y);
+      const targetElement = findLastGraphElement(this.ctx, this.graphElements, x, y);
       
       // Überprüft ob ein Zielelement gefunden wurde und dieser ungleich dem Startelement
       if (this.arrowStart && targetElement && (this.arrowStart.element !== targetElement)) {
@@ -369,8 +363,6 @@ export class PAPWidget extends LitElementWw {
     //this.selectedArrow = undefined;
   }
 
-  
-
   private handleMouseMove(event: MouseEvent) {
     if (this.isDragging && this.draggedElement) {
       const x = event.clientX - this.canvas.offsetLeft - this.dragOffset.x;
@@ -396,7 +388,7 @@ export class PAPWidget extends LitElementWw {
     const y = event.clientY - this.canvas.offsetTop;
     
     // Setze das angeklickte Element, oder entferne die Auswahl, wenn kein Element angeklickt wurde
-    this.selectedElement = this.findLastGraphElement(x, y);
+    this.selectedElement = findLastGraphElement(this.ctx, this.graphElements, x, y);
     const selectedElementIndex = this.graphElements.lastIndexOf(this.selectedElement);
     // Packe das ausgewählte Element ans Ende des Arrays, damit es über den anderen Elementen erscheint
     if(this.selectedElement && !this.isDragging ) {
@@ -429,7 +421,7 @@ export class PAPWidget extends LitElementWw {
     const y = event.offsetY;
 
     // Ermittle, ob das Doppelklick-Event auf einem der Rechtecke stattgefunden hat
-    const clickedElementIndex = this.findGraphElementLastIndex(x, y);
+    const clickedElementIndex = findGraphElementLastIndex(this.ctx, this.graphElements, x, y);
     
     if (clickedElementIndex !== -1) {
       // Fordere den Benutzer auf, neuen Text einzugeben
@@ -449,33 +441,111 @@ export class PAPWidget extends LitElementWw {
     event.stopPropagation();
     this.isDrawingArrow = true;
     this.arrowStart = { element, anchor };
+  } 
+
+ // ------------------------ Lifecycle ------------------------
+
+  firstUpdated() {
+    this.canvas = this.shadowRoot?.querySelector('canvas') as HTMLCanvasElement;
+    this.canvas.width = window.innerWidth - 400;
+    this.canvas.height = window.innerHeight;
+    this.ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D;
   }
 
-    // ------------ Hilfsfunktionen ------------
 
-  // Finde das letzte Element von den Graphelement-Array anhand der x und y Koordinate und gibt dieses zurück
-  private findLastGraphElement(x:number, y:number) {
-    const d = 5;  // Toleranzbereich
-    return findLast(this.graphElements, (element) =>
-      x >= element.x - d &&
-      x <= element.x + measureTextSize(this.ctx, element.text).width + d &&
-      y >= element.y - d &&
-      y <= element.y + measureTextSize(this.ctx, element.text).height + d
-    );
-    
-  }
+  connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener('resize', this.updateCanvasSize);
 
-  // Finde das letzte Element von den Graphelement-Array anhand der x und y Koordinate und gibt den Index zurück 
-  private findGraphElementLastIndex(x:number, y:number) {
-    const d = 5;  // Toleranzbereich
-    return findLastIndex(this.graphElements, (element) =>
-      x >= element.x - d &&
-      x <= element.x + measureTextSize(this.ctx, element.text).width + d &&
-      y >= element.y - d &&
-      y <= element.y + measureTextSize(this.ctx, element.text).height + d
-    );
   }
   
+  disconnectedCallback() {
+    window.removeEventListener('resize', this.updateCanvasSize);
+    super.disconnectedCallback();
+  }
+  
+  // ------------------------ Allgemeine Systemfunktionen ------------------------
+
+  // Passt die Canvasgröße an die aktuelle Größe des Fenster an
+  updateCanvasSize = () => {
+    this.canvas.width = window.innerWidth - 400;
+    this.canvas.height = window.innerHeight;
+    this.redrawCanvas();
+  };
+
+  // Lösche alle Elemente vom Canvas 
+  private clearAll() {
+    this.graphElements = [];
+    this.arrows = [];
+    this.arrowStart = undefined;
+    this.redrawCanvas();
+  }
+
+  // Zeige das Kontextmenü an, wenn ein Element angeklickt wurde
+  private showContextMenu(event: MouseEvent) {
+    const x = event.clientX - this.canvas.offsetLeft;
+    const y = event.clientY - this.canvas.offsetTop;
+  
+    // Finde den angeklickten Knoten oder Verbindung und speichere sie
+    const clickedElement = findLastGraphElement(this.ctx, this.graphElements, x, y);
+    const clickedArrowIndex = this.arrows.findIndex((arrow) => isArrowClicked(x, y, arrow.points));
+  
+    // Falls ein Element angeklickt wurde, wird das Kontextmenü angezeigt
+    if (clickedElement || clickedArrowIndex !== -1) {
+      const contextMenu = this.shadowRoot.getElementById('context-menu');
+      if (contextMenu) {
+        contextMenu.style.display = 'block';
+        contextMenu.style.left = `${event.clientX}px`;
+        contextMenu.style.top = `${event.clientY}px`;
+  
+        if (clickedElement) {
+          this.selectedElement = clickedElement;
+          this.selectedArrow = undefined;
+        } else {
+          this.selectedArrow = this.arrows[clickedArrowIndex];
+          this.selectedElement = undefined;
+        }
+      }
+    }
+  }
+
+  // Schließe das Kontexmenü
+  private hideContextMenu() {
+    const contextMenu = this.shadowRoot.getElementById('context-menu');
+    if (contextMenu) { contextMenu.style.display = 'none'; }
+  }
+
+   // Lösche das ausgewählte Objekt 
+   private deleteSelectedObject() {
+    // Falls ein Knoten ausgewählt wurde, lösche den Knoten und alle zugehören Verbindungen 
+    if (this.selectedElement) {
+      // Entferne ausgewählten Knoten
+      this.graphElements = this.graphElements.filter((element) => element !== this.selectedElement);
+   
+      // Entferne die Verbindungsinformationen für alle betroffenen Knoten
+      this.arrows.forEach(arrow => {
+        if (arrow.from === this.selectedElement || arrow.to === this.selectedElement) {
+          removeOldConnection(arrow.from, arrow.to);
+        }
+      });
+
+      // Entferne alle Pfeile, die mit dem gelöschten Element verbunden sind
+      this.arrows = this.arrows.filter(
+        (arrow) => arrow.from !== this.selectedElement && arrow.to !== this.selectedElement
+      );
+      
+      this.selectedElement = undefined;
+    } else if (this.selectedArrow) {
+      // Entferne den ausgewählten Pfeil und die zugehörigen Informationen in den verbundenen Knoten
+      removeOldConnection(this.selectedArrow.from, this.selectedArrow.to);
+      this.arrows = this.arrows.filter((arrow) => arrow !== this.selectedArrow);
+      this.selectedArrow = undefined;
+    }
+  
+    this.hideContextMenu();
+    this.redrawCanvas();
+  }
+
 }
 
 /*
@@ -484,8 +554,6 @@ TODO Liste
 
 Funktionalitäten des PAP
 - Text ändern: Textarea vs prompt()? 
-- Hervorheben der Lininen durch anklicken. -> Durch 2 Kreise an Start- und Endpunkt, um die Linie zu versetzen. 
-- Rechtklick soll fenster öffnen mit Menü zum löschen einzelner Elemente
 - (Canvas per drag and drop verschieben)
 - Textelemente für Verbindungen 
 - Zwischenpunkte für Loops 
