@@ -3,8 +3,8 @@ import { html, css } from "lit"
 import { customElement, property } from "lit/decorators.js"
 
 import { GraphNodeData, Arrow } from "./src/definitions"
-import { drawSvgElement, drawGraphElement, drawArrow } from "./src/drawer"
-import { measureTextSize, getAnchors, getArrowInformation, getNearestCircle, isArrowClicked, removeOldConnection, findLastGraphElement, findGraphElementLastIndex } from "./src/helper"
+import { drawSvgElement, drawGraphElement, drawElementAnchors, drawArrow } from "./src/drawer"
+import { getAnchors, getArrowInformation, getNearestCircle, isArrowClicked, removeOldConnection, findLastGraphElement, findGraphElementLastIndex } from "./src/helper"
 
 
 @customElement('pap-widget')
@@ -28,6 +28,9 @@ export class PAPWidget extends LitElementWw {
 
    static styles = css`
    :host {
+      display: block;
+      background-color: #708090;
+      height: 100%;
       --offset-x: 0;
       --offset-y: 0;
       --grid-background-color: white;
@@ -37,10 +40,10 @@ export class PAPWidget extends LitElementWw {
     }
     .sidebar {
       position: fixed;
-      left: 1%;
-      top: 5%;
+      left: 1.5%;
+      top: 10%;
       width: 150px;
-      height: 580px;
+      height: 620px;
       background-color: #2c3e50;
       padding: 15px;
       display: flex;
@@ -87,6 +90,7 @@ export class PAPWidget extends LitElementWw {
     canvas {
       position: relative;
       margin-left: 210px;
+      margin-top: 50px;
       width: calc(100% - 210);
       height: 100%;
       border: 1px solid black;
@@ -123,7 +127,7 @@ export class PAPWidget extends LitElementWw {
           ${drawSvgElement('text')}
         </button>
         <button @click="${() => this.clearAll()}">
-          Lösche alles
+         ${drawSvgElement('delete')}
         </button>
       </div>
 
@@ -171,7 +175,12 @@ export class PAPWidget extends LitElementWw {
          }
       });
 
-      //Zeichne eine temporäre Verbindung beim ziehen zwischen zwei Elementen
+      // Zeichne die Ankerpunkte für das ausgewählte Element, falls vorhanden
+      if (this.selectedElement) {
+         drawElementAnchors(this.ctx, this.selectedElement);
+      }
+
+      //Zeichne eine temporäre Verbindung beim ziehen zwischen zwei Elementen, falls vorhanden
       if (this.isDrawingArrow && this.arrowStart && this.tempArrowEnd) {
          const anchors = getAnchors(this.ctx, this.arrowStart.element);
          drawArrow(this.ctx, anchors[this.arrowStart.anchor], this.tempArrowEnd);
@@ -179,16 +188,14 @@ export class PAPWidget extends LitElementWw {
    }
 
    private addGraphElement(node: 'start' | 'end' | 'op' | 'decision' | 'connector' | 'text', text: string) {
-      const x = Math.floor(Math.random() * this.canvas.width * 0.8);
-      const y = Math.floor(Math.random() * this.canvas.height * 0.8);
-      // const x = this.canvas.width * 0.5;
-      // const y = this.canvas.height * 0.5;
+      // const x = Math.floor(Math.random() * this.canvas.width * 0.8);
+      // const y = Math.floor(Math.random() * this.canvas.height * 0.8);
 
       const element: GraphNodeData = {
          node: node,
          text: text,
-         x: x,
-         y: y
+         x: this.canvas.width * 0.1,
+         y: this.canvas.height * 0.1
       };
 
       this.graphElements = [...this.graphElements, element];
@@ -198,8 +205,7 @@ export class PAPWidget extends LitElementWw {
    // ------------------------ Mouse-Events ------------------------
 
    private handleMouseDown(event: MouseEvent) {
-      const x = event.clientX - this.canvas.offsetLeft;
-      const y = event.clientY - this.canvas.offsetTop;
+      const {x, y} = this.getMouseCoordinates(event);
 
       this.draggedElement = findLastGraphElement(this.ctx, this.graphElements, x, y);
 
@@ -216,8 +222,7 @@ export class PAPWidget extends LitElementWw {
          anchors.forEach((position, index) => {
             // Füge einen Event Listener für jeden Anker hinzu
             this.canvas?.addEventListener('mousedown', (event) => {
-               const x = event.clientX - this.canvas.offsetLeft;
-               const y = event.clientY - this.canvas.offsetTop;
+               const {x, y} = this.getMouseCoordinates(event);
                const distance = Math.sqrt((position.x - x) ** 2 + (position.y - y) ** 2);
                if (distance <= 6) {
                   this.handleCircleClick(event, this.selectedElement, index);
@@ -265,8 +270,7 @@ export class PAPWidget extends LitElementWw {
       if (this.isDragging) {
          this.isDragging = false;
       } else if (this.isDrawingArrow) {
-         const x = event.clientX - this.canvas.offsetLeft;
-         const y = event.clientY - this.canvas.offsetTop;
+         const {x, y} = this.getMouseCoordinates(event);
 
          const targetElement = findLastGraphElement(this.ctx, this.graphElements, x, y);
 
@@ -306,17 +310,14 @@ export class PAPWidget extends LitElementWw {
 
    private handleMouseMove(event: MouseEvent) {
       if (this.isDragging && this.draggedElement) {
-         const x = event.clientX - this.canvas.offsetLeft - this.dragOffset.x;
-         const y = event.clientY - this.canvas.offsetTop - this.dragOffset.y;
-
-         this.draggedElement.x = x;
-         this.draggedElement.y = y;
+         const {x, y} = this.getMouseCoordinates(event);
+    
+         this.draggedElement.x = x - this.dragOffset.x;
+         this.draggedElement.y = y - this.dragOffset.y;
 
          this.redrawCanvas();
       } else if (this.isDrawingArrow && this.arrowStart && (this.selectedElement || this.selectedArrow)) {
-
-         const x = event.clientX - this.canvas.offsetLeft;
-         const y = event.clientY - this.canvas.offsetTop;
+         const {x, y} = this.getMouseCoordinates(event);
 
          this.tempArrowEnd = { x, y };
 
@@ -325,8 +326,7 @@ export class PAPWidget extends LitElementWw {
    }
 
    private handleClick(event: MouseEvent) {
-      const x = event.clientX - this.canvas.offsetLeft;
-      const y = event.clientY - this.canvas.offsetTop;
+      const {x, y} = this.getMouseCoordinates(event);
 
       // Setze das angeklickte Element, oder entferne die Auswahl, wenn kein Element angeklickt wurde
       this.selectedElement = findLastGraphElement(this.ctx, this.graphElements, x, y);
@@ -358,13 +358,12 @@ export class PAPWidget extends LitElementWw {
    }
 
    private handleDoubleClick(event: MouseEvent) {
-      const x = event.offsetX;
-      const y = event.offsetY;
+      const {x, y} = this.getMouseCoordinates(event);
 
       // Ermittle, ob das Doppelklick-Event auf einem der Rechtecke stattgefunden hat
       const clickedElementIndex = findGraphElementLastIndex(this.ctx, this.graphElements, x, y);
 
-      if (clickedElementIndex !== -1) {
+      if (clickedElementIndex !== -1 && this.graphElements[clickedElementIndex].node !== 'connector') {
          // Fordere den Benutzer auf, neuen Text einzugeben
          const newText = prompt('Bitte geben Sie den neuen Text ein:');
 
@@ -392,7 +391,6 @@ export class PAPWidget extends LitElementWw {
       this.canvas.height = window.innerHeight;
       this.ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D;
    }
-
 
    connectedCallback() {
       super.connectedCallback();
@@ -424,8 +422,7 @@ export class PAPWidget extends LitElementWw {
 
    // Zeige das Kontextmenü an, wenn ein Element angeklickt wurde
    private showContextMenu(event: MouseEvent) {
-      const x = event.clientX - this.canvas.offsetLeft;
-      const y = event.clientY - this.canvas.offsetTop;
+      const {x, y} = this.getMouseCoordinates(event);
 
       // Finde den angeklickten Knoten oder Verbindung und speichere sie
       const clickedElement = findLastGraphElement(this.ctx, this.graphElements, x, y);
@@ -487,6 +484,13 @@ export class PAPWidget extends LitElementWw {
       this.redrawCanvas();
    }
 
+   // Gibe die aktuellen Koordinaten der Maus zurück, welche den Offset des Canvas und des scrollen berücksichtigt.
+   private getMouseCoordinates(event: MouseEvent) {
+      const x = event.clientX - this.canvas.offsetLeft + window.scrollX;
+      const y = event.clientY - this.canvas.offsetTop + window.scrollY;
+      return {x, y};
+   }
+
 }
 
 /*
@@ -496,8 +500,6 @@ TODO Liste
 Funktionalitäten des PAP
 - Text ändern: Textarea vs prompt()? 
 - (Canvas per drag and drop verschieben)
-- Textelemente für Verbindungen 
-- Zwischenpunkte für Loops 
 - Select All, verschieben mehrere Elemente durch drag and drop
 
 Aufgaben
@@ -506,17 +508,10 @@ Aufgaben
 
 Design Entscheidungen:
 - Canvasgröße? Gesamtfläche - Sidebar?
-- Outline an den jeweiligen Elementen für mehr Tiefe
-- Start- und Endknoten runde Ecken anpassen
-- Buttons durch Buttons mit der richtigen Form ersetzen
 
 
 Pfeil umsetzen 
   - Pfeil am Anfangspunkt umsetzbar machen 
   - Richtung des Pfeils beachten, dieser muss gegebenfalls vertauscht werden 
-
-Aufgaben Morgen:
-  - drawGraphElement handleCircleClick auin index.ts einbinden, offset fehler
-  - sidebar soll über dem Canvas gehen, Canvas über dem gesamten Bildschirm? 
 
 */

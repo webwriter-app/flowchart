@@ -7,7 +7,7 @@ import { measureTextSize, getAnchors } from "./helper";
 
 // -------------------- SVG Grafiken für die Buttons --------------------
 
-export function drawSvgElement(node: string) {
+export function drawSvgElement(element: string) {
    // Funktion zum übersichtlichen setzen der Attribute der SVG Grafiken 
    function setAttributeList(element: SVGElement, attributes: { [key: string]: string }): void {
       for (const key in attributes) {
@@ -33,7 +33,7 @@ export function drawSvgElement(node: string) {
    });
    svg.appendChild(text);
 
-   switch (node) {
+   switch (element) {
       case 'start':
       case 'end':
          const terminal = document.createElementNS("http://www.w3.org/2000/svg", "rect");
@@ -49,7 +49,7 @@ export function drawSvgElement(node: string) {
             'stroke-width': "2"
          });
          svg.appendChild(terminal);
-         node === 'start' ? text.textContent = "Start" : text.textContent = "Ende";
+         element === 'start' ? text.textContent = "Start" : text.textContent = "Ende";
          break;
       case 'op':
          const operation = document.createElementNS("http://www.w3.org/2000/svg", "rect");
@@ -92,6 +92,10 @@ export function drawSvgElement(node: string) {
       case 'text':
          text.textContent = "Text";
          break;
+      case 'delete':
+         // Erzeuge den Mülleimer
+         // TODO
+         text.textContent = "Lösche alles";
    }
 
    return svg;
@@ -101,14 +105,9 @@ export function drawSvgElement(node: string) {
 
 // Zeichnet den passenden Knoten und seine Ankerpunkte 
 export function drawGraphElement(ctx: CanvasRenderingContext2D, element: GraphNodeData, selectedElement: GraphNodeData) {
-   // Wird genutzt, damit die Breite beim ersten Element richtig gemessen wird. 
-   // let firstTime = true;
-   // if (firstTime) {
-   //    ctx.fillStyle = 'black';
-   //    ctx.font = 'bold 16px Courier New';
-   //    ctx.fillText(element.text, element.x + 10, element.y + (60 / 2) + 5);
-   //    firstTime = false;
-   // }
+
+   // Setze die Schriftart des Textes, dies muss vorher gesetzt werden, damit die größe des Textes richtig berechnet werden kann.
+   ctx.font = 'bold 16px Courier New';
 
    const { node, text, x, y } = element;
    const { width, height } = measureTextSize(ctx, text);
@@ -182,7 +181,6 @@ export function drawGraphElement(ctx: CanvasRenderingContext2D, element: GraphNo
 
    // Text zum Element hinzufügen
    ctx.fillStyle = 'black';
-   ctx.font = 'bold 16px Courier New';
    ctx.fillText(text, x + 10, y + (height / 2) + 5);
 
 
@@ -192,22 +190,53 @@ export function drawGraphElement(ctx: CanvasRenderingContext2D, element: GraphNo
       ctx.setLineDash([5, 10]);
       ctx.lineWidth = 2;
       ctx.strokeRect(x, y, width, height);
-
-       // Zeichne die Ankerpunkte an den Rändern, falls es sich nicht um einen Text handelt
-      if (selectedElement.node !== 'text'){
-         ctx.fillStyle = '#87cefa';
-         const circleRadius = 4;
-         const d = 15;   //Abstand zu den Element
-         const anchors = getAnchors(ctx, selectedElement, d);
-
-         // Zeichne die Ankerpunkte
-         anchors.forEach((position) => {
-            ctx.beginPath();
-            ctx.arc(position.x, position.y, circleRadius, 0, 2 * Math.PI);
-            ctx.fill();
-         });
-      }
    }
+}
+
+export function drawElementAnchors(ctx: CanvasRenderingContext2D, element: GraphNodeData, d: number = 20) {
+   if (element.node !== 'text') {
+      ctx.fillStyle = '#87cefa';
+      const anchors = getAnchors(ctx, element, d);
+
+      // Zeichne die Ankerpunkte
+      anchors.forEach((position, index) => {
+         let angle: number;
+         switch (index) {
+             case 0:
+               angle = (3 * Math.PI) / 2;
+               break;
+            case 1:
+               angle = 0;
+               break;
+            case 2:
+               angle = Math.PI / 2;
+               break;
+            case 3:
+               angle = Math.PI;
+               break;
+            default:
+               angle = 0;
+         }
+         drawArrowHead(ctx, position.x, position.y, angle);
+     });
+   }
+}
+
+// Zeichne den Ankerpunkt als Pfeilspitze für die Knoten 
+function drawArrowHead(ctx: CanvasRenderingContext2D, x: number, y: number, angle: number) {
+    const length = 10;
+    const width = 6;
+
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(-length, -width);
+    ctx.lineTo(-length, width);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
 }
 
 // -------------------- Pfeile / Verbindungen --------------------
@@ -357,8 +386,14 @@ export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: n
             }
          } else if (to.anchor === 1) {   // SA unten -> ZA rechts
             if (!isLeft) {
-               points.push({ x: to.x + padding, y: from.y + padding });
-               points.push({ x: to.x + padding, y: to.y });
+               if(isAbove) {
+                  points.push({ x: to.x + padding, y: from.y + padding });
+                  points.push({ x: to.x + padding, y: to.y });
+               } else {
+                  points.push({ x: from.x, y: (from.y + to.y) / 2  });
+                  points.push({ x: to.x + padding, y: (from.y + to.y) / 2  });
+                  points.push({ x: to.x + padding, y: to.y });
+               }
             } else {
                if (isAbove) {
                   points.push({ x: (from.x + to.x) / 2, y: from.y + padding });
@@ -484,7 +519,7 @@ export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: n
    // Zeichne Ankerpunkte des Pfeils, wenn dieser angeklickt wurde
    if (isSelected) {
       // drawAnchorArrow(ctx, from.anchor, points[0].x, points[0].y); // Anfangspunkt nötig? Dafür benötigt man noch eine reverse drawArrow Function
-      drawAnchorArrow(ctx, to.anchor, points[points.length - 1].x, points[points.length - 1].y);
+      drawArrowAnchor(ctx, to.anchor, points[points.length - 1].x, points[points.length - 1].y);
    }
 
    // Gib die Eckpunkte des Pfeils zum abspeichern zurück, falls returnPoints auf true gesetzt wurde
@@ -494,11 +529,11 @@ export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: n
 }
 
 // Zeichne die Ankerpunkte einer Verbindung
-export function drawAnchorArrow(ctx: CanvasRenderingContext2D, anchor: number, x: number, y: number) {
-   const drawAnchor = (x: number, y: number, radius: number, color: string) => {
+function drawArrowAnchor(ctx: CanvasRenderingContext2D, anchor: number, x: number, y: number) {
+   const drawAnchor = (x: number, y: number, radius: number ) => {
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, 2 * Math.PI);
-      ctx.fillStyle = color;
+      ctx.fillStyle = '#3CB371';
       ctx.fill();
       ctx.closePath();
    };
@@ -507,16 +542,16 @@ export function drawAnchorArrow(ctx: CanvasRenderingContext2D, anchor: number, x
 
    switch (anchor) {
       case 0:
-         drawAnchor(x, y - offSetAnchor, 5, 'red');
+         drawAnchor(x, y - offSetAnchor, 5 );
          break;
       case 1:
-         drawAnchor(x + offSetAnchor, y, 5, 'red');
+         drawAnchor(x + offSetAnchor, y, 5 );
          break;
       case 2:
-         drawAnchor(x, y + offSetAnchor, 5, 'red');
+         drawAnchor(x, y + offSetAnchor, 5 );
          break;
       case 3:
-         drawAnchor(x - offSetAnchor, y, 5, 'red');
+         drawAnchor(x - offSetAnchor, y, 5 );
          break;
    }
 };
