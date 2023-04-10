@@ -29,124 +29,164 @@ export class PAPWidget extends LitElementWw {
    static styles = css`
    :host {
       display: block;
-      background-color: #708090;
-      height: 100%;
+      position: relative;
+      width: 100%;
+      height: 98vh;
+      overflow: hidden;
+
       --offset-x: 0;
       --offset-y: 0;
       --grid-background-color: white;
       --grid-color: #104E8B;
       --grid-size: 50px;
       --grid-dot-size: 1px;
-    }
-    .sidebar {
+   }
+
+   .workspace {
+      display: block;
+      position: relative;
+      width: 100%;
+      height: 98vh;
+      overflow: hidden;
+   }
+
+   .flowchart-bar,
+   .toolbar {
       position: fixed;
-      left: 1.5%;
-      top: 10%;
-      width: 150px;
-      height: 620px;
+      display: flex;
       background-color: #2c3e50;
       padding: 15px;
-      display: flex;
+   }
+
+   .flowchart-bar {
+      left: 1.5%;
+      top: 14%;
       flex-direction: column;
       gap: 10px;
-    }
-    .sidebar button {
+   }
+
+   .toolbar {
+      right: 1.5%;
+      top: 3%;
+      flex-direction: row;
+      gap: 10px;
+   }
+
+   .flowchart-bar button,
+   .toolbar button {
       background-color: #34495e;
       color: white;
-      font-size: 16px;
       border: none;
-      padding: 10px;
       cursor: pointer;
       transition: background-color 0.3s;
-    }
-    .sidebar button:hover {
+   }
+
+   .flowchart-bar button,
+   .toolbar button {
+      font-size: 12px;
+      padding: 5px;
+   }
+
+   .flowchart-bar button:hover,
+   .toolbar button:hover {
       background-color: #1abc9c;
-    }
-    .context-menu {
-      background-color: #5C5C5C;
+   }
+
+   .context-menu {
+      position: absolute;
+      z-index: 1000;
+      background-color: #2c3e50;
       border-radius: 8px;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-      color: #ffffff;
+      padding: 8px 0;
       display: none;
+
       font-family: 'Courier New';
       font-size: 12px;
       font-weight: bold;
-      padding: 8px 0;
-      position: absolute;
-      z-index: 1000;
-    }
-    .context-menu-item {
-      cursor: pointer;
+      color: #ffffff;
+   }
+
+   .context-menu-item {
       display: block;
       padding: 4px 16px;
-    }
-    .context-menu-item:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-    button {
-      font-size: 16px;
-      padding: 10px;
-    }
-    canvas {
-      position: relative;
-      margin-left: 210px;
-      margin-top: 50px;
-      width: calc(100% - 210);
-      height: 100%;
-      border: 1px solid black;
+      background-color: #34495e;
+      transition: background-color 0.3s;
+      cursor: pointer;
+   }
+
+   .context-menu-item:hover {
+      background-color: #1abc9c;
+   }
+
+   canvas {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+
       background-size: var(--grid-size) var(--grid-size);
       background-image: radial-gradient(
-        circle,
-        var(--grid-color) var(--grid-dot-size),
-        var(--grid-background-color) var(--grid-dot-size)
+         circle,
+         var(--grid-color) var(--grid-dot-size),
+         var(--grid-background-color) var(--grid-dot-size)
       );
       background-position: var(--offset-x) var(--offset-y);
-      z-index: 0;
-    }
-  `;
-
+   }
+`;
    render() {
       return html`
-      <div class="sidebar">
-        <button @click="${() => this.addGraphElement('start', 'Start')}">
-          ${drawSvgElement('start')}
-        </button>
-        <button @click="${() => this.addGraphElement('op', 'Operation')}">
-          ${drawSvgElement('op')}
-        </button>
-        <button @click="${() => this.addGraphElement('decision', 'Verzweigung')}">
-          ${drawSvgElement('decision')}
-        </button>
-        <button @click="${() => this.addGraphElement('connector', '')}">
-          ${drawSvgElement('connector')}
-        </button>
-        <button @click="${() => this.addGraphElement('end', 'Ende')}">
-          ${drawSvgElement('end')} 
-        </button>
-        <button @click="${() => this.addGraphElement('text', 'Text')}">
-          ${drawSvgElement('text')}
-        </button>
-        <button @click="${() => this.clearAll()}">
-         ${drawSvgElement('delete')}
-        </button>
-      </div>
+      <div class="workspace" @scroll="${this.handleScroll}">
 
-      <div id="context-menu" class="context-menu">
-        <div class="context-menu-item" @click="${() => this.deleteSelectedObject()}">
-          Löschen
-        </div>
-      </div>
+         <canvas
+            width="${window.innerWidth}"
+            height="${window.innerHeight}"
+            @mousedown="${this.handleMouseDown}"
+            @mouseup="${this.handleMouseUp}"
+            @mousemove="${this.handleMouseMove}"
+            @dblclick="${this.handleDoubleClick}"
+            @click="${(event: MouseEvent) => { this.handleClick(event); this.hideContextMenu(); }}"
+            @contextmenu="${(event: MouseEvent) => { event.preventDefault(); this.showContextMenu(event); }}"
+         ></canvas>
 
-      <canvas
-        width="${window.innerWidth - 400}"
-        height="${window.innerHeight}"
-        @mousedown="${this.handleMouseDown}"
-        @mouseup="${this.handleMouseUp}"
-        @mousemove="${this.handleMouseMove}"
-        @dblclick="${this.handleDoubleClick}"
-        @click="${(event: MouseEvent) => { this.handleClick(event); this.hideContextMenu(); }}"
-        @contextmenu="${(event: MouseEvent) => { event.preventDefault(); this.showContextMenu(event); }}"
-      ></canvas>
+         <div class="flowchart-bar">
+            <button @click="${() => this.addGraphElement('start', 'Start')}">
+               ${drawSvgElement('start')}
+            </button>
+            <button @click="${() => this.addGraphElement('op', 'Operation')}">
+               ${drawSvgElement('op')}
+            </button>
+            <button @click="${() => this.addGraphElement('decision', 'Verzweigung')}">
+               ${drawSvgElement('decision')}
+            </button>
+            <button @click="${() => this.addGraphElement('connector', '')}">
+               ${drawSvgElement('connector')}
+            </button>
+            <button @click="${() => this.addGraphElement('end', 'Ende')}">
+               ${drawSvgElement('end')} 
+            </button>
+            <button @click="${() => this.addGraphElement('text', 'Text')}">
+               ${drawSvgElement('text')}
+            </button>
+            <button @click="${() => this.clearAll()}">
+               ${drawSvgElement('delete')}
+            </button>
+         </div>
+
+         <div class="toolbar">
+            <button >Button 1</button>
+            <button >Button 2</button>
+         </div>
+
+         <div id="context-menu" class="context-menu">
+            <div class="context-menu-item" @click="${() => this.deleteSelectedObject()}">
+               Löschen
+            </div>
+         </div>
+
+      </div>
     `;
    }
 
@@ -188,14 +228,15 @@ export class PAPWidget extends LitElementWw {
    }
 
    private addGraphElement(node: 'start' | 'end' | 'op' | 'decision' | 'connector' | 'text', text: string) {
-      // const x = Math.floor(Math.random() * this.canvas.width * 0.8);
-      // const y = Math.floor(Math.random() * this.canvas.height * 0.8);
+      const workspace = this.shadowRoot?.querySelector('.workspace') as HTMLElement;
+      const centerX = this.canvas.width * 0.5 + workspace.scrollLeft;
+      const centerY = this.canvas.height * 0.5 + workspace.scrollTop;
 
       const element: GraphNodeData = {
          node: node,
          text: text,
-         x: this.canvas.width * 0.1,
-         y: this.canvas.height * 0.1
+         x: centerX,
+         y: centerY 
       };
 
       this.graphElements = [...this.graphElements, element];
@@ -224,7 +265,7 @@ export class PAPWidget extends LitElementWw {
             this.canvas?.addEventListener('mousedown', (event) => {
                const {x, y} = this.getMouseCoordinates(event);
                const distance = Math.sqrt((position.x - x) ** 2 + (position.y - y) ** 2);
-               if (distance <= 6) {
+               if (distance <= 8) {
                   this.handleCircleClick(event, this.selectedElement, index);
                }
             });
@@ -387,9 +428,10 @@ export class PAPWidget extends LitElementWw {
 
    firstUpdated() {
       this.canvas = this.shadowRoot?.querySelector('canvas') as HTMLCanvasElement;
-      this.canvas.width = window.innerWidth - 400;
+      this.canvas.width = window.innerWidth;
       this.canvas.height = window.innerHeight;
       this.ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D;
+      this.updateCanvasOffset(); // Offset aktualisieren
    }
 
    connectedCallback() {
@@ -407,7 +449,7 @@ export class PAPWidget extends LitElementWw {
 
    // Passt die Canvasgröße an die aktuelle Größe des Fenster an
    updateCanvasSize = () => {
-      this.canvas.width = window.innerWidth - 400;
+      this.canvas.width = window.innerWidth;
       this.canvas.height = window.innerHeight;
       this.redrawCanvas();
    };
@@ -486,9 +528,22 @@ export class PAPWidget extends LitElementWw {
 
    // Gibe die aktuellen Koordinaten der Maus zurück, welche den Offset des Canvas und des scrollen berücksichtigt.
    private getMouseCoordinates(event: MouseEvent) {
-      const x = event.clientX - this.canvas.offsetLeft + window.scrollX;
-      const y = event.clientY - this.canvas.offsetTop + window.scrollY;
+      const offsetX = this.canvas.getBoundingClientRect().left;
+      const offsetY = this.canvas.getBoundingClientRect().top;
+      const x = event.clientX - offsetX;
+      const y = event.clientY - offsetY;
       return {x, y};
+   }
+
+   private handleScroll(event: Event) {
+      this.updateCanvasOffset();
+   }
+
+   private updateCanvasOffset() {
+      const offsetX = this.canvas.getBoundingClientRect().left;
+      const offsetY = this.canvas.getBoundingClientRect().top;
+      this.style.setProperty('--offset-x', `${offsetX}px`);
+      this.style.setProperty('--offset-y', `${offsetY}px`);
    }
 
 }
@@ -499,6 +554,8 @@ TODO Liste
 
 Funktionalitäten des PAP
 - Text ändern: Textarea vs prompt()? 
+-> eigenes Promt erstellen. Textarea sieht nicht gut aus, kein svg
+- Schriftarten ändern
 - (Canvas per drag and drop verschieben)
 - Select All, verschieben mehrere Elemente durch drag and drop
 
@@ -508,6 +565,8 @@ Aufgaben
 
 Design Entscheidungen:
 - Canvasgröße? Gesamtfläche - Sidebar?
+
+- 
 
 
 Pfeil umsetzen 
