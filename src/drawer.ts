@@ -1,5 +1,5 @@
-import { GraphNodeData } from "./definitions";
-import { measureTextSize, getAnchors } from "./helper";
+import { GraphNodeData } from './definitions';
+import { measureTextSize, getAnchors } from './helper';
 
 /*
 *   Hier finden sich die Funktionen zum Zeichnen auf dem Canvas 
@@ -7,7 +7,7 @@ import { measureTextSize, getAnchors } from "./helper";
 
 // -------------------- SVG Grafiken für die Buttons --------------------
 
-export function drawSvgElement(element: string) {
+export function drawButtonElement(element: string, bar: 'flow' | 'tool') {
    // Funktion zum übersichtlichen setzen der Attribute der SVG Grafiken 
    function setAttributeList(element: SVGElement, attributes: { [key: string]: string }): void {
       for (const key in attributes) {
@@ -15,87 +15,180 @@ export function drawSvgElement(element: string) {
       }
    }
 
-   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-   setAttributeList(svg, {
-      width: "120",
-      height: "55",
-   });
+   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+   switch (bar) {
+      case 'flow':
+         setAttributeList(svg, {
+            width: '120',
+            height: '55',
+         });
+         break;
+      case 'tool':
+         setAttributeList(svg, {
+            width: '40',
+            height: '30',
+         });
+         break;
+      default:
+         console.log('Unbekannter Leistentyp');
+   }
 
    // Erzeuge den Text
-   const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+   const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
    setAttributeList(text, {
-      x: "60",
-      y: "35",
-      fill: "white",
-      "text-anchor": "middle",
-      "font-size": "14",
-      "font-family": "Arial"
+      x: '60',
+      y: '35',
+      fill: 'white',
+      'text-anchor': 'middle',
+      'font-size': '14',
+      'font-family': 'Arial'
    });
    svg.appendChild(text);
 
    switch (element) {
       case 'start':
       case 'end':
-         const terminal = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+         const terminal = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
          setAttributeList(terminal, {
-            x: "10",
-            y: "15",
-            width: "100",
-            height: "30",
-            rx: "15",
-            ry: "15",
-            fill: "none",
-            stroke: "white",
-            'stroke-width': "2"
+            x: '10',
+            y: '15',
+            width: '100',
+            height: '30',
+            rx: '15',
+            ry: '15',
+            fill: 'none',
+            stroke: 'white',
+            'stroke-width': '2'
          });
          svg.appendChild(terminal);
-         element === 'start' ? text.textContent = "Start" : text.textContent = "Ende";
+         element === 'start' ? text.textContent = 'Start' : text.textContent = 'Ende';
          break;
       case 'op':
-         const operation = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+         const operation = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
          setAttributeList(operation, {
-            x: "10",
-            y: "15",
-            width: "100",
-            height: "30",
-            fill: "none",
-            stroke: "white",
-            'stroke-width': "2"
+            x: '10',
+            y: '15',
+            width: '100',
+            height: '30',
+            fill: 'none',
+            stroke: 'white',
+            'stroke-width': '2'
          });
          svg.appendChild(operation);
-         text.textContent = "Operation";
+         text.textContent = 'Operation';
          break;
       case 'decision':
-         const decision = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+         const decision = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
          setAttributeList(decision, {
-            points: "60,2 120,25 60,48 0,25",
-            fill: "none",
-            stroke: "white",
-            'stroke-width': "2"
+            points: '60,2 120,25 60,48 0,25',
+            fill: 'none',
+            stroke: 'white',
+            'stroke-width': '2'
          });
          svg.appendChild(decision);
-         text.textContent = "Verzweigung";
-         text.setAttribute("y", "30");
+         text.textContent = 'Verzweigung';
+         text.setAttribute('y', '30');
          break;
       case 'connector':
-         const connector = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+         const connector = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
          setAttributeList(connector, {
-            cx: "60",
-            cy: "30",
-            r: "10",
-            fill: "none",
-            stroke: "white",
-            'stroke-width': "2"
+            cx: '60',
+            cy: '30',
+            r: '10',
+            fill: 'none',
+            stroke: 'white',
+            'stroke-width': '2'
          });
          svg.appendChild(connector);
          break;
       case 'text':
-         text.textContent = "Text";
+         text.textContent = 'Text';
          break;
       case 'delete':
-         // Erzeuge den Mülleimer
-         // TODO
-         text.textContent = "Lösche alles";
+         const scaleDelete = 0.75;
+         const deleteX = 5;
+         const deleteY = 1;
+
+         const bin = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+         setAttributeList(bin, {
+            d: 'M28,40H11.8c-3.3,0-5.9-2.7-5.9-5.9V16c0-0.6,0.4-1,1-1s1,0.4,1,1v18.1c0,2.2,1.8,3.9,3.9,3.9H28c2.2,0,3.9-1.8,3.9-3.9V16   c0-0.6,0.4-1,1-1s1,0.4,1,1v18.1C33.9,37.3,31.2,40,28,40z',
+            fill: 'white',
+            stroke: 'white',
+            'stroke-width': '1',
+            transform: `scale(${scaleDelete}) translate(${deleteX} ${deleteY})`
+         });
+
+         const lid = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+         setAttributeList(lid, {
+            d: 'M33.3,4.9h-7.6C25.2,2.1,22.8,0,19.9,0s-5.3,2.1-5.8,4.9H6.5c-2.3,0-4.1,1.8-4.1,4.1S4.2,13,6.5,13h26.9   c2.3,0,4.1-1.8,4.1-4.1S35.6,4.9,33.3,4.9z M19.9,2c1.8,0,3.3,1.2,3.7,2.9h-7.5C16.6,3.2,18.1,2,19.9,2z M33.3,11H6.5   c-1.1,0-2.1-0.9-2.1-2.1c0-1.1,0.9-2.1,2.1-2.1h26.9c1.1,0,2.1,0.9,2.1,2.1C35.4,10.1,34.5,11,33.3,11z',
+            fill: 'white',
+            stroke: 'white',
+            'stroke-width': '1',
+            transform: `scale(${scaleDelete}) translate(${deleteX} ${deleteY})`
+         });
+
+         const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+         setAttributeList(line, {
+            d: 'M12.9,35.1c-0.6,0-1-0.4-1-1V17.4c0-0.6,0.4-1,1-1s1,0.4,1,1v16.7C13.9,34.6,13.4,35.1,12.9,35.1z',
+            fill: 'white',
+            stroke: 'white',
+            'stroke-width': '1',
+            transform: `scale(${scaleDelete}) translate(${deleteX} ${deleteY})`
+         });
+
+         const line2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+         setAttributeList(line2, {
+            d: 'M26.9,35.1c-0.6,0-1-0.4-1-1V17.4c0-0.6,0.4-1,1-1s1,0.4,1,1v16.7C27.9,34.6,27.4,35.1,26.9,35.1z',
+            fill: 'white',
+            stroke: 'white',
+            'stroke-width': '1',
+            transform: `scale(${scaleDelete}) translate(${deleteX} ${deleteY})`
+         });
+
+         const line3 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+         setAttributeList(line3, {
+            d: 'M19.9,35.1c-0.6,0-1-0.4-1-1V17.4c0-0.6,0.4-1,1-1s1,0.4,1,1v16.7C20.9,34.6,20.4,35.1,19.9,35.1z',
+            fill: 'white',
+            stroke: 'white',
+            'stroke-width': '1',
+            transform: `scale(${scaleDelete}) translate(${deleteX} ${deleteY})`
+         });
+
+         svg.appendChild(bin);
+         svg.appendChild(lid);
+         svg.appendChild(line);
+         svg.appendChild(line2);
+         svg.appendChild(line3);
+         break;
+      case 'task':
+         const scaleTask = 1.4;
+         const taskX = 2;
+         const taskY = 0;
+
+         const board = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+         setAttributeList(board, {
+            d: 'M5 22h14c1.103 0 2-.897 2-2V5c0-1.103-.897-2-2-2h-2a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1H5c-1.103 0-2 .897-2 2v15c0 1.103.897 2 2 2zM5 5h2v2h10V5h2v15H5V5z',
+            fill: 'white',
+            stroke: 'white',
+            'stroke-width': '0.1',
+            transform: `scale(${scaleTask}) translate(${taskX} ${taskY})`
+         });
+
+
+         const check = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+         setAttributeList(check, {
+            d: 'm11 13.586-1.793-1.793-1.414 1.414L11 16.414l5.207-5.207-1.414-1.414z',
+            fill: 'white',
+            stroke: 'white',
+            'stroke-width': '0.1',
+            transform: `scale(${scaleTask}) translate(${taskX} ${taskY})`
+         });
+
+         svg.appendChild(board);
+         svg.appendChild(check);
+         break;
+      default:
+         console.log('Unbekannte SVG Bezeichnung');
    }
 
    return svg;
@@ -116,7 +209,7 @@ export function drawGraphElement(ctx: CanvasRenderingContext2D, element: GraphNo
    switch (node) {
       case 'start':
       case 'end':
-         ctx.fillStyle = "#FF6A6A";
+         ctx.fillStyle = '#FF6A6A';
          // Zeichne ein abgerundetes Rechteck
          const radius = 25; // Radius der abgerundeten Ecken
          ctx.beginPath();
@@ -133,7 +226,7 @@ export function drawGraphElement(ctx: CanvasRenderingContext2D, element: GraphNo
          ctx.fill();
          break;
       case 'op':
-         ctx.fillStyle = "#FFEC8B";
+         ctx.fillStyle = '#FFEC8B';
          // Zeichne ein Rechteck
          // ctx.fillRect(x, y, width, height);
          const r = 5; // Radius der abgerundeten Ecken
@@ -151,7 +244,7 @@ export function drawGraphElement(ctx: CanvasRenderingContext2D, element: GraphNo
          ctx.fill();
          break;
       case 'decision':
-         ctx.fillStyle = "#4F94CD";
+         ctx.fillStyle = '#4F94CD';
          // Zeichne einen Diamanten
          ctx.beginPath();
          ctx.moveTo(x + width / 2, y);
@@ -162,7 +255,7 @@ export function drawGraphElement(ctx: CanvasRenderingContext2D, element: GraphNo
          ctx.fill();
          break;
       case 'connector':
-         ctx.fillStyle = "#778899";
+         ctx.fillStyle = '#778899';
          // Zeichne einen Kreis
          const circleRadius = Math.min(width, height) / 3;
          ctx.beginPath();
@@ -170,14 +263,14 @@ export function drawGraphElement(ctx: CanvasRenderingContext2D, element: GraphNo
          ctx.fill();
          break;
       default:
-         ctx.fillStyle = "";
+         ctx.fillStyle = '';
    }
 
    // Fügt den schwarzen Umriss hinzu
    ctx.strokeStyle = 'black';
    ctx.setLineDash([]);
    ctx.lineWidth = 2;
-   ctx.stroke(); 
+   ctx.stroke();
 
    // Text zum Element hinzufügen
    ctx.fillStyle = 'black';
@@ -202,7 +295,7 @@ export function drawElementAnchors(ctx: CanvasRenderingContext2D, element: Graph
       anchors.forEach((position, index) => {
          let angle: number;
          switch (index) {
-             case 0:
+            case 0:
                angle = (3 * Math.PI) / 2;
                break;
             case 1:
@@ -218,25 +311,25 @@ export function drawElementAnchors(ctx: CanvasRenderingContext2D, element: Graph
                angle = 0;
          }
          drawArrowHead(ctx, position.x, position.y, angle);
-     });
+      });
    }
 }
 
 // Zeichne den Ankerpunkt als Pfeilspitze für die Knoten 
 function drawArrowHead(ctx: CanvasRenderingContext2D, x: number, y: number, angle: number) {
-    const length = 10;
-    const width = 6;
+   const length = 10;
+   const width = 6;
 
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.rotate(angle);
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.lineTo(-length, -width);
-    ctx.lineTo(-length, width);
-    ctx.closePath();
-    ctx.fill();
-    ctx.restore();
+   ctx.save();
+   ctx.translate(x, y);
+   ctx.rotate(angle);
+   ctx.beginPath();
+   ctx.moveTo(0, 0);
+   ctx.lineTo(-length, -width);
+   ctx.lineTo(-length, width);
+   ctx.closePath();
+   ctx.fill();
+   ctx.restore();
 }
 
 // -------------------- Pfeile / Verbindungen --------------------
@@ -386,12 +479,12 @@ export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: n
             }
          } else if (to.anchor === 1) {   // SA unten -> ZA rechts
             if (!isLeft) {
-               if(isAbove) {
+               if (isAbove) {
                   points.push({ x: to.x + padding, y: from.y + padding });
                   points.push({ x: to.x + padding, y: to.y });
                } else {
-                  points.push({ x: from.x, y: (from.y + to.y) / 2  });
-                  points.push({ x: to.x + padding, y: (from.y + to.y) / 2  });
+                  points.push({ x: from.x, y: (from.y + to.y) / 2 });
+                  points.push({ x: to.x + padding, y: (from.y + to.y) / 2 });
                   points.push({ x: to.x + padding, y: to.y });
                }
             } else {
@@ -530,7 +623,7 @@ export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: n
 
 // Zeichne die Ankerpunkte einer Verbindung
 function drawArrowAnchor(ctx: CanvasRenderingContext2D, anchor: number, x: number, y: number) {
-   const drawAnchor = (x: number, y: number, radius: number ) => {
+   const drawAnchor = (x: number, y: number, radius: number) => {
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, 2 * Math.PI);
       ctx.fillStyle = '#3CB371';
@@ -542,16 +635,16 @@ function drawArrowAnchor(ctx: CanvasRenderingContext2D, anchor: number, x: numbe
 
    switch (anchor) {
       case 0:
-         drawAnchor(x, y - offSetAnchor, 5 );
+         drawAnchor(x, y - offSetAnchor, 5);
          break;
       case 1:
-         drawAnchor(x + offSetAnchor, y, 5 );
+         drawAnchor(x + offSetAnchor, y, 5);
          break;
       case 2:
-         drawAnchor(x, y + offSetAnchor, 5 );
+         drawAnchor(x, y + offSetAnchor, 5);
          break;
       case 3:
-         drawAnchor(x - offSetAnchor, y, 5 );
+         drawAnchor(x - offSetAnchor, y, 5);
          break;
    }
 };

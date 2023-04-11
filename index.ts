@@ -1,10 +1,10 @@
-import { LitElementWw } from "@webwriter/lit"
-import { html, css } from "lit"
-import { customElement, property } from "lit/decorators.js"
+import { LitElementWw } from '@webwriter/lit'
+import { html, css } from 'lit'
+import { customElement, property } from 'lit/decorators.js'
 
-import { GraphNodeData, Arrow } from "./src/definitions"
-import { drawSvgElement, drawGraphElement, drawElementAnchors, drawArrow } from "./src/drawer"
-import { getAnchors, getArrowInformation, getNearestCircle, isArrowClicked, removeOldConnection, findLastGraphElement, findGraphElementLastIndex } from "./src/helper"
+import { GraphNodeData, Arrow } from './src/definitions'
+import { drawButtonElement, drawGraphElement, drawElementAnchors, drawArrow } from './src/drawer'
+import { getAnchors, getArrowInformation, getNearestCircle, isArrowClicked, removeOldConnection, findLastGraphElement, findGraphElementLastIndex } from './src/helper'
 
 
 @customElement('pap-widget')
@@ -60,7 +60,7 @@ export class PAPWidget extends LitElementWw {
 
    .flowchart-bar {
       left: 1.5%;
-      top: 14%;
+      top: 20%;
       flex-direction: column;
       gap: 10px;
    }
@@ -138,50 +138,51 @@ export class PAPWidget extends LitElementWw {
 `;
    render() {
       return html`
-      <div class="workspace" @scroll="${this.handleScroll}">
+      <div class='workspace' @scroll='${this.handleScroll}'>
 
          <canvas
-            width="${window.innerWidth}"
-            height="${window.innerHeight}"
-            @mousedown="${this.handleMouseDown}"
-            @mouseup="${this.handleMouseUp}"
-            @mousemove="${this.handleMouseMove}"
-            @dblclick="${this.handleDoubleClick}"
-            @click="${(event: MouseEvent) => { this.handleClick(event); this.hideContextMenu(); }}"
-            @contextmenu="${(event: MouseEvent) => { event.preventDefault(); this.showContextMenu(event); }}"
+            width='${window.innerWidth}'
+            height='${window.innerHeight}'
+            @mousedown='${this.handleMouseDown}'
+            @mouseup='${this.handleMouseUp}'
+            @mousemove='${this.handleMouseMove}'
+            @dblclick='${this.handleDoubleClick}'
+            @click='${(event: MouseEvent) => { this.handleClick(event); this.hideContextMenu(); }}'
+            @contextmenu='${(event: MouseEvent) => { event.preventDefault(); this.showContextMenu(event); }}'
          ></canvas>
 
-         <div class="flowchart-bar">
-            <button @click="${() => this.addGraphElement('start', 'Start')}">
-               ${drawSvgElement('start')}
+         <div class='flowchart-bar'>
+            <button @click='${() => this.addGraphElement('start', 'Start')}'>
+               ${drawButtonElement('start', 'flow')}
             </button>
-            <button @click="${() => this.addGraphElement('op', 'Operation')}">
-               ${drawSvgElement('op')}
+            <button @click='${() => this.addGraphElement('op', 'Operation')}'>
+               ${drawButtonElement('op', 'flow')}
             </button>
-            <button @click="${() => this.addGraphElement('decision', 'Verzweigung')}">
-               ${drawSvgElement('decision')}
+            <button @click='${() => this.addGraphElement('decision', 'Verzweigung')}'>
+               ${drawButtonElement('decision', 'flow')}
             </button>
-            <button @click="${() => this.addGraphElement('connector', '')}">
-               ${drawSvgElement('connector')}
+            <button @click='${() => this.addGraphElement('connector', '')}'>
+               ${drawButtonElement('connector', 'flow')}
             </button>
-            <button @click="${() => this.addGraphElement('end', 'Ende')}">
-               ${drawSvgElement('end')} 
+            <button @click='${() => this.addGraphElement('end', 'Ende')}'>
+               ${drawButtonElement('end', 'flow')} 
             </button>
-            <button @click="${() => this.addGraphElement('text', 'Text')}">
-               ${drawSvgElement('text')}
-            </button>
-            <button @click="${() => this.clearAll()}">
-               ${drawSvgElement('delete')}
+            <button @click='${() => this.addGraphElement('text', 'Text')}'>
+               ${drawButtonElement('text', 'flow')}
             </button>
          </div>
 
-         <div class="toolbar">
-            <button >Button 1</button>
-            <button >Button 2</button>
+         <div class='toolbar'>
+            <button @click='${() => this.clearAll()}'>
+               ${drawButtonElement('delete', 'tool')}
+            </button>
+            <button >
+               ${drawButtonElement('task', 'tool')}
+            </button>
          </div>
 
-         <div id="context-menu" class="context-menu">
-            <div class="context-menu-item" @click="${() => this.deleteSelectedObject()}">
+         <div id='context-menu' class='context-menu'>
+            <div class='context-menu-item' @click='${() => this.deleteSelectedObject()}'>
                Löschen
             </div>
          </div>
@@ -457,6 +458,7 @@ export class PAPWidget extends LitElementWw {
    // Lösche alle Elemente vom Canvas 
    private clearAll() {
       this.graphElements = [];
+      this.selectedElement = undefined;
       this.arrows = [];
       this.arrowStart = undefined;
       this.redrawCanvas();
