@@ -34,6 +34,7 @@ export class PAPWidget extends LitElementWw {
       height: 98vh;
       overflow: hidden;
 
+      --border-r: 8px;
       --offset-x: 0;
       --offset-y: 0;
       --grid-background-color: white;
@@ -50,45 +51,46 @@ export class PAPWidget extends LitElementWw {
       overflow: hidden;
    }
 
-   .flowchart-bar,
-   .toolbar {
-      position: fixed;
+   .flowchart-menu,
+   .tool-menu {
       display: flex;
+      position: fixed;
       background-color: #2c3e50;
+      border-radius: var(--border-r);
       padding: 15px;
    }
 
-   .flowchart-bar {
+   .flowchart-menu {
       left: 1.5%;
       top: 20%;
       flex-direction: column;
       gap: 10px;
    }
 
-   .toolbar {
+   .tool-menu {
       right: 1.5%;
       top: 3%;
       flex-direction: row;
       gap: 10px;
    }
 
-   .flowchart-bar button,
-   .toolbar button {
+   .flowchart-menu button,
+   .tool-menu button {
       background-color: #34495e;
       color: white;
       border: none;
-      cursor: pointer;
+      border-radius: var(--border-r);
       transition: background-color 0.3s;
    }
 
-   .flowchart-bar button,
-   .toolbar button {
+   .flowchart-menu button,
+   .tool-menu button {
       font-size: 12px;
       padding: 5px;
    }
 
-   .flowchart-bar button:hover,
-   .toolbar button:hover {
+   .flowchart-menu button:hover,
+   .tool-menu button:hover {
       background-color: #1abc9c;
    }
 
@@ -96,7 +98,7 @@ export class PAPWidget extends LitElementWw {
       position: absolute;
       z-index: 1000;
       background-color: #2c3e50;
-      border-radius: 8px;
+      border-radius: var(--border-r);
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
       padding: 8px 0;
       display: none;
@@ -112,11 +114,74 @@ export class PAPWidget extends LitElementWw {
       padding: 4px 16px;
       background-color: #34495e;
       transition: background-color 0.3s;
-      cursor: pointer;
    }
 
    .context-menu-item:hover {
       background-color: #1abc9c;
+   }
+
+   .task-menu {
+      display: flex;
+      position: fixed;
+      right: 1.5%;
+      top: 15%;
+      width: 300px;
+      height: 600px;
+      padding: 15px;
+      flex-direction: column;
+      border-radius: var(--border-r);
+      background-color: #2c3e50;
+   }
+
+   .flowchart-menu > .close-button,
+   .close-button {
+      display: flex;
+      position: relative;
+      width: 30px;
+      height: 15px;
+      padding: 0;
+      border: none;
+      border-radius: var(--border-r);
+
+      color: white;
+      font-size: 20px;
+      font-weight: lighter;
+      justify-content: center;
+      align-items: center;
+
+      background-color:	#34495e;
+      transition: background-color 0.3s;
+   }
+
+   .close-button:hover {
+      background-color: #1abc9c;
+   }
+
+   .show-flowchart-button {
+      display: flex;
+      position: fixed;
+      left: 40px;
+      bottom: 40px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: none;
+
+      color: white;
+      font-size: 46px;
+      font-weight: lighter;
+      justify-content: center;
+      align-items: center;
+      background-color: #34495e;
+      transition: background-color 0.3s;
+   }
+
+   .show-flowchart-button:hover {
+      background-color: #1abc9c;
+   }
+
+   .hidden {
+      display: none;
    }
 
    canvas {
@@ -147,11 +212,14 @@ export class PAPWidget extends LitElementWw {
             @mouseup='${this.handleMouseUp}'
             @mousemove='${this.handleMouseMove}'
             @dblclick='${this.handleDoubleClick}'
-            @click='${(event: MouseEvent) => { this.handleClick(event); this.hideContextMenu(); }}'
+            @click='${(event: MouseEvent) => { this.handleClick(event); this.toggleMenu('context') }}'
             @contextmenu='${(event: MouseEvent) => { event.preventDefault(); this.showContextMenu(event); }}'
          ></canvas>
 
-         <div class='flowchart-bar'>
+         <div class='flowchart-menu'>
+            <button class="close-button" @click='${() => this.toggleMenu('flow')}'>
+               ×
+            </button>
             <button @click='${() => this.addGraphElement('start', 'Start')}'>
                ${drawButtonElement('start', 'flow')}
             </button>
@@ -172,12 +240,22 @@ export class PAPWidget extends LitElementWw {
             </button>
          </div>
 
-         <div class='toolbar'>
+         <button class="show-flowchart-button hidden" @click='${() => this.toggleMenu('flow')}'>
+            +
+         </button>
+
+         <div class='tool-menu'>
             <button @click='${() => this.clearAll()}'>
                ${drawButtonElement('delete', 'tool')}
             </button>
-            <button >
+            <button @click='${() => this.toggleMenu('task')}'>
                ${drawButtonElement('task', 'tool')}
+            </button>
+         </div>
+
+         <div class='task-menu'>
+            <button class='close-button' @click='${() => this.toggleMenu('task')}'>
+               ×
             </button>
          </div>
 
@@ -191,10 +269,38 @@ export class PAPWidget extends LitElementWw {
     `;
    }
 
-   // ------------------------ Drawer Funktion ------------------------
+   // ------------------------ User interface Funktionen ------------------------
+
+   // Zeige oder verstecke die angefragten Benutzeroberflächen 
+   private toggleMenu(menu: 'task' | 'flow' | 'context') {
+      switch (menu) {
+         case 'task':
+            const taskMenu = this.shadowRoot.querySelector('.task-menu');
+            if (taskMenu) {
+               taskMenu.classList.toggle('hidden');
+            }
+            break;
+         case 'flow':
+            const flowchartMenu = this.shadowRoot.querySelector('.flowchart-menu');
+            const showFlowchartButton = this.shadowRoot.querySelector('.show-flowchart-button');
+            if (flowchartMenu && showFlowchartButton) {
+               flowchartMenu.classList.toggle('hidden');
+               showFlowchartButton.classList.toggle('hidden');
+            }
+            break;
+         case 'context':
+            const contextMenu = this.shadowRoot.getElementById('context-menu');
+            if (contextMenu) { 
+               contextMenu.style.display = 'none'; 
+            }
+         default:
+            console.log('Unbekannter Menü Bezeichnung');
+      }
+    }
+
+   // ------------------------ Drawer Funktionen ------------------------
 
    private redrawCanvas() {
-
       // Bereinige das Canvas
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -491,12 +597,6 @@ export class PAPWidget extends LitElementWw {
       }
    }
 
-   // Schließe das Kontexmenü
-   private hideContextMenu() {
-      const contextMenu = this.shadowRoot.getElementById('context-menu');
-      if (contextMenu) { contextMenu.style.display = 'none'; }
-   }
-
    // Lösche das ausgewählte Objekt 
    private deleteSelectedObject() {
       // Falls ein Knoten ausgewählt wurde, lösche den Knoten und alle zugehören Verbindungen 
@@ -524,7 +624,7 @@ export class PAPWidget extends LitElementWw {
          this.selectedArrow = undefined;
       }
 
-      this.hideContextMenu();
+      this.toggleMenu('context');
       this.redrawCanvas();
    }
 
@@ -560,19 +660,18 @@ Funktionalitäten des PAP
 - Schriftarten ändern
 - (Canvas per drag and drop verschieben)
 - Select All, verschieben mehrere Elemente durch drag and drop
+- Feedback Option 
+   - Erklärung der Aktionen
+   - Eigene Feedbackmöglichkeit für Lehrkräfte 
 
 Aufgaben
 - Aufgabenfeld damit Aufgabentexten angegeben werden können. zB Konstruiere zu folgendem Text ein PAP
 
-
 Design Entscheidungen:
-- Canvasgröße? Gesamtfläche - Sidebar?
-
-- 
-
+- Canvasgröße? Gesamtfläche - Sidemenu?
 
 Pfeil umsetzen 
-  - Pfeil am Anfangspunkt umsetzbar machen 
+  - Pfeil am Anfangspunkt umsetzmenu machen 
   - Richtung des Pfeils beachten, dieser muss gegebenfalls vertauscht werden 
 
 */

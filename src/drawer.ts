@@ -80,14 +80,14 @@ export function drawButtonElement(element: string, bar: 'flow' | 'tool') {
       case 'decision':
          const decision = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
          setAttributeList(decision, {
-            points: '60,2 120,25 60,48 0,25',
+            points: '60,5 120,27 60,50 0,27',
             fill: 'none',
             stroke: 'white',
             'stroke-width': '2'
          });
          svg.appendChild(decision);
          text.textContent = 'Verzweigung';
-         text.setAttribute('y', '30');
+         text.setAttribute('y', '32');
          break;
       case 'connector':
          const connector = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
@@ -161,9 +161,9 @@ export function drawButtonElement(element: string, bar: 'flow' | 'tool') {
          svg.appendChild(line3);
          break;
       case 'task':
-         const scaleTask = 1.4;
-         const taskX = 2;
-         const taskY = 0;
+         const scaleTask = 1.5;
+         const taskX = 1;
+         const taskY = -1;
 
          const board = document.createElementNS('http://www.w3.org/2000/svg', 'path');
          setAttributeList(board, {
@@ -337,8 +337,8 @@ function drawArrowHead(ctx: CanvasRenderingContext2D, x: number, y: number, angl
 // Zeichnet die Verbindungspfeile zwischen den Elementen
 export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: number; anchor?: number }, to: { x: number; y: number; anchor?: number }, isSelected: boolean = false, returnPoints = false) {
 
-   const headLength = 8;
-   const padding = 15; // Raum zwischen Elementen und Pfeil
+   const headLength = 7;
+   const padding = 10; // Raum zwischen Elementen und Pfeil
 
    let points: { x: number; y: number }[] = [from];
 
