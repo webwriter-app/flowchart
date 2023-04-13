@@ -7,7 +7,7 @@ import { measureTextSize, getAnchors } from './helper';
 
 // -------------------- SVG Grafiken für die Buttons --------------------
 
-export function drawButtonElement(element: string, bar: 'flow' | 'tool') {
+export function drawButtonElement(element: string, menu: 'flow' | 'tool' | 'task') {
    // Funktion zum übersichtlichen setzen der Attribute der SVG Grafiken 
    function setAttributeList(element: SVGElement, attributes: { [key: string]: string }): void {
       for (const key in attributes) {
@@ -15,13 +15,25 @@ export function drawButtonElement(element: string, bar: 'flow' | 'tool') {
       }
    }
 
+   // Setze die Maße für das Parent SVG Element und das Text Element in Abhängigkeit vom Menü 
    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-   switch (bar) {
+   const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+
+   switch (menu) {
       case 'flow':
          setAttributeList(svg, {
             width: '120',
             height: '55',
          });
+         setAttributeList(text, {
+            x: '60',
+            y: '35',
+            fill: 'white',
+            'text-anchor': 'middle',
+            'font-size': '14',
+            'font-family': 'Arial'
+         });
+         svg.appendChild(text);
          break;
       case 'tool':
          setAttributeList(svg, {
@@ -29,21 +41,15 @@ export function drawButtonElement(element: string, bar: 'flow' | 'tool') {
             height: '30',
          });
          break;
+      case 'task':
+         setAttributeList(svg, {
+            width: '240',
+            height: '30',
+         });
+         break;
       default:
-         console.log('Unbekannter Leistentyp');
+         console.log('Unbekanntes Menü');
    }
-
-   // Erzeuge den Text
-   const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-   setAttributeList(text, {
-      x: '60',
-      y: '35',
-      fill: 'white',
-      'text-anchor': 'middle',
-      'font-size': '14',
-      'font-family': 'Arial'
-   });
-   svg.appendChild(text);
 
    switch (element) {
       case 'start':
@@ -186,6 +192,18 @@ export function drawButtonElement(element: string, bar: 'flow' | 'tool') {
 
          svg.appendChild(board);
          svg.appendChild(check);
+         break;
+      case 'addTask':
+         setAttributeList(text, {
+            x: '120',
+            y: '20',
+            fill: 'white',
+            'text-anchor': 'middle',
+            'font-size': '16',
+            'font-family': 'Arial'
+         });
+         text.textContent = 'Aufgabe Hinzufügen';
+         svg.appendChild(text);
          break;
       default:
          console.log('Unbekannte SVG Bezeichnung');

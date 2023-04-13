@@ -35,12 +35,20 @@ export class PAPWidget extends LitElementWw {
       overflow: hidden;
 
       --border-r: 8px;
+      --menu-color: #2c3e50;
+      --button-color: #3a4f65;
+      --hover-color: #1abc9c;
+
       --offset-x: 0;
       --offset-y: 0;
       --grid-background-color: white;
       --grid-color: #104E8B;
       --grid-size: 50px;
       --grid-dot-size: 1px;
+   }
+
+   :host([editable]) .editMode {
+      display: none;
    }
 
    .workspace {
@@ -55,7 +63,7 @@ export class PAPWidget extends LitElementWw {
    .tool-menu {
       display: flex;
       position: fixed;
-      background-color: #2c3e50;
+      background-color: var(--menu-color);
       border-radius: var(--border-r);
       padding: 15px;
    }
@@ -65,6 +73,7 @@ export class PAPWidget extends LitElementWw {
       top: 20%;
       flex-direction: column;
       gap: 10px;
+      padding-top: 20px;
    }
 
    .tool-menu {
@@ -76,7 +85,7 @@ export class PAPWidget extends LitElementWw {
 
    .flowchart-menu button,
    .tool-menu button {
-      background-color: #34495e;
+      background-color: var(--button-color);
       color: white;
       border: none;
       border-radius: var(--border-r);
@@ -91,13 +100,13 @@ export class PAPWidget extends LitElementWw {
 
    .flowchart-menu button:hover,
    .tool-menu button:hover {
-      background-color: #1abc9c;
+      background-color: var(--hover-color);
    }
 
    .context-menu {
       position: absolute;
       z-index: 1000;
-      background-color: #2c3e50;
+      background-color: var(--menu-color);
       border-radius: var(--border-r);
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
       padding: 8px 0;
@@ -112,49 +121,111 @@ export class PAPWidget extends LitElementWw {
    .context-menu-item {
       display: block;
       padding: 4px 16px;
-      background-color: #34495e;
+      background-color: var(--button-color);
       transition: background-color 0.3s;
    }
 
    .context-menu-item:hover {
-      background-color: #1abc9c;
+      background-color: var(--hover-color);
    }
 
    .task-menu {
-      display: flex;
       position: fixed;
+      display: flex;
+      flex-direction: column;
+      background-color: #2c3e50;
+      padding: 15px;
       right: 1.5%;
       top: 15%;
       width: 300px;
-      height: 600px;
-      padding: 15px;
-      flex-direction: column;
+      min-height: 60px;
+      max-height: 75%;
       border-radius: var(--border-r);
-      background-color: #2c3e50;
+      resize: both;
+      overflow: hidden;
+   }
+
+   .task-menu-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%; 
+      box-sizing: border-box; 
+   }
+
+   .task-container {
+      flex-grow: 1;
+      overflow-y: auto;
+      margin-bottom: 10px;
+   }
+
+   .task-title {
+      width: 100%;
+      box-sizing: border-box;
+      font-size: 14px;
+      font-weight: bold;
+      padding: 5px;
+      margin: 10px 0;
+      border: 1px solid #34495e;
+      border-radius: var(--border-r);
+   }
+
+   .task-content {
+      width: 100%;
+      box-sizing: border-box;
+      font-family: 'Arial';
+      font-size: 14px;
+      padding: 5px;
+      margin-bottom: 5px;
+      border: 1px solid #34495e;
+      border-radius: var(--border-r);
+      resize: vertical;
+   }
+
+   .add-task-button,
+   .delete-task-button {
+      background-color: var(--button-color);
+      color: white;
+      border: none;
+      border-radius: var(--border-r);
+      font-size: 12px;
+      padding: 5px;
+      transition: background-color 0.3s;
+   }
+ 
+   .delete-task-button {
+     margin-left: 80%;
+   }
+
+   .add-task-button:hover,
+   .delete-task-button:hover {
+      background-color: var(--hover-color);
    }
 
    .flowchart-menu > .close-button,
    .close-button {
       display: flex;
-      position: relative;
-      width: 30px;
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      width: 15px;
       height: 15px;
       padding: 0;
       border: none;
       border-radius: var(--border-r);
 
       color: white;
-      font-size: 20px;
+      font-size: 18px;
       font-weight: lighter;
       justify-content: center;
       align-items: center;
 
-      background-color:	#34495e;
+      background-color:	var(--menu-color);
       transition: background-color 0.3s;
    }
 
    .close-button:hover {
-      background-color: #1abc9c;
+      background-color: var(--hover-color);	
    }
 
    .show-flowchart-button {
@@ -172,12 +243,12 @@ export class PAPWidget extends LitElementWw {
       font-weight: lighter;
       justify-content: center;
       align-items: center;
-      background-color: #34495e;
+      background-color: var(--button-color);;
       transition: background-color 0.3s;
    }
 
    .show-flowchart-button:hover {
-      background-color: #1abc9c;
+      background-color: var(--hover-color);;
    }
 
    .hidden {
@@ -257,6 +328,12 @@ export class PAPWidget extends LitElementWw {
             <button class='close-button' @click='${() => this.toggleMenu('task')}'>
                ×
             </button>
+            <div class='task-menu-wrapper'>
+               <div class="task-container"></div>
+               <button class="add-task-button editMode" @click='${this.addTask}'>
+                  ${drawButtonElement('addTask', 'task')}
+               </button>
+            </div>   
          </div>
 
          <div id='context-menu' class='context-menu'>
@@ -297,6 +374,35 @@ export class PAPWidget extends LitElementWw {
             console.log('Unbekannter Menü Bezeichnung');
       }
     }
+
+    private addTask() {
+      const taskContainer = this.shadowRoot.querySelector('.task-container');
+      // Nutze ein Wrapper um die einzelnen Elemente einer Aufgabe zu bündeln
+      const taskWrapper = document.createElement('div');
+      taskWrapper.style.position = 'relative';
+
+      const taskTitle = document.createElement('input');
+      taskTitle.type = 'text';
+      taskTitle.className = 'task-title';
+      taskTitle.placeholder = 'Überschrift';
+
+      const taskContent = document.createElement('textarea');
+      taskContent.className = 'task-content';
+      taskContent.placeholder = 'Inhalt';
+
+      const deleteTask = document.createElement('button');
+      deleteTask.className = 'delete-task-button editMode';
+      deleteTask.textContent = 'Löschen';
+      deleteTask.onclick = () => { taskContainer.removeChild(taskWrapper) };
+
+      // Füge alle Elemente zum Task-Wrapper hinzu
+      taskWrapper.appendChild(taskTitle);
+      taskWrapper.appendChild(taskContent);
+      taskWrapper.appendChild(deleteTask);
+
+      // Der Task-Container beinhaltet alle Aufgaben, so können gezielt einzelne Task-Wrapper hinzu und entfernt werden
+      taskContainer.appendChild(taskWrapper);
+   }
 
    // ------------------------ Drawer Funktionen ------------------------
 
@@ -544,7 +650,6 @@ export class PAPWidget extends LitElementWw {
    connectedCallback() {
       super.connectedCallback();
       window.addEventListener('resize', this.updateCanvasSize);
-
    }
 
    disconnectedCallback() {
