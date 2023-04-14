@@ -26,6 +26,10 @@ export class PAPWidget extends LitElementWw {
    private arrowStart?: { element: GraphNodeData; anchor: number };
    private tempArrowEnd?: { x: number; y: number };
 
+   private isGrabbing = false;
+   private grabStartPosition?: { x: number; y: number };
+   private grabStartOffset?: { x: number; y: number };
+
    static styles = css`
    :host {
       display: block;
@@ -101,6 +105,10 @@ export class PAPWidget extends LitElementWw {
    .flowchart-menu button:hover,
    .tool-menu button:hover {
       background-color: var(--hover-color);
+   }
+
+   .tool-menu button.active {
+      background-color: #EEC900;
    }
 
    .context-menu {
@@ -215,7 +223,7 @@ export class PAPWidget extends LitElementWw {
       border-radius: var(--border-r);
 
       color: white;
-      font-size: 18px;
+      font-size: 15px;
       font-weight: lighter;
       justify-content: center;
       align-items: center;
@@ -316,11 +324,17 @@ export class PAPWidget extends LitElementWw {
          </button>
 
          <div class='tool-menu'>
+            <button id="grab-button" @click='${this.grabCanvas}'>
+               ${drawButtonElement('grab', 'tool')}
+            </button>
             <button @click='${() => this.clearAll()}'>
                ${drawButtonElement('delete', 'tool')}
             </button>
             <button @click='${() => this.toggleMenu('task')}'>
                ${drawButtonElement('task', 'tool')}
+            </button>
+            <button @click='${() => this.toggleMenu('task')}'>
+               ${drawButtonElement('help', 'tool')}
             </button>
          </div>
 
@@ -345,7 +359,7 @@ export class PAPWidget extends LitElementWw {
       </div>
     `;
    }
-
+ 
    // ------------------------ User interface Funktionen ------------------------
 
    // Zeige oder verstecke die angefragten Benutzeroberflächen 
@@ -402,6 +416,13 @@ export class PAPWidget extends LitElementWw {
 
       // Der Task-Container beinhaltet alle Aufgaben, so können gezielt einzelne Task-Wrapper hinzu und entfernt werden
       taskContainer.appendChild(taskWrapper);
+   }
+
+   // Aktive Bewegungsmodus für das Canvas
+   private grabCanvas(){
+      this.isGrabbing = !this.isGrabbing;
+      const grabButton = this.shadowRoot.getElementById('grab-button');
+      this.isGrabbing ? grabButton?.classList.add('active') : grabButton?.classList.remove('active');
    }
 
    // ------------------------ Drawer Funktionen ------------------------
@@ -461,121 +482,165 @@ export class PAPWidget extends LitElementWw {
    private handleMouseDown(event: MouseEvent) {
       const {x, y} = this.getMouseCoordinates(event);
 
-      this.draggedElement = findLastGraphElement(this.ctx, this.graphElements, x, y);
+      if (this.isGrabbing) {
+         this.grabStartPosition = { x, y };
+         const offsetX = parseFloat(this.style.getPropertyValue('--offset-x'));
+         const offsetY = parseFloat(this.style.getPropertyValue('--offset-y'));
+         this.grabStartOffset = { x: offsetX, y: offsetY };
+      } else {
+         this.draggedElement = findLastGraphElement(this.ctx, this.graphElements, x, y);
 
-      if (this.draggedElement && !this.selectedArrow) {
-         this.isDragging = true;
-         this.dragOffset = { x: x - this.draggedElement.x, y: y - this.draggedElement.y };
-      }
+         if (this.draggedElement && !this.selectedArrow) {
+            this.isDragging = true;
+            this.dragOffset = { x: x - this.draggedElement.x, y: y - this.draggedElement.y };
+         }
 
-      // Setze die Event Listener für die Ankerpunkt eines Knotens, falls ein Knoten ausgewählt wurde (der kein Text ist), damit das zeichnen einer Verbindung erkannt wird
-      if (this.selectedElement && this.selectedElement.node !== 'text') {
-         const anchors = getAnchors(this.ctx, this.selectedElement, 15)
+         // Setze die Event Listener für die Ankerpunkt eines Knotens, falls ein Knoten ausgewählt wurde (der kein Text ist), damit das zeichnen einer Verbindung erkannt wird
+         if (this.selectedElement && this.selectedElement.node !== 'text') {
+            const anchors = getAnchors(this.ctx, this.selectedElement, 15)
 
-         // Index: 0: oben, 1: rechts, 2: unten, 3: links 
-         anchors.forEach((position, index) => {
-            // Füge einen Event Listener für jeden Anker hinzu
-            this.canvas?.addEventListener('mousedown', (event) => {
-               const {x, y} = this.getMouseCoordinates(event);
-               const distance = Math.sqrt((position.x - x) ** 2 + (position.y - y) ** 2);
-               if (distance <= 8) {
-                  this.handleCircleClick(event, this.selectedElement, index);
-               }
+            // Index: 0: oben, 1: rechts, 2: unten, 3: links 
+            anchors.forEach((position, index) => {
+               // Füge einen Event Listener für jeden Anker hinzu
+               this.canvas?.addEventListener('mousedown', (event) => {
+                  const {x, y} = this.getMouseCoordinates(event);
+                  const distance = Math.sqrt((position.x - x) ** 2 + (position.y - y) ** 2);
+                  if (distance <= 8) {
+                     this.handleCircleClick(event, this.selectedElement, index);
+                  }
+               });
             });
-         });
-      }
+         }
 
-      if (this.selectedArrow) {
-         const { points } = this.selectedArrow;
+         if (this.selectedArrow) {
+            const { points } = this.selectedArrow;
 
-         const isWithinCircle = (x: number, y: number, circleX: number, circleY: number, radius: number) =>
-            Math.sqrt(Math.pow(x - circleX, 2) + Math.pow(y - circleY, 2)) <= radius;
+            const isWithinCircle = (x: number, y: number, circleX: number, circleY: number, radius: number) =>
+               Math.sqrt(Math.pow(x - circleX, 2) + Math.pow(y - circleY, 2)) <= radius;
 
-         // Überprüfe ob einer der Ankerpunkte berührt wurde, wenn ja setze die Variablen zum ziehen.
-         //if (isWithinCircle(x, y, points[0].x, points[0].y, 5) || isWithinCircle(x, y, points[points.length - 1].x, points[points.length - 1].y, 5)) {
-         if (isWithinCircle(x, y, points[points.length - 1].x, points[points.length - 1].y, 5)) {
-            let tempElement: GraphNodeData;
-            let tempAnchor: number;
-            const nearestElement = findLastGraphElement(this.ctx, this.graphElements, x, y);
+            // Überprüfe ob einer der Ankerpunkte berührt wurde, wenn ja setze die Variablen zum ziehen.
+            //if (isWithinCircle(x, y, points[0].x, points[0].y, 5) || isWithinCircle(x, y, points[points.length - 1].x, points[points.length - 1].y, 5)) {
+            if (isWithinCircle(x, y, points[points.length - 1].x, points[points.length - 1].y, 5)) {
+               let tempElement: GraphNodeData;
+               let tempAnchor: number;
+               const nearestElement = findLastGraphElement(this.ctx, this.graphElements, x, y);
 
-            // Bestimme das Startelement von dem der temporäre Pfeil gesetzt werden soll
-            if (nearestElement) {
-               // Auskommentierten Code sind für den Fall das an beiden Start- und Endpositionen der Pfeil verschoben werden kann
-               //nearestElement === this.selectedArrow.from ? tempElement = this.selectedArrow.to : tempElement = this.selectedArrow.from
-               tempElement = this.selectedArrow.from;
-               for (let i = 0; i < tempElement.connections.length; i++) {
-                  if (tempElement.connections[i].connectedTo === nearestElement) { tempAnchor = tempElement.connections[i].anchor }
+               // Bestimme das Startelement von dem der temporäre Pfeil gesetzt werden soll
+               if (nearestElement) {
+                  // Auskommentierten Code sind für den Fall das an beiden Start- und Endpositionen der Pfeil verschoben werden kann
+                  //nearestElement === this.selectedArrow.from ? tempElement = this.selectedArrow.to : tempElement = this.selectedArrow.from
+                  tempElement = this.selectedArrow.from;
+                  for (let i = 0; i < tempElement.connections.length; i++) {
+                     if (tempElement.connections[i].connectedTo === nearestElement) { tempAnchor = tempElement.connections[i].anchor }
+                  }
+
+                  // Rufe handleCircleClick auf um einen temporären Pfeil zu zeichnen.
+                  this.handleCircleClick(event, tempElement, tempAnchor);
+
+                  // Lösche die alten Verbindungsinformationen innerhalb der Knoten und die Verbindung
+                  removeOldConnection(this.selectedArrow.from, this.selectedArrow.to);
+                  // Entferne den alte Verbindung 
+                  this.arrows = this.arrows.filter((arrow) => arrow.from !== this.selectedArrow.from || arrow.to !== this.selectedArrow.to);
                }
 
-               // Rufe handleCircleClick auf um einen temporären Pfeil zu zeichnen.
-               this.handleCircleClick(event, tempElement, tempAnchor);
-
-               // Lösche die alten Verbindungsinformationen innerhalb der Knoten und die Verbindung
-               removeOldConnection(this.selectedArrow.from, this.selectedArrow.to);
-               // Entferne den alte Verbindung 
-               this.arrows = this.arrows.filter((arrow) => arrow.from !== this.selectedArrow.from || arrow.to !== this.selectedArrow.to);
             }
-
          }
       }
    }
 
    private handleMouseUp(event: MouseEvent) {
-      if (this.isDragging) {
-         this.isDragging = false;
-      } else if (this.isDrawingArrow) {
-         const {x, y} = this.getMouseCoordinates(event);
+      if (this.isGrabbing && this.grabStartPosition) {
+         this.grabStartPosition = undefined;
+         this.grabStartOffset = undefined;
+      } else {
+         if (this.isDragging) {
+            this.isDragging = false;
+         } else if (this.isDrawingArrow) {
+            const {x, y} = this.getMouseCoordinates(event);
 
-         const targetElement = findLastGraphElement(this.ctx, this.graphElements, x, y);
+            const targetElement = findLastGraphElement(this.ctx, this.graphElements, x, y);
 
-         // Überprüft ob ein Zielelement gefunden wurde und dieser ungleich dem Startelement
-         if (this.arrowStart && targetElement && (this.arrowStart.element !== targetElement) && (targetElement.node !== 'text')) {
+            // Überprüft ob ein Zielelement gefunden wurde und dieser ungleich dem Startelement
+            if (this.arrowStart && targetElement && (this.arrowStart.element !== targetElement) && (targetElement.node !== 'text')) {
 
-            // Speichere die Pfeilverbindung am Startelement
-            if (!this.arrowStart.element.connections) {
-               this.arrowStart.element.connections = [];
+               // Speichere die Pfeilverbindung am Startelement
+               if (!this.arrowStart.element.connections) {
+                  this.arrowStart.element.connections = [];
+               }
+               this.arrowStart.element.connections.push({ anchor: this.arrowStart.anchor, connectedTo: targetElement });
+
+               // Speichere die Pfeilverbindung am Ziel-Element
+               if (!targetElement.connections) {
+                  targetElement.connections = [];
+               }
+               const nearestCircleIndex = getNearestCircle(this.ctx, { x, y }, targetElement);
+               targetElement.connections.push({ anchor: nearestCircleIndex, connectedTo: this.arrowStart.element });
+
+               // Hole die Eckpunkte zum Zeichnen des Pfeils, um sie im arrows-Array abzuspeichern
+               const fromCoordination = getArrowInformation(this.ctx, this.arrowStart.element, targetElement);
+               const toCoordination = getArrowInformation(this.ctx, targetElement, this.arrowStart.element);
+               const points = drawArrow(this.ctx, fromCoordination, toCoordination, false, true);
+               this.arrows.push({ from: this.arrowStart.element, to: targetElement, points });
+               console.log(this.arrows);
+               this.redrawCanvas();
             }
-            this.arrowStart.element.connections.push({ anchor: this.arrowStart.anchor, connectedTo: targetElement });
 
-            // Speichere die Pfeilverbindung am Ziel-Element
-            if (!targetElement.connections) {
-               targetElement.connections = [];
-            }
-            const nearestCircleIndex = getNearestCircle(this.ctx, { x, y }, targetElement);
-            targetElement.connections.push({ anchor: nearestCircleIndex, connectedTo: this.arrowStart.element });
-
-            // Hole die Eckpunkte zum Zeichnen des Pfeils, um sie im arrows-Array abzuspeichern
-            const fromCoordination = getArrowInformation(this.ctx, this.arrowStart.element, targetElement);
-            const toCoordination = getArrowInformation(this.ctx, targetElement, this.arrowStart.element);
-            const points = drawArrow(this.ctx, fromCoordination, toCoordination, false, true);
-            this.arrows.push({ from: this.arrowStart.element, to: targetElement, points });
-            console.log(this.arrows);
-            this.redrawCanvas();
+            this.isDrawingArrow = false;
          }
 
-         this.isDrawingArrow = false;
+         // Resete die Informationen
+         this.tempArrowEnd = undefined;
+         this.arrowStart = undefined;
+         //this.selectedArrow = undefined;
       }
-
-      // Resete die Informationen
-      this.tempArrowEnd = undefined;
-      this.arrowStart = undefined;
-      //this.selectedArrow = undefined;
    }
 
    private handleMouseMove(event: MouseEvent) {
-      if (this.isDragging && this.draggedElement) {
-         const {x, y} = this.getMouseCoordinates(event);
-    
-         this.draggedElement.x = x - this.dragOffset.x;
-         this.draggedElement.y = y - this.dragOffset.y;
+      if (this.isGrabbing && this.grabStartPosition && this.grabStartOffset) {
+      const { x, y } = this.getMouseCoordinates(event);
+      const deltaX = x - this.grabStartPosition.x;
+      const deltaY = y - this.grabStartPosition.y;
 
-         this.redrawCanvas();
-      } else if (this.isDrawingArrow && this.arrowStart && (this.selectedElement || this.selectedArrow)) {
-         const {x, y} = this.getMouseCoordinates(event);
+      // Aktualisiere die Koordinaten der Knoten und Verbindungen
+      this.graphElements.forEach(element => {
+         element.x += deltaX;
+         element.y += deltaY;
+      });
+      this.arrows.forEach(arrow => {
+         if (arrow.points) {
+            arrow.points.forEach(point => {
+               point.x += deltaX;
+               point.y += deltaY;
+            });
+         }
+      });
 
-         this.tempArrowEnd = { x, y };
+      // Aktualisiere das Canvas anhand der Mausbewegung
+      const offsetX = parseFloat(this.style.getPropertyValue('--offset-x'));
+      const offsetY = parseFloat(this.style.getPropertyValue('--offset-y'));
+      this.style.setProperty('--offset-x', `${offsetX + deltaX}px`);
+      this.style.setProperty('--offset-y', `${offsetY + deltaY}px`);
 
-         this.redrawCanvas();
+      // Zeichne das aktualisierte Canvas
+      this.redrawCanvas();
+
+      // Aktualisiere die grabStartPosition auf die aktuelle Mausposition
+      this.grabStartPosition = { x, y };
+      } else {
+         if (this.isDragging && this.draggedElement) {
+            const {x, y} = this.getMouseCoordinates(event);
+      
+            this.draggedElement.x = x - this.dragOffset.x;
+            this.draggedElement.y = y - this.dragOffset.y;
+
+            this.redrawCanvas();
+         } else if (this.isDrawingArrow && this.arrowStart && (this.selectedElement || this.selectedArrow)) {
+            const {x, y} = this.getMouseCoordinates(event);
+
+            this.tempArrowEnd = { x, y };
+
+            this.redrawCanvas();
+         }
       }
    }
 
