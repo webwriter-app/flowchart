@@ -2,7 +2,7 @@ import { GraphNodeData } from './definitions';
 import { measureTextSize, getAnchors } from './helper';
 
 /*
-*   Hier finden sich die Funktionen zum Zeichnen auf dem Canvas 
+*   Hier finden sich die Funktionen zum Zeichnen auf dem Canvas und der UI
 */
 
 // -------------------- SVG Grafiken für die Buttons --------------------
@@ -342,13 +342,17 @@ export function drawGraphElement(ctx: CanvasRenderingContext2D, element: GraphNo
    }
 }
 
-export function drawElementAnchors(ctx: CanvasRenderingContext2D, element: GraphNodeData, d: number = 20) {
+export function drawElementAnchors(ctx: CanvasRenderingContext2D, element: GraphNodeData,  hoveredAnchor: { element: GraphNodeData; anchor: number } | undefined, d: number = 20) {
    if (element.node !== 'text') {
-      ctx.fillStyle = '#87cefa';
+      //ctx.fillStyle = '#87cefa'; 
+      ctx.fillStyle = '#5CACEE';
       const anchors = getAnchors(ctx, element, d);
 
       // Zeichne die Ankerpunkte
       anchors.forEach((position, index) => {
+         // Falls ein Ankerpunkt gehovert wird, wird die Transparenz auf 1 gesetzt. 
+         (hoveredAnchor && hoveredAnchor.element === element && hoveredAnchor.anchor === index) ? ctx.globalAlpha = 1 : ctx.globalAlpha = 0.4;         
+
          let angle: number;
          switch (index) {
             case 0:
@@ -368,6 +372,7 @@ export function drawElementAnchors(ctx: CanvasRenderingContext2D, element: Graph
          }
          drawArrowHead(ctx, position.x, position.y, angle);
       });
+      ctx.globalAlpha = 1;
    }
 }
 
@@ -394,7 +399,7 @@ function drawArrowHead(ctx: CanvasRenderingContext2D, x: number, y: number, angl
 export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: number; anchor?: number }, to: { x: number; y: number; anchor?: number }, isSelected: boolean = false, returnPoints = false) {
 
    const headLength = 7;
-   const padding = 10; // Raum zwischen Elementen und Pfeil
+   const padding = 12; // Raum zwischen Elementen und Pfeil
 
    let points: { x: number; y: number }[] = [from];
 

@@ -4,6 +4,7 @@ import { customElement, property } from 'lit/decorators.js'
 
 import { GraphNodeData, Arrow } from './src/definitions'
 import { drawButtonElement, drawGraphElement, drawElementAnchors, drawArrow } from './src/drawer'
+import { toggleMenu, addTask, grabCanvas } from './src/ui'
 import { getAnchors, getArrowInformation, getNearestCircle, isArrowClicked, removeOldConnection, findLastGraphElement, findGraphElementLastIndex } from './src/helper'
 
 
@@ -13,7 +14,6 @@ export class PAPWidget extends LitElementWw {
    @property({ type: Object }) selectedElement?: GraphNodeData;
    @property({ type: Array }) arrows: Arrow[] = [];
    @property({ type: Object }) selectedArrow?: Arrow;
-
 
    private canvas: HTMLCanvasElement;
    private ctx: CanvasRenderingContext2D;
@@ -29,6 +29,8 @@ export class PAPWidget extends LitElementWw {
    private isGrabbing = false;
    private grabStartPosition?: { x: number; y: number };
    private grabStartOffset?: { x: number; y: number };
+
+   private hoveredAnchor?: { element: GraphNodeData; anchor: number };
 
    static styles = css`
    :host {
@@ -364,65 +366,43 @@ export class PAPWidget extends LitElementWw {
 
    // Zeige oder verstecke die angefragten Benutzeroberflächen 
    private toggleMenu(menu: 'task' | 'flow' | 'context') {
-      switch (menu) {
-         case 'task':
-            const taskMenu = this.shadowRoot.querySelector('.task-menu');
-            if (taskMenu) {
-               taskMenu.classList.toggle('hidden');
-            }
-            break;
-         case 'flow':
-            const flowchartMenu = this.shadowRoot.querySelector('.flowchart-menu');
-            const showFlowchartButton = this.shadowRoot.querySelector('.show-flowchart-button');
-            if (flowchartMenu && showFlowchartButton) {
-               flowchartMenu.classList.toggle('hidden');
-               showFlowchartButton.classList.toggle('hidden');
-            }
-            break;
-         case 'context':
-            const contextMenu = this.shadowRoot.getElementById('context-menu');
-            if (contextMenu) { 
-               contextMenu.style.display = 'none'; 
-            }
-         default:
-            console.log('Unbekannter Menü Bezeichnung');
-      }
+      toggleMenu (this, menu);
     }
 
-    private addTask() {
-      const taskContainer = this.shadowRoot.querySelector('.task-container');
-      // Nutze ein Wrapper um die einzelnen Elemente einer Aufgabe zu bündeln
-      const taskWrapper = document.createElement('div');
-      taskWrapper.style.position = 'relative';
+    // Zeige das Kontextmenü an, wenn ein Element angeklickt wurde
+   private showContextMenu(event: MouseEvent) {
+      const {x, y} = this.getMouseCoordinates(event);
 
-      const taskTitle = document.createElement('input');
-      taskTitle.type = 'text';
-      taskTitle.className = 'task-title';
-      taskTitle.placeholder = 'Überschrift';
+      // Finde den angeklickten Knoten oder Verbindung und speichere sie
+      const clickedElement = findLastGraphElement(this.ctx, this.graphElements, x, y);
+      const clickedArrowIndex = this.arrows.findIndex((arrow) => isArrowClicked(x, y, arrow.points));
 
-      const taskContent = document.createElement('textarea');
-      taskContent.className = 'task-content';
-      taskContent.placeholder = 'Inhalt';
+      // Falls ein Element angeklickt wurde, wird das Kontextmenü angezeigt
+      if (clickedElement || clickedArrowIndex !== -1) {
+         const contextMenu = this.shadowRoot.getElementById('context-menu');
+         if (contextMenu) {
+            contextMenu.style.display = 'block';
+            contextMenu.style.left = `${event.clientX}px`;
+            contextMenu.style.top = `${event.clientY}px`;
 
-      const deleteTask = document.createElement('button');
-      deleteTask.className = 'delete-task-button editMode';
-      deleteTask.textContent = 'Löschen';
-      deleteTask.onclick = () => { taskContainer.removeChild(taskWrapper) };
-
-      // Füge alle Elemente zum Task-Wrapper hinzu
-      taskWrapper.appendChild(taskTitle);
-      taskWrapper.appendChild(taskContent);
-      taskWrapper.appendChild(deleteTask);
-
-      // Der Task-Container beinhaltet alle Aufgaben, so können gezielt einzelne Task-Wrapper hinzu und entfernt werden
-      taskContainer.appendChild(taskWrapper);
+            if (clickedElement) {
+               this.selectedElement = clickedElement;
+               this.selectedArrow = undefined;
+            } else {
+               this.selectedArrow = this.arrows[clickedArrowIndex];
+               this.selectedElement = undefined;
+            }
+         }
+      }
    }
 
-   // Aktive Bewegungsmodus für das Canvas
+    private addTask() {
+      addTask(this);
+   }
+
+   // Aktiviere Bewegungsmodus für das Canvas
    private grabCanvas(){
-      this.isGrabbing = !this.isGrabbing;
-      const grabButton = this.shadowRoot.getElementById('grab-button');
-      this.isGrabbing ? grabButton?.classList.add('active') : grabButton?.classList.remove('active');
+      this.isGrabbing = grabCanvas(this, this.isGrabbing);
    }
 
    // ------------------------ Drawer Funktionen ------------------------
@@ -451,7 +431,7 @@ export class PAPWidget extends LitElementWw {
 
       // Zeichne die Ankerpunkte für das ausgewählte Element, falls vorhanden
       if (this.selectedElement) {
-         drawElementAnchors(this.ctx, this.selectedElement);
+         drawElementAnchors(this.ctx, this.selectedElement, this.hoveredAnchor);
       }
 
       //Zeichne eine temporäre Verbindung beim ziehen zwischen zwei Elementen, falls vorhanden
@@ -477,6 +457,8 @@ export class PAPWidget extends LitElementWw {
       drawGraphElement(this.ctx, element, this.selectedElement);
    }
 
+   
+
    // ------------------------ Mouse-Events ------------------------
 
    private handleMouseDown(event: MouseEvent) {
@@ -493,23 +475,6 @@ export class PAPWidget extends LitElementWw {
          if (this.draggedElement && !this.selectedArrow) {
             this.isDragging = true;
             this.dragOffset = { x: x - this.draggedElement.x, y: y - this.draggedElement.y };
-         }
-
-         // Setze die Event Listener für die Ankerpunkt eines Knotens, falls ein Knoten ausgewählt wurde (der kein Text ist), damit das zeichnen einer Verbindung erkannt wird
-         if (this.selectedElement && this.selectedElement.node !== 'text') {
-            const anchors = getAnchors(this.ctx, this.selectedElement, 15)
-
-            // Index: 0: oben, 1: rechts, 2: unten, 3: links 
-            anchors.forEach((position, index) => {
-               // Füge einen Event Listener für jeden Anker hinzu
-               this.canvas?.addEventListener('mousedown', (event) => {
-                  const {x, y} = this.getMouseCoordinates(event);
-                  const distance = Math.sqrt((position.x - x) ** 2 + (position.y - y) ** 2);
-                  if (distance <= 8) {
-                     this.handleCircleClick(event, this.selectedElement, index);
-                  }
-               });
-            });
          }
 
          if (this.selectedArrow) {
@@ -534,8 +499,8 @@ export class PAPWidget extends LitElementWw {
                      if (tempElement.connections[i].connectedTo === nearestElement) { tempAnchor = tempElement.connections[i].anchor }
                   }
 
-                  // Rufe handleCircleClick auf um einen temporären Pfeil zu zeichnen.
-                  this.handleCircleClick(event, tempElement, tempAnchor);
+                  // Rufe handleAnchorClick auf um einen temporären Pfeil zu zeichnen.
+                  this.handleAnchorClick(event, tempElement, tempAnchor);
 
                   // Lösche die alten Verbindungsinformationen innerhalb der Knoten und die Verbindung
                   removeOldConnection(this.selectedArrow.from, this.selectedArrow.to);
@@ -554,7 +519,8 @@ export class PAPWidget extends LitElementWw {
          this.grabStartOffset = undefined;
       } else {
          if (this.isDragging) {
-            this.isDragging = false;
+            // Element loslassen nach dem ziehen
+            this.isDragging = false; 
          } else if (this.isDrawingArrow) {
             const {x, y} = this.getMouseCoordinates(event);
 
@@ -581,7 +547,6 @@ export class PAPWidget extends LitElementWw {
                const toCoordination = getArrowInformation(this.ctx, targetElement, this.arrowStart.element);
                const points = drawArrow(this.ctx, fromCoordination, toCoordination, false, true);
                this.arrows.push({ from: this.arrowStart.element, to: targetElement, points });
-               console.log(this.arrows);
                this.redrawCanvas();
             }
 
@@ -596,8 +561,8 @@ export class PAPWidget extends LitElementWw {
    }
 
    private handleMouseMove(event: MouseEvent) {
-      if (this.isGrabbing && this.grabStartPosition && this.grabStartOffset) {
       const { x, y } = this.getMouseCoordinates(event);
+      if (this.isGrabbing && this.grabStartPosition && this.grabStartOffset) {
       const deltaX = x - this.grabStartPosition.x;
       const deltaY = y - this.grabStartPosition.y;
 
@@ -628,7 +593,6 @@ export class PAPWidget extends LitElementWw {
       this.grabStartPosition = { x, y };
       } else {
          if (this.isDragging && this.draggedElement) {
-            const {x, y} = this.getMouseCoordinates(event);
       
             this.draggedElement.x = x - this.dragOffset.x;
             this.draggedElement.y = y - this.dragOffset.y;
@@ -642,6 +606,8 @@ export class PAPWidget extends LitElementWw {
             this.redrawCanvas();
          }
       }
+      // Highlighte den Ankerpunkt, falls der Benutzer über diesen kommt
+      this.highlightAnchor(x, y);
    }
 
    private handleClick(event: MouseEvent) {
@@ -655,6 +621,8 @@ export class PAPWidget extends LitElementWw {
          this.graphElements.splice(selectedElementIndex, 1);
          this.graphElements.push(this.selectedElement);
       }
+
+      this.updateAnchorListeners();
 
       // Finde den angeklickte Pfeilindex, oder entferne die Auswahl, wenn kein Pfeil angeklickt wurde
       const selectedArrowIndex = this.arrows.findIndex((arrow) => isArrowClicked(x, y, arrow.points));
@@ -696,11 +664,49 @@ export class PAPWidget extends LitElementWw {
       }
    }
 
-   private handleCircleClick(event: MouseEvent, element: GraphNodeData, anchor: number) {
+   private handleAnchorClick(event: MouseEvent, element: GraphNodeData, anchor: number) {
       event.stopPropagation();
       this.isDrawingArrow = true;
       this.arrowStart = { element, anchor };
    }
+
+   private updateAnchorListeners() {
+      if (this.selectedElement && this.selectedElement.node !== 'text') {
+         const anchors = getAnchors(this.ctx, this.selectedElement, 15);
+   
+         anchors.forEach((position, index) => {
+            this.canvas?.addEventListener('mousedown', (event) => {
+               const {x, y} = this.getMouseCoordinates(event);
+               const distance = Math.sqrt((position.x - x) ** 2 + (position.y - y) ** 2);
+               if (distance <= 8) {
+                  this.handleAnchorClick(event, this.selectedElement, index);
+               }
+            });
+         });
+      }
+   }
+
+   private highlightAnchor(x: number, y: number) {
+      if (this.selectedElement && this.selectedElement.node !== 'text') {
+        const anchors = getAnchors(this.ctx, this.selectedElement, 15);
+        let found = false;
+    
+        anchors.forEach((position, index) => {
+          const distance = Math.sqrt((position.x - x) ** 2 + (position.y - y) ** 2);
+    
+          if (distance <= 8) {
+            this.hoveredAnchor = { element: this.selectedElement, anchor: index };
+            found = true;
+          }
+        });
+    
+        if (!found) {
+          this.hoveredAnchor = undefined;
+        }
+    
+        this.redrawCanvas();
+      }
+    }
 
    // ------------------------ Lifecycle ------------------------
 
@@ -740,32 +746,7 @@ export class PAPWidget extends LitElementWw {
       this.redrawCanvas();
    }
 
-   // Zeige das Kontextmenü an, wenn ein Element angeklickt wurde
-   private showContextMenu(event: MouseEvent) {
-      const {x, y} = this.getMouseCoordinates(event);
-
-      // Finde den angeklickten Knoten oder Verbindung und speichere sie
-      const clickedElement = findLastGraphElement(this.ctx, this.graphElements, x, y);
-      const clickedArrowIndex = this.arrows.findIndex((arrow) => isArrowClicked(x, y, arrow.points));
-
-      // Falls ein Element angeklickt wurde, wird das Kontextmenü angezeigt
-      if (clickedElement || clickedArrowIndex !== -1) {
-         const contextMenu = this.shadowRoot.getElementById('context-menu');
-         if (contextMenu) {
-            contextMenu.style.display = 'block';
-            contextMenu.style.left = `${event.clientX}px`;
-            contextMenu.style.top = `${event.clientY}px`;
-
-            if (clickedElement) {
-               this.selectedElement = clickedElement;
-               this.selectedArrow = undefined;
-            } else {
-               this.selectedArrow = this.arrows[clickedArrowIndex];
-               this.selectedElement = undefined;
-            }
-         }
-      }
-   }
+   
 
    // Lösche das ausgewählte Objekt 
    private deleteSelectedObject() {
@@ -828,7 +809,6 @@ Funktionalitäten des PAP
 - Text ändern: Textarea vs prompt()? 
 -> eigenes Promt erstellen. Textarea sieht nicht gut aus, kein svg
 - Schriftarten ändern
-- (Canvas per drag and drop verschieben)
 - Select All, verschieben mehrere Elemente durch drag and drop
 - Feedback Option 
    - Erklärung der Aktionen
