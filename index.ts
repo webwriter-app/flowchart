@@ -76,7 +76,7 @@ export class PAPWidget extends LitElementWw {
 
    .flowchart-menu {
       left: 1.5%;
-      top: 20%;
+      top: 15%;
       flex-direction: column;
       gap: 10px;
       padding-top: 20px;
@@ -313,6 +313,12 @@ export class PAPWidget extends LitElementWw {
             <button @click='${() => this.addGraphElement('connector', '')}'>
                ${drawButtonElement('connector', 'flow')}
             </button>
+            <button @click='${() => this.addGraphElement('i/o', 'Ein-/Ausgabe')}'>
+               ${drawButtonElement('i/o', 'flow')}
+            </button>
+            <button @click='${() => this.addGraphElement('sub', 'Unterprogramm')}'>
+               ${drawButtonElement('sub', 'flow')}
+            </button>
             <button @click='${() => this.addGraphElement('end', 'Ende')}'>
                ${drawButtonElement('end', 'flow')} 
             </button>
@@ -441,7 +447,7 @@ export class PAPWidget extends LitElementWw {
       }
    }
 
-   private addGraphElement(node: 'start' | 'end' | 'op' | 'decision' | 'connector' | 'text', text: string) {
+   private addGraphElement(node: 'start' | 'end' | 'op' | 'decision' | 'connector' | 'i/o' | 'sub' | 'text', text: string) {
       const workspace = this.shadowRoot?.querySelector('.workspace') as HTMLElement;
       const centerX = this.canvas.width * 0.5 + workspace.scrollLeft;
       const centerY = this.canvas.height * 0.5 + workspace.scrollTop;

@@ -60,6 +60,6 @@ export function addTask(element: HTMLElement) {
 
 export function grabCanvas(element: HTMLElement, isGrabbing: boolean): boolean {
    const grabButton = element.shadowRoot.getElementById('grab-button');
-   isGrabbing ? grabButton?.classList.add('active') : grabButton?.classList.remove('active');
+   !isGrabbing ? grabButton?.classList.add('active') : grabButton?.classList.remove('active');
    return !isGrabbing;
 }

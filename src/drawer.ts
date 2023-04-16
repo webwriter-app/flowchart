@@ -22,15 +22,15 @@ export function drawButtonElement(element: string, menu: 'flow' | 'tool' | 'task
    switch (menu) {
       case 'flow':
          setAttributeList(svg, {
-            width: '120',
+            width: '130',
             height: '55',
          });
          setAttributeList(text, {
-            x: '60',
+            x: '65',
             y: '35',
             fill: 'white',
             'text-anchor': 'middle',
-            'font-size': '14',
+            'font-size': '13',
             'font-family': 'Arial'
          });
          svg.appendChild(text);
@@ -56,7 +56,7 @@ export function drawButtonElement(element: string, menu: 'flow' | 'tool' | 'task
       case 'end':
          const terminal = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
          setAttributeList(terminal, {
-            x: '10',
+            x: '15',
             y: '15',
             width: '100',
             height: '30',
@@ -73,7 +73,7 @@ export function drawButtonElement(element: string, menu: 'flow' | 'tool' | 'task
       case 'op':
          const operation = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
          setAttributeList(operation, {
-            x: '10',
+            x: '15',
             y: '15',
             width: '100',
             height: '30',
@@ -88,7 +88,7 @@ export function drawButtonElement(element: string, menu: 'flow' | 'tool' | 'task
       case 'decision':
          const decision = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
          setAttributeList(decision, {
-            points: '60,5 120,27 60,50 0,27',
+            points: '65,5 125,27 65,50 5,27',
             fill: 'none',
             stroke: 'white',
             'stroke-width': '2'
@@ -101,14 +101,80 @@ export function drawButtonElement(element: string, menu: 'flow' | 'tool' | 'task
       case 'connector':
          const connector = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
          setAttributeList(connector, {
-            cx: '60',
-            cy: '30',
-            r: '10',
+            cx: '65',
+            cy: '24',
+            r: '8',
             fill: 'none',
             stroke: 'white',
             'stroke-width': '2'
          });
          svg.appendChild(connector);
+         text.textContent = 'Verbindungsstelle';
+         text.setAttribute('y', '50');
+         break;
+
+      case 'i/o':
+         const io = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+         const offsetX = 6;
+         const offsetY = 15;
+         const width = 115;
+         const height = 30;
+         const skewX = 20;
+      
+         const points = [
+            offsetX + skewX, offsetY,
+            offsetX + width, offsetY,
+            offsetX + width - skewX, offsetY + height,
+            offsetX, offsetY + height
+         ].join(',');
+      
+         setAttributeList(io, {
+            points: points,
+            fill: 'none',
+            stroke: 'white',
+            'stroke-width': '2'
+         });
+         svg.appendChild(io);
+         text.textContent = 'Ein-/Ausgabe';
+         break;
+
+      case 'sub':
+         const sub = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+         setAttributeList(sub, {
+            x: '7',
+            y: '15',
+            width: '114',
+            height: '30',
+            fill: 'none',
+            stroke: 'white',
+            'stroke-width': '2'
+         });
+         svg.appendChild(sub);
+
+         const lineL = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+         setAttributeList(lineL, {
+            x1: '12',
+            y1: '15',
+            x2: '12',
+            y2: '45',
+            stroke: 'white',
+            'stroke-width': '2'
+         });
+         svg.appendChild(lineL);
+
+         const lineR = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+         setAttributeList(lineR, {
+            x1: '116',
+            y1: '15',
+            x2: '116',
+            y2: '45',
+            stroke: 'white',
+            'stroke-width': '2'
+         });
+         svg.appendChild(lineR);
+
+         text.textContent = 'Unterprogramm';
+         text.setAttribute('x', '63');
          break;
 
       case 'text':
@@ -265,7 +331,7 @@ export function drawGraphElement(ctx: CanvasRenderingContext2D, element: GraphNo
    switch (node) {
       case 'start':
       case 'end':
-         ctx.fillStyle = '#FF6A6A';
+         ctx.fillStyle = '#FF6961'//'#FF6A6A';
          // Zeichne ein abgerundetes Rechteck
          const radius = 25; // Radius der abgerundeten Ecken
          ctx.beginPath();
@@ -284,18 +350,11 @@ export function drawGraphElement(ctx: CanvasRenderingContext2D, element: GraphNo
       case 'op':
          ctx.fillStyle = '#FFEC8B';
          // Zeichne ein Rechteck
-         // ctx.fillRect(x, y, width, height);
-         const r = 5; // Radius der abgerundeten Ecken
          ctx.beginPath();
-         ctx.moveTo(x + r, y);
-         ctx.lineTo(x + width - r, y);
-         ctx.quadraticCurveTo(x + width, y, x + width, y + r);
-         ctx.lineTo(x + width, y + height - r);
-         ctx.quadraticCurveTo(x + width, y + height, x + width - r, y + height);
-         ctx.lineTo(x + r, y + height);
-         ctx.quadraticCurveTo(x, y + height, x, y + height - r);
-         ctx.lineTo(x, y + r);
-         ctx.quadraticCurveTo(x, y, x + r, y);
+         ctx.moveTo(x, y);
+         ctx.lineTo(x + width, y);
+         ctx.lineTo(x + width, y + height);
+         ctx.lineTo(x, y + height);
          ctx.closePath();
          ctx.fill();
          break;
@@ -311,12 +370,42 @@ export function drawGraphElement(ctx: CanvasRenderingContext2D, element: GraphNo
          ctx.fill();
          break;
       case 'connector':
-         ctx.fillStyle = '#778899';
+         ctx.fillStyle = '#C6CBC4';
          // Zeichne einen Kreis
          const circleRadius = Math.min(width, height) / 3;
          ctx.beginPath();
          ctx.arc(x + width / 2, y + height / 2, circleRadius, 0, 2 * Math.PI);
          ctx.fill();
+         break;
+      case 'i/o':
+         ctx.fillStyle = '#49B675'; //85EB66 b2fba5
+         // Zeichne ein Parallelogramm
+         const s = 20; // Schräge vom Parallelogramm
+         ctx.beginPath();
+         ctx.moveTo(x + s, y);
+         ctx.lineTo(x + width, y);
+         ctx.lineTo(x + width - s, y + height);
+         ctx.lineTo(x, y + height);
+         ctx.closePath();
+         ctx.fill();
+         break;
+      case 'sub':
+         ctx.fillStyle = '#C6CBC4';
+         // Zeichne ein Rechteck mit 2 vertikalen Linien
+         const d = 6; // Abstand der Linien
+         ctx.beginPath();
+         ctx.moveTo(x, y);
+         ctx.lineTo(x + width, y);
+         ctx.lineTo(x + width, y + height);
+         ctx.lineTo(x, y + height);
+         ctx.lineTo(x, y);
+         ctx.moveTo(x + d, y);
+         ctx.lineTo(x + d, y + height);
+         ctx.moveTo(x + width - d, y);
+         ctx.lineTo(x + width - d, y + height);
+         ctx.closePath();
+         ctx.fill();
+
          break;
       default:
          ctx.fillStyle = '';
@@ -330,16 +419,19 @@ export function drawGraphElement(ctx: CanvasRenderingContext2D, element: GraphNo
 
    // Text zum Element hinzufügen
    ctx.fillStyle = 'black';
-   ctx.fillText(text, x + 10, y + (height / 2) + 5);
+   //ctx.fillText(text, x + 10, y + (height / 2) + 5);
+   const textX = x + (width - ctx.measureText(text).width) / 2;
+   const textY = y + height / 2 + 5;
+   ctx.fillText(text, textX, textY);
 
 
    // Hervorhebung eines ausgewählten Knoten
-   if (selectedElement === element) {
-      ctx.strokeStyle = '#87cefa';
-      ctx.setLineDash([5, 10]);
-      ctx.lineWidth = 2;
-      ctx.strokeRect(x, y, width, height);
-   }
+   // if (selectedElement === element) {
+   //    ctx.strokeStyle = '#87cefa';
+   //    ctx.setLineDash([5, 10]);
+   //    ctx.lineWidth = 2;
+   //    ctx.strokeRect(x, y, width, height);
+   // }
 }
 
 export function drawElementAnchors(ctx: CanvasRenderingContext2D, element: GraphNodeData,  hoveredAnchor: { element: GraphNodeData; anchor: number } | undefined, d: number = 20) {
@@ -399,14 +491,14 @@ function drawArrowHead(ctx: CanvasRenderingContext2D, x: number, y: number, angl
 export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: number; anchor?: number }, to: { x: number; y: number; anchor?: number }, isSelected: boolean = false, returnPoints = false) {
 
    const headLength = 7;
-   const padding = 12; // Raum zwischen Elementen und Pfeil
+   const padding = 15; // Raum zwischen Elementen und Pfeil
 
    let points: { x: number; y: number }[] = [from];
 
    if (from && to) {
 
       // Halte die Positionen der Knoten zueinander fest
-      const isAbove = to.y < from.y;
+      const isAbove = to.y  < from.y;
       const isLeft = to.x < from.x;
 
       // Zum Zeichnen der Verbindungen zwischen zwei Knoten 
@@ -646,8 +738,8 @@ export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: n
    points.push(to);
 
    // Setze den Stil und zeichne die Verbindung
-   ctx.strokeStyle = isSelected ? '#87cefa' : 'black';
-   ctx.fillStyle = isSelected ? '#87cefa' : 'black';
+   ctx.strokeStyle = isSelected ? '#659CF5' : 'black'; 
+   ctx.fillStyle = isSelected ? '#659CF5' : 'black';
    ctx.lineWidth = 2;
 
    ctx.beginPath();
@@ -687,7 +779,7 @@ function drawArrowAnchor(ctx: CanvasRenderingContext2D, anchor: number, x: numbe
    const drawAnchor = (x: number, y: number, radius: number) => {
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, 2 * Math.PI);
-      ctx.fillStyle = '#3CB371';
+      ctx.fillStyle = '#91B8F9'; //5CACEE 3CB371
       ctx.fill();
       ctx.closePath();
    };
