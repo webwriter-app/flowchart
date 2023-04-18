@@ -14,3 +14,8 @@ export interface Arrow {
    points?: { x: number; y: number }[];
    isSelected?: boolean;
 }
+
+export interface ItemList {
+   titel: string;
+   content: string;
+}

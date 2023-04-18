@@ -2,10 +2,12 @@ import { LitElementWw } from '@webwriter/lit'
 import { html, css } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 
-import { GraphNodeData, Arrow } from './src/definitions'
+import { GraphNodeData, Arrow, ItemList } from './src/definitions'
 import { drawButtonElement, drawGraphElement, drawElementAnchors, drawArrow } from './src/drawer'
 import { toggleMenu, addTask, grabCanvas } from './src/ui'
-import { getAnchors, getArrowInformation, getNearestCircle, isArrowClicked, removeOldConnection, findLastGraphElement, findGraphElementLastIndex } from './src/helper'
+import { getAnchors, getArrowInformation, getNearestCircle, highlightAnchor, isArrowClicked, removeOldConnection, findLastGraphElement, findGraphElementLastIndex } from './src/helper'
+
+import { papWidgetStyles } from './src/styles'
 
 
 @customElement('pap-widget')
@@ -15,6 +17,9 @@ export class PAPWidget extends LitElementWw {
    @property({ type: Array }) arrows: Arrow[] = [];
    @property({ type: Object }) selectedArrow?: Arrow;
 
+   @property({ type: Array }) taskList: ItemList[] = [];
+   @property({ type: Array }) helpList: ItemList[] = [];
+ 
    private canvas: HTMLCanvasElement;
    private ctx: CanvasRenderingContext2D;
 
@@ -31,257 +36,10 @@ export class PAPWidget extends LitElementWw {
    private grabStartOffset?: { x: number; y: number };
 
    private hoveredAnchor?: { element: GraphNodeData; anchor: number };
+   private hoveredArrowAnchor: boolean;
 
-   static styles = css`
-   :host {
-      display: block;
-      position: relative;
-      width: 100%;
-      height: 98vh;
-      overflow: hidden;
+   static styles = papWidgetStyles;
 
-      --border-r: 8px;
-      --menu-color: #2c3e50;
-      --button-color: #3a4f65;
-      --hover-color: #1abc9c;
-
-      --offset-x: 0;
-      --offset-y: 0;
-      --grid-background-color: white;
-      --grid-color: #104E8B;
-      --grid-size: 50px;
-      --grid-dot-size: 1px;
-   }
-
-   :host([editable]) .editMode {
-      display: none;
-   }
-
-   .workspace {
-      display: block;
-      position: relative;
-      width: 100%;
-      height: 98vh;
-      overflow: hidden;
-   }
-
-   .flowchart-menu,
-   .tool-menu {
-      display: flex;
-      position: fixed;
-      background-color: var(--menu-color);
-      border-radius: var(--border-r);
-      padding: 15px;
-   }
-
-   .flowchart-menu {
-      left: 1.5%;
-      top: 15%;
-      flex-direction: column;
-      gap: 10px;
-      padding-top: 20px;
-   }
-
-   .tool-menu {
-      right: 1.5%;
-      top: 3%;
-      flex-direction: row;
-      gap: 10px;
-   }
-
-   .flowchart-menu button,
-   .tool-menu button {
-      background-color: var(--button-color);
-      color: white;
-      border: none;
-      border-radius: var(--border-r);
-      transition: background-color 0.3s;
-   }
-
-   .flowchart-menu button,
-   .tool-menu button {
-      font-size: 12px;
-      padding: 5px;
-   }
-
-   .flowchart-menu button:hover,
-   .tool-menu button:hover {
-      background-color: var(--hover-color);
-   }
-
-   .tool-menu button.active {
-      background-color: #EEC900;
-   }
-
-   .context-menu {
-      position: absolute;
-      z-index: 1000;
-      background-color: var(--menu-color);
-      border-radius: var(--border-r);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-      padding: 8px 0;
-      display: none;
-
-      font-family: 'Courier New';
-      font-size: 12px;
-      font-weight: bold;
-      color: #ffffff;
-   }
-
-   .context-menu-item {
-      display: block;
-      padding: 4px 16px;
-      background-color: var(--button-color);
-      transition: background-color 0.3s;
-   }
-
-   .context-menu-item:hover {
-      background-color: var(--hover-color);
-   }
-
-   .task-menu {
-      position: fixed;
-      display: flex;
-      flex-direction: column;
-      background-color: #2c3e50;
-      padding: 15px;
-      right: 1.5%;
-      top: 15%;
-      width: 300px;
-      min-height: 60px;
-      max-height: 75%;
-      border-radius: var(--border-r);
-      resize: both;
-      overflow: hidden;
-   }
-
-   .task-menu-wrapper {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      width: 100%; 
-      box-sizing: border-box; 
-   }
-
-   .task-container {
-      flex-grow: 1;
-      overflow-y: auto;
-      margin-bottom: 10px;
-   }
-
-   .task-title {
-      width: 100%;
-      box-sizing: border-box;
-      font-size: 14px;
-      font-weight: bold;
-      padding: 5px;
-      margin: 10px 0;
-      border: 1px solid #34495e;
-      border-radius: var(--border-r);
-   }
-
-   .task-content {
-      width: 100%;
-      box-sizing: border-box;
-      font-family: 'Arial';
-      font-size: 14px;
-      padding: 5px;
-      margin-bottom: 5px;
-      border: 1px solid #34495e;
-      border-radius: var(--border-r);
-      resize: vertical;
-   }
-
-   .add-task-button,
-   .delete-task-button {
-      background-color: var(--button-color);
-      color: white;
-      border: none;
-      border-radius: var(--border-r);
-      font-size: 12px;
-      padding: 5px;
-      transition: background-color 0.3s;
-   }
- 
-   .delete-task-button {
-     margin-left: 80%;
-   }
-
-   .add-task-button:hover,
-   .delete-task-button:hover {
-      background-color: var(--hover-color);
-   }
-
-   .flowchart-menu > .close-button,
-   .close-button {
-      display: flex;
-      position: absolute;
-      top: 5px;
-      right: 5px;
-      width: 15px;
-      height: 15px;
-      padding: 0;
-      border: none;
-      border-radius: var(--border-r);
-
-      color: white;
-      font-size: 15px;
-      font-weight: lighter;
-      justify-content: center;
-      align-items: center;
-
-      background-color:	var(--menu-color);
-      transition: background-color 0.3s;
-   }
-
-   .close-button:hover {
-      background-color: var(--hover-color);	
-   }
-
-   .show-flowchart-button {
-      display: flex;
-      position: fixed;
-      left: 40px;
-      bottom: 40px;
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      border: none;
-
-      color: white;
-      font-size: 46px;
-      font-weight: lighter;
-      justify-content: center;
-      align-items: center;
-      background-color: var(--button-color);;
-      transition: background-color 0.3s;
-   }
-
-   .show-flowchart-button:hover {
-      background-color: var(--hover-color);;
-   }
-
-   .hidden {
-      display: none;
-   }
-
-   canvas {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 0;
-
-      background-size: var(--grid-size) var(--grid-size);
-      background-image: radial-gradient(
-         circle,
-         var(--grid-color) var(--grid-dot-size),
-         var(--grid-background-color) var(--grid-dot-size)
-      );
-      background-position: var(--offset-x) var(--offset-y);
-   }
-`;
    render() {
       return html`
       <div class='workspace' @scroll='${this.handleScroll}'>
@@ -341,7 +99,7 @@ export class PAPWidget extends LitElementWw {
             <button @click='${() => this.toggleMenu('task')}'>
                ${drawButtonElement('task', 'tool')}
             </button>
-            <button @click='${() => this.toggleMenu('task')}'>
+            <button @click='${() => this.toggleMenu('help')}'>
                ${drawButtonElement('help', 'tool')}
             </button>
          </div>
@@ -356,6 +114,16 @@ export class PAPWidget extends LitElementWw {
                   ${drawButtonElement('addTask', 'task')}
                </button>
             </div>   
+         </div> 
+
+         <div class='help-menu hidden'>
+            <button class='close-button' @click='${() => this.toggleMenu('help')}'>
+               ×
+            </button>
+            <div class="help-container"></div>
+               <button class="add-help-button editMode" @click='${this.addTask}'>
+                  ${drawButtonElement('addTask', 'task')}
+               </button>
          </div>
 
          <div id='context-menu' class='context-menu'>
@@ -371,7 +139,7 @@ export class PAPWidget extends LitElementWw {
    // ------------------------ User interface Funktionen ------------------------
 
    // Zeige oder verstecke die angefragten Benutzeroberflächen 
-   private toggleMenu(menu: 'task' | 'flow' | 'context') {
+   private toggleMenu(menu: 'task' | 'flow' | 'context' | 'help') {
       toggleMenu (this, menu);
     }
 
@@ -403,7 +171,7 @@ export class PAPWidget extends LitElementWw {
    }
 
     private addTask() {
-      addTask(this);
+      addTask(this, this.taskList);
    }
 
    // Aktiviere Bewegungsmodus für das Canvas
@@ -426,7 +194,7 @@ export class PAPWidget extends LitElementWw {
       this.arrows.forEach((arrow) => {
          const fromCoordination = getArrowInformation(this.ctx, arrow.from, arrow.to);
          const toCoordination = getArrowInformation(this.ctx, arrow.to, arrow.from);
-         const updatedArrowPoints = drawArrow(this.ctx, fromCoordination, toCoordination, arrow.isSelected, true);
+         const updatedArrowPoints = drawArrow(this.ctx, fromCoordination, toCoordination, arrow.isSelected, this.hoveredArrowAnchor, true);
          arrow.points = updatedArrowPoints;
          if (this.selectedArrow === arrow) {
             arrow.isSelected = true;
@@ -477,7 +245,7 @@ export class PAPWidget extends LitElementWw {
          this.grabStartOffset = { x: offsetX, y: offsetY };
       } else {
          this.draggedElement = findLastGraphElement(this.ctx, this.graphElements, x, y);
-
+         
          if (this.draggedElement && !this.selectedArrow) {
             this.isDragging = true;
             this.dragOffset = { x: x - this.draggedElement.x, y: y - this.draggedElement.y };
@@ -612,8 +380,12 @@ export class PAPWidget extends LitElementWw {
             this.redrawCanvas();
          }
       }
+
       // Highlighte den Ankerpunkt, falls der Benutzer über diesen kommt
-      this.highlightAnchor(x, y);
+      const { hoveredAnchor, hoveredArrowAnchor } = highlightAnchor( this.ctx, this.selectedElement, this.selectedArrow, x, y );
+      this.hoveredAnchor = hoveredAnchor;
+      this.hoveredArrowAnchor = hoveredArrowAnchor;
+      this.redrawCanvas();
    }
 
    private handleClick(event: MouseEvent) {
@@ -692,28 +464,6 @@ export class PAPWidget extends LitElementWw {
       }
    }
 
-   private highlightAnchor(x: number, y: number) {
-      if (this.selectedElement && this.selectedElement.node !== 'text') {
-        const anchors = getAnchors(this.ctx, this.selectedElement, 15);
-        let found = false;
-    
-        anchors.forEach((position, index) => {
-          const distance = Math.sqrt((position.x - x) ** 2 + (position.y - y) ** 2);
-    
-          if (distance <= 8) {
-            this.hoveredAnchor = { element: this.selectedElement, anchor: index };
-            found = true;
-          }
-        });
-    
-        if (!found) {
-          this.hoveredAnchor = undefined;
-        }
-    
-        this.redrawCanvas();
-      }
-    }
-
    // ------------------------ Lifecycle ------------------------
 
    firstUpdated() {
@@ -751,8 +501,6 @@ export class PAPWidget extends LitElementWw {
       this.arrowStart = undefined;
       this.redrawCanvas();
    }
-
-   
 
    // Lösche das ausgewählte Objekt 
    private deleteSelectedObject() {
@@ -808,7 +556,6 @@ export class PAPWidget extends LitElementWw {
 }
 
 /*
-
 TODO Liste
 
 Funktionalitäten des PAP
@@ -819,15 +566,5 @@ Funktionalitäten des PAP
 - Feedback Option 
    - Erklärung der Aktionen
    - Eigene Feedbackmöglichkeit für Lehrkräfte 
-
-Aufgaben
-- Aufgabenfeld damit Aufgabentexten angegeben werden können. zB Konstruiere zu folgendem Text ein PAP
-
-Design Entscheidungen:
-- Canvasgröße? Gesamtfläche - Sidemenu?
-
-Pfeil umsetzen 
-  - Pfeil am Anfangspunkt umsetzmenu machen 
-  - Richtung des Pfeils beachten, dieser muss gegebenfalls vertauscht werden 
 
 */

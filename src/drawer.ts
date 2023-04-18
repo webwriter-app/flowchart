@@ -7,7 +7,7 @@ import { measureTextSize, getAnchors } from './helper';
 
 // -------------------- SVG Grafiken für die Buttons --------------------
 
-export function drawButtonElement(element: string, menu: 'flow' | 'tool' | 'task') {
+export function drawButtonElement(element: string, menu: 'flow' | 'tool' | 'task' | 'help') {
    // Funktion zum übersichtlichen setzen der Attribute der SVG Grafiken 
    function setAttributeList(element: SVGElement, attributes: { [key: string]: string }): void {
       for (const key in attributes) {
@@ -44,6 +44,12 @@ export function drawButtonElement(element: string, menu: 'flow' | 'tool' | 'task
       case 'task':
          setAttributeList(svg, {
             width: '240',
+            height: '30',
+         });
+         break;
+      case 'help':
+         setAttributeList(svg, {
+            width: '140',
             height: '30',
          });
          break;
@@ -419,9 +425,10 @@ export function drawGraphElement(ctx: CanvasRenderingContext2D, element: GraphNo
 
    // Text zum Element hinzufügen
    ctx.fillStyle = 'black';
-   //ctx.fillText(text, x + 10, y + (height / 2) + 5);
-   const textX = x + (width - ctx.measureText(text).width) / 2;
-   const textY = y + height / 2 + 5;
+   ctx.textAlign = 'center'
+   ctx.textBaseline = 'middle';
+   const textX = x + width / 2; 
+   const textY = y + height / 2;
    ctx.fillText(text, textX, textY);
 
 
@@ -488,7 +495,7 @@ function drawArrowHead(ctx: CanvasRenderingContext2D, x: number, y: number, angl
 // -------------------- Pfeile / Verbindungen --------------------
 
 // Zeichnet die Verbindungspfeile zwischen den Elementen
-export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: number; anchor?: number }, to: { x: number; y: number; anchor?: number }, isSelected: boolean = false, returnPoints = false) {
+export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: number; anchor?: number }, to: { x: number; y: number; anchor?: number }, isSelected: boolean = false, hoveredArrowAnchor: boolean = false, returnPoints = false) {
 
    const headLength = 7;
    const padding = 15; // Raum zwischen Elementen und Pfeil
@@ -738,8 +745,8 @@ export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: n
    points.push(to);
 
    // Setze den Stil und zeichne die Verbindung
-   ctx.strokeStyle = isSelected ? '#659CF5' : 'black'; 
-   ctx.fillStyle = isSelected ? '#659CF5' : 'black';
+   ctx.strokeStyle = isSelected ? '#5CACEE' : 'black'; 
+   ctx.fillStyle = isSelected ? '#5CACEE' : 'black';
    ctx.lineWidth = 2;
 
    ctx.beginPath();
@@ -765,9 +772,9 @@ export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: n
    // Zeichne Ankerpunkte des Pfeils, wenn dieser angeklickt wurde
    if (isSelected) {
       // drawAnchorArrow(ctx, from.anchor, points[0].x, points[0].y); // Anfangspunkt nötig? Dafür benötigt man noch eine reverse drawArrow Function
-      drawArrowAnchor(ctx, to.anchor, points[points.length - 1].x, points[points.length - 1].y);
+      drawArrowAnchor(ctx, to.anchor, points[points.length - 1].x, points[points.length - 1].y, hoveredArrowAnchor);
    }
-
+   
    // Gib die Eckpunkte des Pfeils zum abspeichern zurück, falls returnPoints auf true gesetzt wurde
    if (returnPoints) {
       return points;
@@ -775,14 +782,21 @@ export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: n
 }
 
 // Zeichne die Ankerpunkte einer Verbindung
-function drawArrowAnchor(ctx: CanvasRenderingContext2D, anchor: number, x: number, y: number) {
+function drawArrowAnchor(ctx: CanvasRenderingContext2D, anchor: number, x: number, y: number, hoveredArrowAnchor: boolean) {
    const drawAnchor = (x: number, y: number, radius: number) => {
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, 2 * Math.PI);
-      ctx.fillStyle = '#91B8F9'; //5CACEE 3CB371
+      ctx.fillStyle = 'black'; 
       ctx.fill();
       ctx.closePath();
+      ctx.font = 'bold 12px Courier New';
+      ctx.textBaseline = 'middle';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = 'white'
+      ctx.fillText('×', x, y);
    };
+   // Falls ein Ankerpunkt gehovert wird, wird die Transparenz auf 1 gesetzt. 
+   hoveredArrowAnchor ? ctx.globalAlpha = 1 : ctx.globalAlpha = 0.6;    
 
    const offSetAnchor = 0;
 
@@ -800,4 +814,7 @@ function drawArrowAnchor(ctx: CanvasRenderingContext2D, anchor: number, x: numbe
          drawAnchor(x - offSetAnchor, y, 5);
          break;
    }
+   // Resette Einstellungen. 
+   ctx.globalAlpha = 1;
+   ctx.font = 'bold 16px Courier New';
 };

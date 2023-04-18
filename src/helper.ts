@@ -1,4 +1,4 @@
-import { GraphNodeData } from "./definitions";
+import { GraphNodeData, Arrow } from "./definitions";
 
 /*
 *   Hilfsfunktionen 
@@ -108,6 +108,45 @@ export function getNearestCircle(ctx: CanvasRenderingContext2D, from: { x: numbe
    return nearestCircleIndex;
 }
 
+export function highlightAnchor(ctx: CanvasRenderingContext2D, selectedElement: GraphNodeData | undefined, selectedArrow: Arrow | undefined, x: number, y: number) {
+   let found = false;
+   let hoveredAnchor: { element: GraphNodeData; anchor: number };
+   let hoveredArrowAnchor = false;
+
+   // Highlight die Anker eines Knotens
+   if (selectedElement && selectedElement.node !== 'text') {
+       const anchors = getAnchors(ctx, selectedElement, 15);
+
+       anchors.forEach((position, index) => {
+           const distance = Math.sqrt((position.x - x) ** 2 + (position.y - y) ** 2);
+
+           if (distance <= 8) {
+               hoveredAnchor = { element: selectedElement, anchor: index };
+               found = true;
+           }
+       });
+   }
+
+   // Highlight den Anker einer Verbindung
+   if (!found && selectedArrow && selectedArrow.points) {
+       const points = selectedArrow.points;
+       const endPoint = points[points.length - 1];
+       const distance = Math.sqrt((endPoint.x - x) ** 2 + (endPoint.y - y) ** 2);
+
+       if (distance <= 8) {
+           hoveredArrowAnchor = true;
+           found = true;
+       }
+   }
+
+   if (!found) {
+       hoveredAnchor = undefined;
+       hoveredArrowAnchor = false;
+   }
+
+   return { hoveredAnchor, hoveredArrowAnchor };
+}
+
 
 // -------------------- Allgemeine --------------------
 
@@ -144,7 +183,7 @@ export function findGraphElementLastIndex(ctx: CanvasRenderingContext2D, graphEl
 }
 
 // Gibt das letzte gesuchte Element zurück, ansonsten undefined
-export function findLast<T>(arr: T[], predicate: (element: T) => boolean): T | undefined {
+function findLast<T>(arr: T[], predicate: (element: T) => boolean): T | undefined {
    for (let i = arr.length - 1; i >= 0; i--) {
       const element = arr[i];
       if (predicate(element)) {
@@ -155,7 +194,7 @@ export function findLast<T>(arr: T[], predicate: (element: T) => boolean): T | u
 }
 
 // Gibt den letzten gesuchten Index zurück, ansonsten -1
-export function findLastIndex<T>(arr: T[], predicate: (element: T) => boolean): number {
+function findLastIndex<T>(arr: T[], predicate: (element: T) => boolean): number {
    for (let i = arr.length - 1; i >= 0; i--) {
       const element = arr[i];
       if (predicate(element)) {
