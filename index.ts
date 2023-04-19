@@ -4,7 +4,7 @@ import { customElement, property } from 'lit/decorators.js'
 
 import { GraphNodeData, Arrow, ItemList } from './src/definitions'
 import { drawButtonElement, drawGraphElement, drawElementAnchors, drawArrow } from './src/drawer'
-import { toggleMenu, addTask, grabCanvas } from './src/ui'
+import { toggleMenu, addTask, addHelp, updateDisabledState, grabCanvas } from './src/ui'
 import { getAnchors, getArrowInformation, getNearestCircle, highlightAnchor, isArrowClicked, removeOldConnection, findLastGraphElement, findGraphElementLastIndex } from './src/helper'
 
 import { papWidgetStyles } from './src/styles'
@@ -121,8 +121,8 @@ export class PAPWidget extends LitElementWw {
                ×
             </button>
             <div class="help-container"></div>
-               <button class="add-help-button editMode" @click='${this.addTask}'>
-                  ${drawButtonElement('addTask', 'task')}
+               <button class="add-help-button editMode" @click='${this.addHelp}'>
+                  ${drawButtonElement('addHelp', 'help')}
                </button>
          </div>
 
@@ -174,9 +174,14 @@ export class PAPWidget extends LitElementWw {
       addTask(this, this.taskList);
    }
 
+   private addHelp() {
+      addHelp(this, this.helpList);
+   }
+
    // Aktiviere Bewegungsmodus für das Canvas
    private grabCanvas(){
       this.isGrabbing = grabCanvas(this, this.isGrabbing);
+      console.log("grab:" + this.editable);
    }
 
    // ------------------------ Drawer Funktionen ------------------------
@@ -483,6 +488,12 @@ export class PAPWidget extends LitElementWw {
       window.removeEventListener('resize', this.updateCanvasSize);
       super.disconnectedCallback();
    }
+
+   updated(changedProperties: Map<string, any>) {
+      if (changedProperties.has('editable')) {
+        updateDisabledState(this, this.editable);
+      }
+    }
 
    // ------------------------ Allgemeine Systemfunktionen ------------------------
 

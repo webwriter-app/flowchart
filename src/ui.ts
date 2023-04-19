@@ -38,6 +38,7 @@ export function toggleMenu(element: HTMLElement, menu: 'task' | 'flow' | 'contex
          if (contextMenu) { 
             contextMenu.style.display = 'none'; 
          }
+         break;
       default:
          console.log('Unbekannter Menü Bezeichnung');
    }
@@ -81,9 +82,48 @@ export function addTask(element: HTMLElement, taskList: ItemList[]) {
  
    taskContainer.appendChild(taskWrapper);
    taskList.push({ titel: '', content: '' });
- }
+}
 
- export function addHelp(element: HTMLElement, helpList: ItemList[]) {
+export function updateDisabledState(element: HTMLElement, editable: boolean | undefined) {
+   const taskContainers = element.shadowRoot.querySelectorAll('.task-container');
+   taskContainers.forEach((taskContainer) => {
+     const taskTitles = taskContainer.querySelectorAll('.task-title');
+     const taskContents = taskContainer.querySelectorAll('.task-content');
+
+     taskTitles.forEach((taskTitle: HTMLInputElement) => {
+       taskTitle.disabled = editable;
+       console.log(taskTitle.disabled);
+     });
+
+     taskContents.forEach((taskContent: HTMLTextAreaElement) => {
+       taskContent.disabled = editable;
+     });
+   });
+
+   const helpContainers = element.shadowRoot.querySelectorAll('.help-container');
+   helpContainers.forEach((helpContainer) => {
+     const helpTitles = helpContainer.querySelectorAll('.help-title');
+     const helpContents = helpContainer.querySelectorAll('.help-content');
+     const showHelpButtons = helpContainer.querySelectorAll('.show-help-button');
+
+      helpTitles.forEach((helpTitle: HTMLInputElement) => {
+         helpTitle.disabled = editable;
+         editable ? helpTitle.classList.add('hidden') : helpTitle.classList.remove('hidden');
+      });
+
+      helpContents.forEach((helpContent: HTMLTextAreaElement) => {
+         helpContent.disabled = editable;
+         editable ? helpContent.classList.add('hidden') : helpContent.classList.remove('hidden');
+      });
+
+      showHelpButtons.forEach((showHelpButton: HTMLButtonElement) => {
+         editable ? showHelpButton.classList.remove('hidden') : showHelpButton.classList.add('hidden');
+      });
+   });
+}
+
+
+export function addHelp(element: HTMLElement, helpList: ItemList[]) {
    const helpContainer = element.shadowRoot.querySelector('.help-container');
    
    const helpWrapper = document.createElement('div');
@@ -96,6 +136,7 @@ export function addTask(element: HTMLElement, taskList: ItemList[]) {
    helpTitle.addEventListener('change', (event) => {
      const index = Array.from(helpContainer.children).indexOf(helpWrapper);
      helpList[index].titel = (event.target as HTMLInputElement).value;
+     showHelp.textContent = helpList[index].titel;
    });
  
    const helpContent = document.createElement('textarea');
@@ -106,18 +147,26 @@ export function addTask(element: HTMLElement, taskList: ItemList[]) {
      helpList[index].content = (event.target as HTMLTextAreaElement).value;
    });
  
-   const deletehelp = document.createElement('button');
-   deletehelp.className = 'delete-help-button editMode';
-   deletehelp.textContent = 'Löschen';
-   deletehelp.onclick = () => { 
+   const deleteHelp = document.createElement('button');
+   deleteHelp.className = 'delete-help-button editMode';
+   deleteHelp.textContent = 'Löschen';
+   deleteHelp.onclick = () => { 
      const index = Array.from(helpContainer.children).indexOf(helpWrapper);
      helpList.splice(index, 1);
      helpContainer.removeChild(helpWrapper);
    };
  
+   const showHelp = document.createElement('button');
+   showHelp.className = 'show-help-button hidden';
+   showHelp.textContent = 'Tipp';
+   showHelp.onclick = () => {
+     helpContent.classList.toggle('hidden');
+   };
+ 
+   helpWrapper.appendChild(showHelp);
    helpWrapper.appendChild(helpTitle);
    helpWrapper.appendChild(helpContent);
-   helpWrapper.appendChild(deletehelp);
+   helpWrapper.appendChild(deleteHelp);
  
    helpContainer.appendChild(helpWrapper);
    helpList.push({ titel: '', content: '' });

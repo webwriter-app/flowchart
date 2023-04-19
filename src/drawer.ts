@@ -315,6 +315,20 @@ export function drawButtonElement(element: string, menu: 'flow' | 'tool' | 'task
          text.textContent = 'Aufgabe Hinzufügen';
          svg.appendChild(text);
          break;
+
+      // Help Menü 
+      case 'addHelp':
+         setAttributeList(text, {
+            x: '70',
+            y: '22',
+            fill: 'white',
+            'text-anchor': 'middle',
+            'font-size': '16',
+            'font-family': 'Arial'
+         });
+         text.textContent = 'Hilfe Hinzufügen';
+         svg.appendChild(text);
+         break;
       default:
          console.log('Unbekannte SVG Bezeichnung');
    }
