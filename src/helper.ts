@@ -22,7 +22,7 @@ export function getArrowInformation(ctx: CanvasRenderingContext2D, from: GraphNo
       return arrowInformation;
    }
 
-   const connection = from.connections.find(x => x.connectedTo === to);
+   const connection = from.connections.find(x => x.connectedToId === to.id);
    if (connection) {
       arrowInformation.x = anchors[connection.anchor].x;
       arrowInformation.y = anchors[connection.anchor].y;
@@ -65,14 +65,14 @@ export function removeOldConnection(fromNode: GraphNodeData, toNode: GraphNodeDa
    // Entferne die Verbindungsinformation vom Startknoten 
    if (fromNode.connections) {
       fromNode.connections = fromNode.connections.filter(
-         (connection) => connection.connectedTo !== toNode
+         (connection) => connection.connectedToId !== toNode.id
       );
    }
 
    // Entferne die Verbindungsinformation vom Zielknoten
    if (toNode.connections) {
       toNode.connections = toNode.connections.filter(
-         (connection) => connection.connectedTo !== fromNode
+         (connection) => connection.connectedToId !== fromNode.id
       );
    }
 }

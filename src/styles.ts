@@ -252,7 +252,7 @@ export const papWidgetStyles = css`
       height: 100%;
       width: 100%; 
       box-sizing: border-box; 
-      align-items: stretch;
+      //align-items: stretch;
    }
 
    .help-container {
@@ -304,15 +304,58 @@ export const papWidgetStyles = css`
       width: 100%;
       box-sizing: border-box;
       font-family: 'Arial';
-      font-size: 14px;
+      font-size: 16px;
       padding: 10px;
-      margin-bottom: 5px;
-      margin-top: 10px;
+      margin-bottom: 10px;
+      //margin-top: 10px;
    }
 
    .add-help-button:hover,
    .delete-help-button:hover,
    .show-help-button:hover {
+      background-color: var(--hover-color);
+   }
+
+   .preset-menu {
+      position: fixed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      background-color: #2c3e50;
+      padding: 15px;
+      right: 1.5%;
+      top: 15%;
+      max-width: 250px;
+      max-height: 75%;
+      border-radius: var(--border-r);
+      overflow: hidden;
+   }
+
+   .preset-menu-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%; 
+      box-sizing: border-box; 
+      align-items: stretch;
+      flex-grow: 1;
+      overflow-y: auto;
+      margin-bottom: 10px;
+   }
+
+   .preset-button {
+      background-color: var(--button-color);
+      color: white;
+      border: none;
+      border-radius: var(--border-r);
+      font-family: 'Arial';
+      font-size: 16px;
+      padding: 10px;
+      transition: background-color 0.3s;
+   }
+
+   .preset-button:hover {
       background-color: var(--hover-color);
    }
 

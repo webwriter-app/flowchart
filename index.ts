@@ -1,11 +1,14 @@
 import { LitElementWw } from '@webwriter/lit'
 import { html, css } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
+import { v4 as uuidv4 } from 'uuid';
 
 import { GraphNodeData, Arrow, ItemList } from './src/definitions'
 import { drawButtonElement, drawGraphElement, drawElementAnchors, drawArrow } from './src/drawer'
 import { toggleMenu, addTask, addHelp, updateDisabledState, grabCanvas } from './src/ui'
 import { getAnchors, getArrowInformation, getNearestCircle, highlightAnchor, isArrowClicked, removeOldConnection, findLastGraphElement, findGraphElementLastIndex } from './src/helper'
+
+import { flowchartPresets } from './src/presets'
 
 import { papWidgetStyles } from './src/styles'
 
@@ -19,6 +22,9 @@ export class PAPWidget extends LitElementWw {
 
    @property({ type: Array }) taskList: ItemList[] = [];
    @property({ type: Array }) helpList: ItemList[] = [];
+
+   @property({ type: Array }) presetList: { name: string, graphElements: GraphNodeData[] }[] = flowchartPresets;
+
  
    private canvas: HTMLCanvasElement;
    private ctx: CanvasRenderingContext2D;
@@ -65,7 +71,7 @@ export class PAPWidget extends LitElementWw {
             <button @click='${() => this.addGraphElement('op', 'Operation')}'>
                ${drawButtonElement('op', 'flow')}
             </button>
-            <button @click='${() => this.addGraphElement('decision', 'Verzweigung')}'>
+            <button @click='${() => this.addGraphElement('decision', 'Bedingung')}'>
                ${drawButtonElement('decision', 'flow')}
             </button>
             <button @click='${() => this.addGraphElement('connector', '')}'>
@@ -99,6 +105,9 @@ export class PAPWidget extends LitElementWw {
             <button @click='${() => this.toggleMenu('task')}'>
                ${drawButtonElement('task', 'tool')}
             </button>
+            <button @click='${() => this.toggleMenu('preset')}'>
+               ${drawButtonElement('preset', 'tool')}
+            </button>
             <button @click='${() => this.toggleMenu('help')}'>
                ${drawButtonElement('help', 'tool')}
             </button>
@@ -115,6 +124,16 @@ export class PAPWidget extends LitElementWw {
                </button>
             </div>   
          </div> 
+
+         <div class='preset-menu hidden'>
+            <button class='close-button' @click='${() => this.toggleMenu('preset')}'>
+               ×
+            </button>
+            <div class="preset-container"></div>
+               <button class="preset-button" @click='${() => this.showPreset('Beispiel')}'>
+                  Beispiel
+               </button>
+         </div>
 
          <div class='help-menu hidden'>
             <button class='close-button' @click='${() => this.toggleMenu('help')}'>
@@ -139,7 +158,7 @@ export class PAPWidget extends LitElementWw {
    // ------------------------ User interface Funktionen ------------------------
 
    // Zeige oder verstecke die angefragten Benutzeroberflächen 
-   private toggleMenu(menu: 'task' | 'flow' | 'context' | 'help') {
+   private toggleMenu(menu: 'task' | 'flow' | 'context' | 'preset' | 'help') {
       toggleMenu (this, menu);
     }
 
@@ -178,10 +197,68 @@ export class PAPWidget extends LitElementWw {
       addHelp(this, this.helpList);
    }
 
+   private showPreset(presetName: string) {
+      const preset = this.presetList.find((p) => p.name === presetName);
+
+      if (preset) {
+        const updatedPreset = this.updatePresetIds(preset.graphElements);
+
+         this.graphElements = [...this.graphElements, ...updatedPreset];
+         this.createArrowsFromGraphElements();
+         this.redrawCanvas();
+      } else {
+         console.error(`Preset "${presetName}" nicht gefunden`);
+      }
+   }
+
+   private createArrowsFromGraphElements() {
+      this.arrows = [];
+    
+      this.graphElements.forEach((fromElement) => {
+        if (fromElement.connections) {
+          fromElement.connections.forEach((connection) => {
+            const toElement = this.graphElements.find((element) => element.id === connection.connectedToId);
+            
+            if (toElement && connection.direction === 'to') {
+              this.arrows.push({
+                from: fromElement,
+                to: toElement,
+                isSelected: false,
+                points: [] // Initialisiere points als leeres Array, wird später in drawArrow aktualisiert
+              });
+            }
+          });
+        }
+      });
+    }
+
+    private updatePresetIds(preset: GraphNodeData[]): GraphNodeData[] {
+      // Erstelle eine Zuordnung zwischen alten und neuen IDs
+      const idMap = new Map<string, string>();
+      preset.forEach((element) => {
+        idMap.set(element.id, uuidv4());
+      });
+    
+      // Aktualisiere die IDs der Elemente und ihrer Verbindungen
+      const updatedPreset = preset.map((element) => {
+        const newElement = { ...element, id: idMap.get(element.id) };
+    
+        if (newElement.connections) {
+          newElement.connections = newElement.connections.map((connection) => {
+            return { ...connection, connectedToId: idMap.get(connection.connectedToId) };
+          });
+        }
+    
+        return newElement;
+      });
+    
+      return updatedPreset;
+    }
+
    // Aktiviere Bewegungsmodus für das Canvas
    private grabCanvas(){
       this.isGrabbing = grabCanvas(this, this.isGrabbing);
-      console.log("grab:" + this.editable);
+      console.log("GraphNode: ", this.graphElements);
    }
 
    // ------------------------ Drawer Funktionen ------------------------
@@ -226,6 +303,7 @@ export class PAPWidget extends LitElementWw {
       const centerY = this.canvas.height * 0.5 + workspace.scrollTop;
 
       const element: GraphNodeData = {
+         id: uuidv4(),
          node: node,
          text: text,
          x: centerX,
@@ -275,7 +353,7 @@ export class PAPWidget extends LitElementWw {
                   //nearestElement === this.selectedArrow.from ? tempElement = this.selectedArrow.to : tempElement = this.selectedArrow.from
                   tempElement = this.selectedArrow.from;
                   for (let i = 0; i < tempElement.connections.length; i++) {
-                     if (tempElement.connections[i].connectedTo === nearestElement) { tempAnchor = tempElement.connections[i].anchor }
+                     if (tempElement.connections[i].connectedToId === nearestElement.id) { tempAnchor = tempElement.connections[i].anchor }
                   }
 
                   // Rufe handleAnchorClick auf um einen temporären Pfeil zu zeichnen.
@@ -312,14 +390,14 @@ export class PAPWidget extends LitElementWw {
                if (!this.arrowStart.element.connections) {
                   this.arrowStart.element.connections = [];
                }
-               this.arrowStart.element.connections.push({ anchor: this.arrowStart.anchor, connectedTo: targetElement });
+               this.arrowStart.element.connections.push({ anchor: this.arrowStart.anchor, direction: 'to', connectedToId: targetElement.id });
 
                // Speichere die Pfeilverbindung am Ziel-Element
                if (!targetElement.connections) {
                   targetElement.connections = [];
                }
                const nearestCircleIndex = getNearestCircle(this.ctx, { x, y }, targetElement);
-               targetElement.connections.push({ anchor: nearestCircleIndex, connectedTo: this.arrowStart.element });
+               targetElement.connections.push({ anchor: nearestCircleIndex, direction: 'from', connectedToId: this.arrowStart.element.id });
 
                // Hole die Eckpunkte zum Zeichnen des Pfeils, um sie im arrows-Array abzuspeichern
                const fromCoordination = getArrowInformation(this.ctx, this.arrowStart.element, targetElement);

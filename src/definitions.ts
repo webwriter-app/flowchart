@@ -1,11 +1,12 @@
 // --------------- Definitionen ---------------
 
 export interface GraphNodeData {
+   id: string;
    node: string;
    text: string;
    x: number;
    y: number;
-   connections?: { anchor: number; connectedTo: GraphNodeData }[];
+   connections?: { anchor: number; direction: string, connectedToId: string }[];
 }
 
 export interface Arrow {

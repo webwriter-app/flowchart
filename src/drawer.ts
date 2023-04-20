@@ -259,6 +259,22 @@ export function drawButtonElement(element: string, menu: 'flow' | 'tool' | 'task
          svg.appendChild(line2);
          svg.appendChild(line3);
          break;
+      
+      case 'preset':
+         const scalePreset = 0.85;
+         const presetX = 5;
+         const presetY = 2;
+
+         const chart = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+         setAttributeList(chart, {
+            d: 'M24,10h4a2,2,0,0,0,2-2V4a2,2,0,0,0-2-2H24a2,2,0,0,0-2,2V5H19a2,2,0,0,0-2,2v8H14V12a2,2,0,0,0-2-2H4a2,2,0,0,0-2,2v8a2,2,0,0,0,2,2h8a2,2,0,0,0,2-2V17h3v8a2,2,0,0,0,2,2h3v1a2,2,0,0,0,2,2h4a2,2,0,0,0,2-2V24a2,2,0,0,0-2-2H24a2,2,0,0,0-2,2v1H19V17h3v1a2,2,0,0,0,2,2h4a2,2,0,0,0,2-2V14a2,2,0,0,0-2-2H24a2,2,0,0,0-2,2v1H19V7h3V8A2,2,0,0,0,24,10ZM12,20H4V12h8Zm12,4h4v4H24Zm0-10h4v4H24ZM24,4h4V8H24Z',
+            fill: 'white',
+            stroke: 'white',
+            'stroke-width': '0.1',
+            transform: `scale(${scalePreset}) translate(${presetX} ${presetY})` // rotate(90, 17, 17)  
+         });
+         svg.appendChild(chart);
+         break;
 
       case 'help':
          const scaleHelp = 0.06;
@@ -276,31 +292,31 @@ export function drawButtonElement(element: string, menu: 'flow' | 'tool' | 'task
          svg.appendChild(curve);
          break;
 
-         case 'task':
-            const scaleTask = 1.5;
-            const taskX = 1;
-            const taskY = -1;
-   
-            const board = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            setAttributeList(board, {
-               d: 'M5 22h14c1.103 0 2-.897 2-2V5c0-1.103-.897-2-2-2h-2a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1H5c-1.103 0-2 .897-2 2v15c0 1.103.897 2 2 2zM5 5h2v2h10V5h2v15H5V5z',
-               fill: 'white',
-               stroke: 'white',
-               'stroke-width': '0.1',
-               transform: `scale(${scaleTask}) translate(${taskX} ${taskY})`
-            });
-   
-            const check = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            setAttributeList(check, {
-               d: 'm11 13.586-1.793-1.793-1.414 1.414L11 16.414l5.207-5.207-1.414-1.414z',
-               fill: 'white',
-               stroke: 'white',
-               'stroke-width': '0.1',
-               transform: `scale(${scaleTask}) translate(${taskX} ${taskY})`
-            });
-            svg.appendChild(board);
-            svg.appendChild(check);
-            break;
+      case 'task':
+         const scaleTask = 1.5;
+         const taskX = 1;
+         const taskY = -1;
+
+         const board = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+         setAttributeList(board, {
+            d: 'M5 22h14c1.103 0 2-.897 2-2V5c0-1.103-.897-2-2-2h-2a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1H5c-1.103 0-2 .897-2 2v15c0 1.103.897 2 2 2zM5 5h2v2h10V5h2v15H5V5z',
+            fill: 'white',
+            stroke: 'white',
+            'stroke-width': '0.1',
+            transform: `scale(${scaleTask}) translate(${taskX} ${taskY})`
+         });
+
+         const check = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+         setAttributeList(check, {
+            d: 'm11 13.586-1.793-1.793-1.414 1.414L11 16.414l5.207-5.207-1.414-1.414z',
+            fill: 'white',
+            stroke: 'white',
+            'stroke-width': '0.1',
+            transform: `scale(${scaleTask}) translate(${taskX} ${taskY})`
+         });
+         svg.appendChild(board);
+         svg.appendChild(check);
+         break;
 
       // Task Menü 
       case 'addTask':

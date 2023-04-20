@@ -5,44 +5,58 @@ import { ItemList } from "./definitions";
 */
 
 // Zeige oder verstecke die angefragten Benutzeroberflächen 
-export function toggleMenu(element: HTMLElement, menu: 'task' | 'flow' | 'context' | 'help') {
+export function toggleMenu(element: HTMLElement, menu: 'task' | 'flow' | 'context' | 'preset' | 'help') {
+   const taskMenu = element.shadowRoot.querySelector('.task-menu');
+   const helpMenu = element.shadowRoot.querySelector('.help-menu');
+   const presetMenu = element.shadowRoot.querySelector('.preset-menu');
+   const flowchartMenu = element.shadowRoot.querySelector('.flowchart-menu');
+   const showFlowchartButton = element.shadowRoot.querySelector('.show-flowchart-button');
+   const contextMenu = element.shadowRoot.getElementById('context-menu');
+ 
    switch (menu) {
-      case 'task':
-      case 'help':
-         const taskMenu = element.shadowRoot.querySelector('.task-menu');
-         const helpMenu = element.shadowRoot.querySelector('.help-menu');
-         if (taskMenu && helpMenu) {
-            if (menu === 'task') {
-               taskMenu.classList.toggle('hidden');
-               if (!taskMenu.classList.contains('hidden')) {
-                  helpMenu.classList.add('hidden');
-               }
-            } else if (menu === 'help') {
-               helpMenu.classList.toggle('hidden');
-               if (!helpMenu.classList.contains('hidden')) {
-                  taskMenu.classList.add('hidden');
-               }
-            }
+     case 'task':
+       if (taskMenu) {
+         taskMenu.classList.toggle('hidden');
+         if (!taskMenu.classList.contains('hidden')) {
+           helpMenu.classList.add('hidden');
+           presetMenu.classList.add('hidden');
          }
-         break;
-      case 'flow':
-         const flowchartMenu = element.shadowRoot.querySelector('.flowchart-menu');
-         const showFlowchartButton = element.shadowRoot.querySelector('.show-flowchart-button');
-         if (flowchartMenu && showFlowchartButton) {
-            flowchartMenu.classList.toggle('hidden');
-            showFlowchartButton.classList.toggle('hidden');
+       }
+       break;
+     case 'help':
+       if (helpMenu) {
+         helpMenu.classList.toggle('hidden');
+         if (!helpMenu.classList.contains('hidden')) {
+           taskMenu.classList.add('hidden');
+           presetMenu.classList.add('hidden');
          }
-         break;
-      case 'context':
-         const contextMenu = element.shadowRoot.getElementById('context-menu');
-         if (contextMenu) { 
-            contextMenu.style.display = 'none'; 
+       }
+       break;
+     case 'preset':
+       if (presetMenu) {
+         presetMenu.classList.toggle('hidden');
+         if (!presetMenu.classList.contains('hidden')) {
+           taskMenu.classList.add('hidden');
+           helpMenu.classList.add('hidden');
          }
-         break;
-      default:
-         console.log('Unbekannter Menü Bezeichnung');
+       }
+       break;
+     case 'flow':
+       if (flowchartMenu && showFlowchartButton) {
+         flowchartMenu.classList.toggle('hidden');
+         showFlowchartButton.classList.toggle('hidden');
+       }
+       break;
+     case 'context':
+       if (contextMenu) {
+         contextMenu.style.display = 'none';
+       }
+       break;
+     default:
+       console.log('Unbekannter Menü Bezeichnung');
    }
-}
+ }
+ 
 
 export function addTask(element: HTMLElement, taskList: ItemList[]) {
    const taskContainer = element.shadowRoot.querySelector('.task-container');

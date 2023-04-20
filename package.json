@@ -4,8 +4,9 @@
     "build": "vite build"
   },
   "dependencies": {
+    "@webwriter/lit": "latest",
     "lit": "^2.4.0",
-    "@webwriter/lit": "latest"
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "typescript": "^4.8.4",
