@@ -176,6 +176,10 @@ export function addHelp(element: HTMLElement, helpList: ItemList[]) {
    showHelp.onclick = () => {
      helpContent.classList.toggle('hidden');
    };
+
+   helpTitle.value = helpList[helpList.length - 1].titel;
+   showHelp.textContent = helpList[helpList.length - 1].titel;
+   helpContent.value = helpList[helpList.length - 1].content;
  
    helpWrapper.appendChild(showHelp);
    helpWrapper.appendChild(helpTitle);

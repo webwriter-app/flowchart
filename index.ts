@@ -8,7 +8,7 @@ import { drawButtonElement, drawGraphElement, drawElementAnchors, drawArrow } fr
 import { toggleMenu, addTask, addHelp, updateDisabledState, grabCanvas } from './src/ui'
 import { getAnchors, getArrowInformation, getNearestCircle, highlightAnchor, isArrowClicked, removeOldConnection, findLastGraphElement, findGraphElementLastIndex } from './src/helper'
 
-import { flowchartPresets } from './src/presets'
+import { defaultHelpItems, flowchartPresets } from './src/presets'
 
 import { papWidgetStyles } from './src/styles'
 
@@ -71,7 +71,7 @@ export class PAPWidget extends LitElementWw {
             <button @click='${() => this.addGraphElement('op', 'Operation')}'>
                ${drawButtonElement('op', 'flow')}
             </button>
-            <button @click='${() => this.addGraphElement('decision', 'Bedingung')}'>
+            <button @click='${() => this.addGraphElement('decision', 'Verzweigung')}'>
                ${drawButtonElement('decision', 'flow')}
             </button>
             <button @click='${() => this.addGraphElement('connector', '')}'>
@@ -132,6 +132,12 @@ export class PAPWidget extends LitElementWw {
             <div class="preset-container"></div>
                <button class="preset-button" @click='${() => this.showPreset('Beispiel')}'>
                   Beispiel
+               </button>
+               <button class="preset-button" @click='${() => this.showPreset('If/Else')}'>
+                  If/Else
+               </button>
+               <button class="preset-button" @click='${() => this.showPreset('For-Schleife')}'>
+                  For-Schleife
                </button>
          </div>
 
@@ -259,6 +265,7 @@ export class PAPWidget extends LitElementWw {
    private grabCanvas(){
       this.isGrabbing = grabCanvas(this, this.isGrabbing);
       console.log("GraphNode: ", this.graphElements);
+      console.log(this.helpList);
    }
 
    // ------------------------ Drawer Funktionen ------------------------
@@ -555,6 +562,14 @@ export class PAPWidget extends LitElementWw {
       this.canvas.height = window.innerHeight;
       this.ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D;
       this.updateCanvasOffset(); // Offset aktualisieren
+
+      // Fügen Sie standardmäßige Hilfeinformationen hinzu
+      defaultHelpItems.forEach((item) => {
+         this.helpList.push(item);
+         addHelp(this, this.helpList);
+      });
+      console.log(defaultHelpItems);
+      console.log(this.helpList);
    }
 
    connectedCallback() {

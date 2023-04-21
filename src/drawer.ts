@@ -448,11 +448,13 @@ export function drawGraphElement(ctx: CanvasRenderingContext2D, element: GraphNo
    }
 
    // Fügt den schwarzen Umriss hinzu
-   ctx.strokeStyle = 'black';
-   ctx.setLineDash([]);
-   ctx.lineWidth = 2;
-   ctx.stroke();
-
+   if (element.node !== 'text') {
+      ctx.strokeStyle = 'black';
+      ctx.setLineDash([]);
+      ctx.lineWidth = 2;
+      ctx.stroke();
+   }
+   
    // Text zum Element hinzufügen
    ctx.fillStyle = 'black';
    ctx.textAlign = 'center'
@@ -463,12 +465,13 @@ export function drawGraphElement(ctx: CanvasRenderingContext2D, element: GraphNo
 
 
    // Hervorhebung eines ausgewählten Knoten
-   // if (selectedElement === element) {
-   //    ctx.strokeStyle = '#87cefa';
-   //    ctx.setLineDash([5, 10]);
-   //    ctx.lineWidth = 2;
-   //    ctx.strokeRect(x, y, width, height);
-   // }
+   if (selectedElement === element && selectedElement.node === 'text') {
+      ctx.strokeStyle = '#87cefa';
+      ctx.setLineDash([5, 10]);
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x, y, width, height);
+   }
+
 }
 
 export function drawElementAnchors(ctx: CanvasRenderingContext2D, element: GraphNodeData,  hoveredAnchor: { element: GraphNodeData; anchor: number } | undefined, d: number = 20) {

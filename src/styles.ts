@@ -348,10 +348,13 @@ export const papWidgetStyles = css`
       background-color: var(--button-color);
       color: white;
       border: none;
+      width: 100%;
       border-radius: var(--border-r);
       font-family: 'Arial';
       font-size: 16px;
       padding: 10px;
+      margin-bottom: 10px;
+      margin-top: 5px;
       transition: background-color 0.3s;
    }
 
