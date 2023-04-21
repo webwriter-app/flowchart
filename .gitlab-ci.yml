@@ -7,7 +7,7 @@ deploy:
     name: pap-widget
     url: https://flowchart-lu.netlify.app
   only:
-    - master
+    - main
   script:
     - npm i
     # your build command
