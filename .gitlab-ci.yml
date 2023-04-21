@@ -3,6 +3,7 @@ stages:
 
 deploy:
   stage: deploy
+  image: node:latest
   environment:
     name: pap-widget
     url: https://flowchart-lu.netlify.app
