@@ -1,8 +1,8 @@
-import { ItemList } from "./definitions";
-
 /*
 *   Hier finden sich die Funktionen für die Benutzeroberfläche 
 */
+
+import { ItemList } from "./definitions";
 
 // Zeige oder verstecke die angefragten Benutzeroberflächen 
 export function toggleMenu(element: HTMLElement, menu: 'task' | 'flow' | 'context' | 'preset' | 'help') {
@@ -57,7 +57,7 @@ export function toggleMenu(element: HTMLElement, menu: 'task' | 'flow' | 'contex
    }
  }
  
-
+// Füge eine Aufgabe hinzu
 export function addTask(element: HTMLElement, taskList: ItemList[]) {
    const taskContainer = element.shadowRoot.querySelector('.task-container');
    
@@ -98,6 +98,7 @@ export function addTask(element: HTMLElement, taskList: ItemList[]) {
    taskList.push({ titel: '', content: '' });
 }
 
+// Deaktiviere die Input Möglichkeit falls editable deaktiviert ist
 export function updateDisabledState(element: HTMLElement, editable: boolean | undefined) {
    const taskContainers = element.shadowRoot.querySelectorAll('.task-container');
    taskContainers.forEach((taskContainer) => {
@@ -136,7 +137,7 @@ export function updateDisabledState(element: HTMLElement, editable: boolean | un
    });
 }
 
-
+// Füge eine Hilfskarte hinzu
 export function addHelp(element: HTMLElement, helpList: ItemList[]) {
    const helpContainer = element.shadowRoot.querySelector('.help-container');
    
@@ -177,6 +178,7 @@ export function addHelp(element: HTMLElement, helpList: ItemList[]) {
      helpContent.classList.toggle('hidden');
    };
 
+   // Speichere ggf. die Default Werte
    helpTitle.value = helpList[helpList.length - 1].titel;
    showHelp.textContent = helpList[helpList.length - 1].titel;
    helpContent.value = helpList[helpList.length - 1].content;
@@ -188,8 +190,9 @@ export function addHelp(element: HTMLElement, helpList: ItemList[]) {
  
    helpContainer.appendChild(helpWrapper);
    helpList.push({ titel: '', content: '' });
- }
+}
 
+// Erlaubt das draggen von Canvas
 export function grabCanvas(element: HTMLElement, isGrabbing: boolean): boolean {
    const grabButton = element.shadowRoot.getElementById('grab-button');
    !isGrabbing ? grabButton?.classList.add('active') : grabButton?.classList.remove('active');

@@ -66,8 +66,8 @@ export const flowchartPresets: { name: string, graphElements: GraphNodeData[] } 
             y: 316.5,
             connections: [
                { anchor: 0, direction: "from", connectedToId: "04893012-47f7-4e75-93b9-cbe58910e18a" },
-               { anchor: 2, direction: "to", connectedToId: "9e067393-c167-4157-8104-10cfa4b2a8de" },
-               { anchor: 2, direction: "to", connectedToId: "43375730-48f0-4e07-8ba9-686672b8cb26" },
+               { anchor: 2, direction: "to", connectedToId: "9e067393-c167-4157-8104-10cfa4b2a8de", text: 'Ja' },
+               { anchor: 2, direction: "to", connectedToId: "43375730-48f0-4e07-8ba9-686672b8cb26", text: 'Nein' },
             ],
          },
          {
@@ -133,8 +133,8 @@ export const flowchartPresets: { name: string, graphElements: GraphNodeData[] } 
             y: 603.5,
             connections: [
                { anchor: 0, direction: "from", connectedToId: "812ce303-a1a3-46e1-84b4-ff2cdc5c819a" },
-               { anchor: 3, direction: "to", connectedToId: "68e5723f-1985-4d87-ac52-0230430c7d49" },
-               { anchor: 1, direction: "to", connectedToId: "9533930b-1a71-4e14-a207-24e6b356a595" }
+               { anchor: 3, direction: "to", connectedToId: "68e5723f-1985-4d87-ac52-0230430c7d49", text: 'Ja' },
+               { anchor: 1, direction: "to", connectedToId: "9533930b-1a71-4e14-a207-24e6b356a595", text: 'Nein' }
             ],
          },
          {
@@ -149,34 +149,6 @@ export const flowchartPresets: { name: string, graphElements: GraphNodeData[] } 
                { anchor: 2, direction: "to", connectedToId: "9775752f-d69b-4fd2-9232-6bc4c377bd92" }
             ],
          },
-         {
-            id: "81862008-cf17-43d2-8864-6d39f5e0e457",
-            node: "text",
-            text: "Ja",
-            x: 669,
-            y: 355.5,
-         },
-         {
-            id: "957feea9-a33f-4126-86cc-d7f88bdeb7fc",
-            node: "text",
-            text: "Nein",
-            x: 898,
-            y: 353.5,
-         },
-         {
-            id: "25fcf5bb-c4d9-4973-830f-4ad4d4fcf62c",
-            node: "text",
-            text: "Ja",
-            x: 642,
-            y: 586.5,
-         },
-         {
-            id: "6088b976-51fb-41e5-a0ec-8cb072963498",
-            node: "text",
-            text: "Nein",
-            x: 930,
-            y: 583.5,
-         },
       ]
    },
    {
@@ -186,7 +158,7 @@ export const flowchartPresets: { name: string, graphElements: GraphNodeData[] } 
             id: '667f8666-a3d0-4fdb-a9ee-61b51ec9ff74',
             node: 'op',
             text: 'Sonst ____',
-            x: 944,
+            x: 980,
             y: 284.5,
             connections: [
                { anchor: 3, direction: 'from', connectedToId: 'bcc936b5-66b3-4fe7-85c1-7131cad9f181' }
@@ -203,28 +175,14 @@ export const flowchartPresets: { name: string, graphElements: GraphNodeData[] } 
             ],
          },
          {
-            id: '8096199c-7395-43d3-a3f3-38e32668e856',
-            node: 'text',
-            text: 'Ja',
-            x: 713,
-            y: 358.5,
-         },
-         {
-            id: '22d7f57f-4666-4f00-b613-0c47aadd91ea',
-            node: 'text',
-            text: 'Nein',
-            x: 858,
-            y: 271.5,
-         },
-         {
             id: 'bcc936b5-66b3-4fe7-85c1-7131cad9f181',
             node: 'decision',
             text: ' Gilt ___ ? ',
             x: 695,
             y: 284.5,
             connections: [
-               { anchor: 2, direction: 'to', connectedToId: 'a6175565-44eb-4198-a151-5ca5b8d4ae8c' },
-               { anchor: 1, direction: 'to', connectedToId: '667f8666-a3d0-4fdb-a9ee-61b51ec9ff74' }
+               { anchor: 2, direction: 'to', connectedToId: 'a6175565-44eb-4198-a151-5ca5b8d4ae8c', text: 'Ja' },
+               { anchor: 1, direction: 'to', connectedToId: '667f8666-a3d0-4fdb-a9ee-61b51ec9ff74', text: 'Nein' }
             ],
          },
       ],
@@ -272,8 +230,8 @@ export const flowchartPresets: { name: string, graphElements: GraphNodeData[] } 
             y: 339.5,
             connections: [
                { anchor: 0, direction: "from", connectedToId: "421574d8-e295-4bd8-bbe1-de4b0a6da8a2" },
-               { anchor: 1, direction: "to", connectedToId: "b837b0ca-3e70-44c1-b434-01e34800ccfc" },
-               { anchor: 2, direction: "to", connectedToId: "6fe31b50-fbab-46b8-b0aa-8018a7418e3d" },
+               { anchor: 1, direction: "to", connectedToId: "b837b0ca-3e70-44c1-b434-01e34800ccfc", text: 'falsch' },
+               { anchor: 2, direction: "to", connectedToId: "6fe31b50-fbab-46b8-b0aa-8018a7418e3d", text: 'wahr' },
                { anchor: 3, direction: "from", connectedToId: "8816955c-00e6-4662-85cb-deaf2b8a8e22" },
             ],
          },
@@ -297,20 +255,6 @@ export const flowchartPresets: { name: string, graphElements: GraphNodeData[] } 
                { anchor: 0, direction: "from", connectedToId: "6fe31b50-fbab-46b8-b0aa-8018a7418e3d" },
                { anchor: 2, direction: "to", connectedToId: "8816955c-00e6-4662-85cb-deaf2b8a8e22" }
             ],
-         },
-         {
-            id: "fd354cb2-1bc5-4dfd-ab1f-63ca4746e286",
-            node: "text",
-            text: "wahr",
-            x: 733,
-            y: 385.5,
-         },
-         {
-            id: "55c1a076-f4fa-4126-828b-ef21d7415d0a",
-            node: "text",
-            text: "falsch",
-            x: 890,
-            y: 322.5,
          },
       ]
    },

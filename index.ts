@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { GraphNodeData, Arrow, ItemList } from './src/definitions'
 import { drawButtonElement, drawGraphElement, drawElementAnchors, drawArrow } from './src/drawer'
 import { toggleMenu, addTask, addHelp, updateDisabledState, grabCanvas } from './src/ui'
-import { getAnchors, getArrowInformation, getNearestCircle, highlightAnchor, isArrowClicked, removeOldConnection, findLastGraphElement, findGraphElementLastIndex } from './src/helper'
+import { createArrowsFromGraphElements, updatePresetIds, getAnchors, getArrowInformation, getNearestCircle, highlightAnchor, isArrowClicked, removeOldConnection, findLastGraphElement, findGraphElementLastIndex } from './src/helper'
 
 import { defaultHelpItems, flowchartPresets } from './src/presets'
 
@@ -25,7 +25,7 @@ export class PAPWidget extends LitElementWw {
 
    @property({ type: Array }) presetList: { name: string, graphElements: GraphNodeData[] }[] = flowchartPresets;
 
- 
+
    private canvas: HTMLCanvasElement;
    private ctx: CanvasRenderingContext2D;
 
@@ -160,17 +160,17 @@ export class PAPWidget extends LitElementWw {
       </div>
     `;
    }
- 
+
    // ------------------------ User interface Funktionen ------------------------
 
    // Zeige oder verstecke die angefragten Benutzeroberflächen 
    private toggleMenu(menu: 'task' | 'flow' | 'context' | 'preset' | 'help') {
-      toggleMenu (this, menu);
-    }
+      toggleMenu(this, menu);
+   }
 
-    // Zeige das Kontextmenü an, wenn ein Element angeklickt wurde
+   // Zeige das Kontextmenü an, wenn ein Element angeklickt wurde
    private showContextMenu(event: MouseEvent) {
-      const {x, y} = this.getMouseCoordinates(event);
+      const { x, y } = this.getMouseCoordinates(event);
 
       // Finde den angeklickten Knoten oder Verbindung und speichere sie
       const clickedElement = findLastGraphElement(this.ctx, this.graphElements, x, y);
@@ -195,7 +195,7 @@ export class PAPWidget extends LitElementWw {
       }
    }
 
-    private addTask() {
+   private addTask() {
       addTask(this, this.taskList);
    }
 
@@ -207,65 +207,21 @@ export class PAPWidget extends LitElementWw {
       const preset = this.presetList.find((p) => p.name === presetName);
 
       if (preset) {
-        const updatedPreset = this.updatePresetIds(preset.graphElements);
+         const updatedPreset = updatePresetIds(preset.graphElements);
 
          this.graphElements = [...this.graphElements, ...updatedPreset];
-         this.createArrowsFromGraphElements();
+         this.arrows = createArrowsFromGraphElements(this.arrows, this.graphElements);
          this.redrawCanvas();
       } else {
          console.error(`Preset "${presetName}" nicht gefunden`);
       }
    }
 
-   private createArrowsFromGraphElements() {
-      this.arrows = [];
-    
-      this.graphElements.forEach((fromElement) => {
-        if (fromElement.connections) {
-          fromElement.connections.forEach((connection) => {
-            const toElement = this.graphElements.find((element) => element.id === connection.connectedToId);
-            
-            if (toElement && connection.direction === 'to') {
-              this.arrows.push({
-                from: fromElement,
-                to: toElement,
-                isSelected: false,
-                points: [] // Initialisiere points als leeres Array, wird später in drawArrow aktualisiert
-              });
-            }
-          });
-        }
-      });
-    }
-
-    private updatePresetIds(preset: GraphNodeData[]): GraphNodeData[] {
-      // Erstelle eine Zuordnung zwischen alten und neuen IDs
-      const idMap = new Map<string, string>();
-      preset.forEach((element) => {
-        idMap.set(element.id, uuidv4());
-      });
-    
-      // Aktualisiere die IDs der Elemente und ihrer Verbindungen
-      const updatedPreset = preset.map((element) => {
-        const newElement = { ...element, id: idMap.get(element.id) };
-    
-        if (newElement.connections) {
-          newElement.connections = newElement.connections.map((connection) => {
-            return { ...connection, connectedToId: idMap.get(connection.connectedToId) };
-          });
-        }
-    
-        return newElement;
-      });
-    
-      return updatedPreset;
-    }
-
    // Aktiviere Bewegungsmodus für das Canvas
-   private grabCanvas(){
+   private grabCanvas() {
       this.isGrabbing = grabCanvas(this, this.isGrabbing);
       console.log("GraphNode: ", this.graphElements);
-      console.log(this.helpList);
+      console.log("Arrows: ", this.arrows);
    }
 
    // ------------------------ Drawer Funktionen ------------------------
@@ -283,7 +239,7 @@ export class PAPWidget extends LitElementWw {
       this.arrows.forEach((arrow) => {
          const fromCoordination = getArrowInformation(this.ctx, arrow.from, arrow.to);
          const toCoordination = getArrowInformation(this.ctx, arrow.to, arrow.from);
-         const updatedArrowPoints = drawArrow(this.ctx, fromCoordination, toCoordination, arrow.isSelected, this.hoveredArrowAnchor, true);
+         const updatedArrowPoints = drawArrow(this.ctx, fromCoordination, toCoordination, arrow.isSelected, this.hoveredArrowAnchor, true, arrow.text);
          arrow.points = updatedArrowPoints;
          if (this.selectedArrow === arrow) {
             arrow.isSelected = true;
@@ -314,19 +270,19 @@ export class PAPWidget extends LitElementWw {
          node: node,
          text: text,
          x: centerX,
-         y: centerY 
+         y: centerY
       };
 
       this.graphElements = [...this.graphElements, element];
       drawGraphElement(this.ctx, element, this.selectedElement);
    }
 
-   
+
 
    // ------------------------ Mouse-Events ------------------------
 
    private handleMouseDown(event: MouseEvent) {
-      const {x, y} = this.getMouseCoordinates(event);
+      const { x, y } = this.getMouseCoordinates(event);
 
       if (this.isGrabbing) {
          this.grabStartPosition = { x, y };
@@ -335,7 +291,7 @@ export class PAPWidget extends LitElementWw {
          this.grabStartOffset = { x: offsetX, y: offsetY };
       } else {
          this.draggedElement = findLastGraphElement(this.ctx, this.graphElements, x, y);
-         
+
          if (this.draggedElement && !this.selectedArrow) {
             this.isDragging = true;
             this.dragOffset = { x: x - this.draggedElement.x, y: y - this.draggedElement.y };
@@ -384,9 +340,9 @@ export class PAPWidget extends LitElementWw {
       } else {
          if (this.isDragging) {
             // Element loslassen nach dem ziehen
-            this.isDragging = false; 
+            this.isDragging = false;
          } else if (this.isDrawingArrow) {
-            const {x, y} = this.getMouseCoordinates(event);
+            const { x, y } = this.getMouseCoordinates(event);
 
             const targetElement = findLastGraphElement(this.ctx, this.graphElements, x, y);
 
@@ -427,43 +383,43 @@ export class PAPWidget extends LitElementWw {
    private handleMouseMove(event: MouseEvent) {
       const { x, y } = this.getMouseCoordinates(event);
       if (this.isGrabbing && this.grabStartPosition && this.grabStartOffset) {
-      const deltaX = x - this.grabStartPosition.x;
-      const deltaY = y - this.grabStartPosition.y;
+         const deltaX = x - this.grabStartPosition.x;
+         const deltaY = y - this.grabStartPosition.y;
 
-      // Aktualisiere die Koordinaten der Knoten und Verbindungen
-      this.graphElements.forEach(element => {
-         element.x += deltaX;
-         element.y += deltaY;
-      });
-      this.arrows.forEach(arrow => {
-         if (arrow.points) {
-            arrow.points.forEach(point => {
-               point.x += deltaX;
-               point.y += deltaY;
-            });
-         }
-      });
+         // Aktualisiere die Koordinaten der Knoten und Verbindungen
+         this.graphElements.forEach(element => {
+            element.x += deltaX;
+            element.y += deltaY;
+         });
+         this.arrows.forEach(arrow => {
+            if (arrow.points) {
+               arrow.points.forEach(point => {
+                  point.x += deltaX;
+                  point.y += deltaY;
+               });
+            }
+         });
 
-      // Aktualisiere das Canvas anhand der Mausbewegung
-      const offsetX = parseFloat(this.style.getPropertyValue('--offset-x'));
-      const offsetY = parseFloat(this.style.getPropertyValue('--offset-y'));
-      this.style.setProperty('--offset-x', `${offsetX + deltaX}px`);
-      this.style.setProperty('--offset-y', `${offsetY + deltaY}px`);
+         // Aktualisiere das Canvas anhand der Mausbewegung
+         const offsetX = parseFloat(this.style.getPropertyValue('--offset-x'));
+         const offsetY = parseFloat(this.style.getPropertyValue('--offset-y'));
+         this.style.setProperty('--offset-x', `${offsetX + deltaX}px`);
+         this.style.setProperty('--offset-y', `${offsetY + deltaY}px`);
 
-      // Zeichne das aktualisierte Canvas
-      this.redrawCanvas();
+         // Zeichne das aktualisierte Canvas
+         this.redrawCanvas();
 
-      // Aktualisiere die grabStartPosition auf die aktuelle Mausposition
-      this.grabStartPosition = { x, y };
+         // Aktualisiere die grabStartPosition auf die aktuelle Mausposition
+         this.grabStartPosition = { x, y };
       } else {
          if (this.isDragging && this.draggedElement) {
-      
+
             this.draggedElement.x = x - this.dragOffset.x;
             this.draggedElement.y = y - this.dragOffset.y;
 
             this.redrawCanvas();
          } else if (this.isDrawingArrow && this.arrowStart && (this.selectedElement || this.selectedArrow)) {
-            const {x, y} = this.getMouseCoordinates(event);
+            const { x, y } = this.getMouseCoordinates(event);
 
             this.tempArrowEnd = { x, y };
 
@@ -472,14 +428,14 @@ export class PAPWidget extends LitElementWw {
       }
 
       // Highlighte den Ankerpunkt, falls der Benutzer über diesen kommt
-      const { hoveredAnchor, hoveredArrowAnchor } = highlightAnchor( this.ctx, this.selectedElement, this.selectedArrow, x, y );
+      const { hoveredAnchor, hoveredArrowAnchor } = highlightAnchor(this.ctx, this.selectedElement, this.selectedArrow, x, y);
       this.hoveredAnchor = hoveredAnchor;
       this.hoveredArrowAnchor = hoveredArrowAnchor;
       this.redrawCanvas();
    }
 
    private handleClick(event: MouseEvent) {
-      const {x, y} = this.getMouseCoordinates(event);
+      const { x, y } = this.getMouseCoordinates(event);
 
       // Setze das angeklickte Element, oder entferne die Auswahl, wenn kein Element angeklickt wurde
       this.selectedElement = findLastGraphElement(this.ctx, this.graphElements, x, y);
@@ -513,14 +469,14 @@ export class PAPWidget extends LitElementWw {
    }
 
    private handleDoubleClick(event: MouseEvent) {
-      const {x, y} = this.getMouseCoordinates(event);
+      const { x, y } = this.getMouseCoordinates(event);
 
       // Ermittle, ob das Doppelklick-Event auf einem der Rechtecke stattgefunden hat
       const clickedElementIndex = findGraphElementLastIndex(this.ctx, this.graphElements, x, y);
 
       if (clickedElementIndex !== -1 && this.graphElements[clickedElementIndex].node !== 'connector') {
-         // Fordere den Benutzer auf, neuen Text einzugeben
-         const newText = prompt('Bitte geben Sie den neuen Text ein:');
+         // Fordere den Benutzer auf, einen neuen Text einzugeben
+         const newText = prompt('Bitte geben einen neuen Text ein:');
 
          if (newText !== null) {
             // Ersetze den Text des Elements
@@ -528,6 +484,23 @@ export class PAPWidget extends LitElementWw {
 
             // Zeichne das Canvas neu, um die Änderungen anzuzeigen
             this.redrawCanvas();
+         }
+      } 
+
+      const selectedArrowIndex = this.arrows.findIndex((arrow) => isArrowClicked(x, y, arrow.points));
+      if (selectedArrowIndex !== -1) {
+         this.selectedArrow = this.arrows[selectedArrowIndex];
+
+         // Fordere den Benutzer auf, einen neuen Text für den Pfeil einzugeben
+         const newText = prompt('Bitte gebe einen  neuen Text für den Pfeil ein:');
+     
+         if (newText !== null) {
+           // Ersetze den Text des Pfeils
+           this.selectedArrow.text = newText;
+           this.arrows.splice(selectedArrowIndex, 1);
+           this.arrows.push(this.selectedArrow);
+
+           this.redrawCanvas();
          }
       }
    }
@@ -541,10 +514,10 @@ export class PAPWidget extends LitElementWw {
    private updateAnchorListeners() {
       if (this.selectedElement && this.selectedElement.node !== 'text') {
          const anchors = getAnchors(this.ctx, this.selectedElement, 15);
-   
+
          anchors.forEach((position, index) => {
             this.canvas?.addEventListener('mousedown', (event) => {
-               const {x, y} = this.getMouseCoordinates(event);
+               const { x, y } = this.getMouseCoordinates(event);
                const distance = Math.sqrt((position.x - x) ** 2 + (position.y - y) ** 2);
                if (distance <= 8) {
                   this.handleAnchorClick(event, this.selectedElement, index);
@@ -584,9 +557,9 @@ export class PAPWidget extends LitElementWw {
 
    updated(changedProperties: Map<string, any>) {
       if (changedProperties.has('editable')) {
-        updateDisabledState(this, this.editable);
+         updateDisabledState(this, this.editable);
       }
-    }
+   }
 
    // ------------------------ Allgemeine Systemfunktionen ------------------------
 
@@ -643,7 +616,7 @@ export class PAPWidget extends LitElementWw {
       const offsetY = this.canvas.getBoundingClientRect().top;
       const x = event.clientX - offsetX;
       const y = event.clientY - offsetY;
-      return {x, y};
+      return { x, y };
    }
 
    private handleScroll(event: Event) {

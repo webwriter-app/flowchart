@@ -6,13 +6,14 @@ export interface GraphNodeData {
    text: string;
    x: number;
    y: number;
-   connections?: { anchor: number; direction: string, connectedToId: string }[];
+   connections?: { anchor: number; direction: string, connectedToId: string, text?: string }[];
 }
 
 export interface Arrow {
    from: GraphNodeData;
    to: GraphNodeData;
    points?: { x: number; y: number }[];
+   text?: string;
    isSelected?: boolean;
 }
 

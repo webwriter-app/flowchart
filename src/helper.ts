@@ -1,8 +1,60 @@
-import { GraphNodeData, Arrow } from "./definitions";
-
 /*
-*   Hilfsfunktionen 
+*   Allerlei Hilfsfunktionen 
 */
+
+import { GraphNodeData, Arrow } from "./definitions";
+import { v4 as uuidv4 } from 'uuid';
+
+// -------------------- Preset - Hilfsfunktionen --------------------
+
+// Erzeuge die Verbindungen anhand der gegebenen Knoten 
+export function createArrowsFromGraphElements(arrows: Arrow[], graphElements: GraphNodeData[]): Arrow[] {
+   arrows = [];
+
+   graphElements.forEach((fromElement) => {
+      if (fromElement.connections) {
+         fromElement.connections.forEach((connection) => {
+            const toElement = graphElements.find((element) => element.id === connection.connectedToId);
+
+            if (toElement && connection.direction === 'to') {
+               arrows.push({
+                  from: fromElement,
+                  to: toElement,
+                  points: [], // Initialisiere points als leeres Array, wird später in drawArrow aktualisiert
+                  text: connection.text,
+                  isSelected: false,
+               });
+            }
+         });
+      }
+   });
+
+   return arrows;
+}
+
+// Update die ID der Knoten von Preset
+export function updatePresetIds(preset: GraphNodeData[]): GraphNodeData[] {
+   // Erstelle eine Zuordnung zwischen alten und neuen IDs
+   const idMap = new Map<string, string>();
+   preset.forEach((element) => {
+      idMap.set(element.id, uuidv4());
+   });
+
+   // Aktualisiere die IDs der Elemente und ihrer Verbindungen
+   const updatedPreset = preset.map((element) => {
+      const newElement = { ...element, id: idMap.get(element.id) };
+
+      if (newElement.connections) {
+         newElement.connections = newElement.connections.map((connection) => {
+            return { ...connection, connectedToId: idMap.get(connection.connectedToId) };
+         });
+      }
+
+      return newElement;
+   });
+
+   return updatedPreset;
+}
 
 // -------------------- Pfeile / Verbindungen --------------------
 

@@ -190,7 +190,7 @@ export function drawButtonElement(element: string, menu: 'flow' | 'tool' | 'task
       // Tool Menü    
       case 'grab':
          const scaleGrab = 0.05;
-         const grabX = 100;
+         const grabX = 115;
          const grabY = 45;
 
          const hand = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -205,8 +205,8 @@ export function drawButtonElement(element: string, menu: 'flow' | 'tool' | 'task
          break;
 
       case 'delete':
-         const scaleDelete = 0.75;
-         const deleteX = 5;
+         const scaleDelete = 0.74;
+         const deleteX = 7;
          const deleteY = 1;
 
          const bin = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -454,7 +454,7 @@ export function drawGraphElement(ctx: CanvasRenderingContext2D, element: GraphNo
       ctx.lineWidth = 2;
       ctx.stroke();
    }
-   
+
    // Text zum Element hinzufügen
    ctx.fillStyle = 'black';
    ctx.textAlign = 'center'
@@ -528,7 +528,7 @@ function drawArrowHead(ctx: CanvasRenderingContext2D, x: number, y: number, angl
 // -------------------- Pfeile / Verbindungen --------------------
 
 // Zeichnet die Verbindungspfeile zwischen den Elementen
-export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: number; anchor?: number }, to: { x: number; y: number; anchor?: number }, isSelected: boolean = false, hoveredArrowAnchor: boolean = false, returnPoints = false) {
+export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: number; anchor?: number }, to: { x: number; y: number; anchor?: number }, isSelected: boolean = false, hoveredArrowAnchor: boolean = false, returnPoints = false, text?: string) {
 
    const headLength = 7;
    const padding = 15; // Raum zwischen Elementen und Pfeil
@@ -801,18 +801,42 @@ export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: n
    ctx.fill();
    ctx.closePath();
 
-
    // Zeichne Ankerpunkte des Pfeils, wenn dieser angeklickt wurde
    if (isSelected) {
       // drawAnchorArrow(ctx, from.anchor, points[0].x, points[0].y); // Anfangspunkt nötig? Dafür benötigt man noch eine reverse drawArrow Function
       drawArrowAnchor(ctx, to.anchor, points[points.length - 1].x, points[points.length - 1].y, hoveredArrowAnchor);
    }
+
+    // Füge den Text hinzu, falls dieser vorhanden ist
+    if (text) {
+      addArrowText(ctx, points, text);
+    }
    
    // Gib die Eckpunkte des Pfeils zum abspeichern zurück, falls returnPoints auf true gesetzt wurde
    if (returnPoints) {
       return points;
    }
+  
 }
+
+export function addArrowText(ctx: CanvasRenderingContext2D, points: { x: number; y: number }[], text: string) {
+   const midPointIndex = Math.floor(points.length / 2);
+   const midPoint = {
+     x: (points[midPointIndex].x + points[midPointIndex + 1].x) / 2,
+     y: (points[midPointIndex].y + points[midPointIndex + 1].y) / 2,
+   };
+ 
+   ctx.save();
+   ctx.font = 'bold 16px Courier New';
+   ctx.textAlign = 'center';
+   ctx.textBaseline = 'middle';
+   ctx.translate(midPoint.x, midPoint.y);
+   ctx.fillStyle = 'white';
+   ctx.fillRect(-ctx.measureText(text).width / 2 - 4, -8, ctx.measureText(text).width + 8, 16);
+   ctx.fillStyle = 'black';
+   ctx.fillText(text, 0, 0);
+   ctx.restore();
+ }
 
 // Zeichne die Ankerpunkte einer Verbindung
 function drawArrowAnchor(ctx: CanvasRenderingContext2D, anchor: number, x: number, y: number, hoveredArrowAnchor: boolean) {
