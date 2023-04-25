@@ -1,4 +1,4 @@
-import { GraphNodeData } from './definitions';
+import { GraphNode } from './definitions';
 import { measureTextSize, getAnchors } from './helper';
 
 /*
@@ -184,7 +184,7 @@ export function drawButtonElement(element: string, menu: 'flow' | 'tool' | 'task
          break;
 
       case 'text':
-         text.textContent = 'Text';
+         text.textContent = 'Kommentar';
          break;
 
       // Tool Menü    
@@ -202,6 +202,22 @@ export function drawButtonElement(element: string, menu: 'flow' | 'tool' | 'task
             transform: `scale(${scaleGrab}) translate(${grabX} ${grabY})`
          });
          svg.appendChild(hand);
+         break;
+
+      case 'select':
+         const scaleSelect = 0.05;
+         const selectX = 280;
+         const selectY = 45;
+
+         const select = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+         setAttributeList(select, {
+            d: 'M318.4 304.5c-3.531 9.344-12.47 15.52-22.45 15.52h-105l45.15 94.82c9.496 19.94 1.031 43.8-18.91 53.31c-19.95 9.504-43.82 1.035-53.32-18.91L117.3 351.3l-75 88.25c-4.641 5.469-11.37 8.453-18.28 8.453c-2.781 0-5.578-.4844-8.281-1.469C6.281 443.1 0 434.1 0 423.1V56.02c0-9.438 5.531-18.03 14.12-21.91C22.75 30.26 32.83 31.77 39.87 37.99l271.1 240C319.4 284.6 321.1 295.1 318.4 304.5z',
+            fill: 'white',
+            stroke: 'white',
+            'stroke-width': '0.1',
+            transform: `scale(${scaleSelect}) translate(${selectX} ${selectY})`
+         });
+         svg.appendChild(select);
          break;
 
       case 'delete':
@@ -355,7 +371,7 @@ export function drawButtonElement(element: string, menu: 'flow' | 'tool' | 'task
 // -------------------- Knoten / Elemente --------------------
 
 // Zeichnet den passenden Knoten und seine Ankerpunkte 
-export function drawGraphElement(ctx: CanvasRenderingContext2D, element: GraphNodeData, selectedElement: GraphNodeData) {
+export function drawGraphNode(ctx: CanvasRenderingContext2D, element: GraphNode, selectedElement: GraphNode, selectedSequence: { id: string; order: number; type: string}[]) {
 
    // Setze die Schriftart des Textes, dies muss vorher gesetzt werden, damit die größe des Textes richtig berechnet werden kann.
    ctx.font = 'bold 16px Courier New';
@@ -472,9 +488,27 @@ export function drawGraphElement(ctx: CanvasRenderingContext2D, element: GraphNo
       ctx.strokeRect(x, y, width, height);
    }
 
+   //Hervorhebung der ausgewählten Sequenz und Anzeige des Counters
+   const sequenceIndex = selectedSequence.findIndex((item) => item.id === element.id && item.type === 'node');
+   if (sequenceIndex !== -1) {
+      ctx.save();
+      ctx.strokeStyle = 'gold';
+      ctx.lineWidth = 4;
+      ctx.stroke();
+
+      ctx.fillStyle = 'gold';
+      ctx.font = 'bold 16px Arial';
+      ctx.fillText(
+         selectedSequence[sequenceIndex].order.toString(),
+         x + width + 8,
+         y - 5
+      );
+      ctx.restore();
+   }
+
 }
 
-export function drawElementAnchors(ctx: CanvasRenderingContext2D, element: GraphNodeData,  hoveredAnchor: { element: GraphNodeData; anchor: number } | undefined, d: number = 20) {
+export function drawNodeAnchors(ctx: CanvasRenderingContext2D, element: GraphNode,  hoveredAnchor: { element: GraphNode; anchor: number } | undefined, d: number = 20) {
    if (element.node !== 'text') {
       //ctx.fillStyle = '#87cefa'; 
       ctx.fillStyle = '#5CACEE';
@@ -528,7 +562,7 @@ function drawArrowHead(ctx: CanvasRenderingContext2D, x: number, y: number, angl
 // -------------------- Pfeile / Verbindungen --------------------
 
 // Zeichnet die Verbindungspfeile zwischen den Elementen
-export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: number; anchor?: number }, to: { x: number; y: number; anchor?: number }, isSelected: boolean = false, hoveredArrowAnchor: boolean = false, returnPoints = false, text?: string) {
+export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: number; anchor?: number }, to: { x: number; y: number; anchor?: number }, selectedSequence?: { id: string; order: number; type: string}[], isSelected: boolean = false, hoveredArrowAnchor: boolean = false, returnPoints = false, text?: string) {
 
    const headLength = 7;
    const padding = 15; // Raum zwischen Elementen und Pfeil
@@ -811,6 +845,24 @@ export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: n
     if (text) {
       addArrowText(ctx, points, text);
     }
+
+   //Hervorhebung der ausgewählten Sequenz und Anzeige des Counters
+   // const sequenceIndex = selectedSequence.findIndex((item) => item.type === 'node');
+   // if (sequenceIndex !== -1) {
+   //    ctx.save();
+   //    ctx.strokeStyle = 'gold';
+   //    ctx.lineWidth = 4;
+   //    ctx.stroke();
+
+   //    ctx.fillStyle = 'gold';
+   //    ctx.font = 'bold 16px Arial';
+   //    ctx.fillText(
+   //       selectedSequence[sequenceIndex].order.toString(),
+   //       x + width + 8,
+   //       y - 5
+   //    );
+   //    ctx.restore();
+   //}
    
    // Gib die Eckpunkte des Pfeils zum abspeichern zurück, falls returnPoints auf true gesetzt wurde
    if (returnPoints) {
@@ -819,8 +871,8 @@ export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: n
   
 }
 
-export function addArrowText(ctx: CanvasRenderingContext2D, points: { x: number; y: number }[], text: string) {
-   const midPointIndex = Math.floor(points.length / 2);
+function addArrowText(ctx: CanvasRenderingContext2D, points: { x: number; y: number }[], text: string) {
+   const midPointIndex = Math.floor(points.length / 2 - 0.5);
    const midPoint = {
      x: (points[midPointIndex].x + points[midPointIndex + 1].x) / 2,
      y: (points[midPointIndex].y + points[midPointIndex + 1].y) / 2,

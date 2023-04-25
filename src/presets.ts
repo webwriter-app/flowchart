@@ -7,7 +7,7 @@
  * 
  */
 
-import { GraphNodeData, ItemList } from "./definitions";
+import { GraphNode, ItemList } from "./definitions";
 
  
 export const defaultHelpItems: ItemList[] = [
@@ -22,10 +22,10 @@ export const defaultHelpItems: ItemList[] = [
 ];
 
 // Presets von verschiedenen PAP-Sequenzen die erzeugt werden können
-export const flowchartPresets: { name: string, graphElements: GraphNodeData[] } [] = [
+export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
    {
       name: 'Beispiel',
-      graphElements: [
+      graphNodes: [
          {
             id: "0ac439b0-7b5e-4648-989d-61712e63ee57",
             node: "start",
@@ -153,7 +153,7 @@ export const flowchartPresets: { name: string, graphElements: GraphNodeData[] } 
    },
    {
       name: 'If/Else',
-      graphElements: [
+      graphNodes: [
          {
             id: '667f8666-a3d0-4fdb-a9ee-61b51ec9ff74',
             node: 'op',
@@ -189,7 +189,7 @@ export const flowchartPresets: { name: string, graphElements: GraphNodeData[] } 
    },
    {
       name: "For-Schleife",
-      graphElements: [
+      graphNodes: [
          {
             id: "421574d8-e295-4bd8-bbe1-de4b0a6da8a2",
             node: "op",

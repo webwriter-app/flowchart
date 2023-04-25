@@ -3,10 +3,11 @@ import { html, css } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { v4 as uuidv4 } from 'uuid';
 
-import { GraphNodeData, Arrow, ItemList } from './src/definitions'
-import { drawButtonElement, drawGraphElement, drawElementAnchors, drawArrow } from './src/drawer'
+import { GraphNode, Arrow, ItemList } from './src/definitions'
+import { drawButtonElement, drawGraphNode, drawNodeAnchors, drawArrow } from './src/drawer'
 import { toggleMenu, addTask, addHelp, updateDisabledState, grabCanvas } from './src/ui'
-import { createArrowsFromGraphElements, updatePresetIds, getAnchors, getArrowInformation, getNearestCircle, highlightAnchor, isArrowClicked, removeOldConnection, findLastGraphElement, findGraphElementLastIndex } from './src/helper'
+import { createArrowsFromGraphNodes, updatePresetIds, getAnchors, getArrowInformation, getNearestCircle, highlightAnchor, isArrowClicked, removeOldConnection, findLastGraphNode, findGraphNodeLastIndex } from './src/helper'
+import { handleSequenceSelection } from './src/handler';
 
 import { defaultHelpItems, flowchartPresets } from './src/presets'
 
@@ -15,34 +16,37 @@ import { papWidgetStyles } from './src/styles'
 
 @customElement('pap-widget')
 export class PAPWidget extends LitElementWw {
-   @property({ type: Array }) graphElements: GraphNodeData[] = [];
-   @property({ type: Object }) selectedElement?: GraphNodeData;
+   @property({ type: Array }) graphNodes: GraphNode[] = [];
+   @property({ type: Object }) selectedNode?: GraphNode;
    @property({ type: Array }) arrows: Arrow[] = [];
    @property({ type: Object }) selectedArrow?: Arrow;
 
    @property({ type: Array }) taskList: ItemList[] = [];
    @property({ type: Array }) helpList: ItemList[] = [];
 
-   @property({ type: Array }) presetList: { name: string, graphElements: GraphNodeData[] }[] = flowchartPresets;
+   @property({ type: Array }) presetList: { name: string, graphNodes: GraphNode[] }[] = flowchartPresets;
 
 
    private canvas: HTMLCanvasElement;
    private ctx: CanvasRenderingContext2D;
 
    private isDragging = false;
-   private draggedElement: GraphNodeData;
+   private draggedNode: GraphNode;
    private dragOffset = { x: 0, y: 0 };
 
    private isDrawingArrow = false;
-   private arrowStart?: { element: GraphNodeData; anchor: number };
+   private arrowStart?: { node: GraphNode; anchor: number };
    private tempArrowEnd?: { x: number; y: number };
 
    private isGrabbing = false;
    private grabStartPosition?: { x: number; y: number };
    private grabStartOffset?: { x: number; y: number };
 
-   private hoveredAnchor?: { element: GraphNodeData; anchor: number };
+   private hoveredAnchor?: { element: GraphNode; anchor: number };
    private hoveredArrowAnchor: boolean;
+
+   private isSelectingSequence = false;
+   private selectedSequence: { id: string; order: number; type: string}[] = [];
 
    static styles = papWidgetStyles;
 
@@ -65,28 +69,28 @@ export class PAPWidget extends LitElementWw {
             <button class="close-button" @click='${() => this.toggleMenu('flow')}'>
                ×
             </button>
-            <button @click='${() => this.addGraphElement('start', 'Start')}'>
+            <button @click='${() => this.addGraphNode('start', 'Start')}'>
                ${drawButtonElement('start', 'flow')}
             </button>
-            <button @click='${() => this.addGraphElement('op', 'Operation')}'>
+            <button @click='${() => this.addGraphNode('op', 'Operation')}'>
                ${drawButtonElement('op', 'flow')}
             </button>
-            <button @click='${() => this.addGraphElement('decision', 'Verzweigung')}'>
+            <button @click='${() => this.addGraphNode('decision', 'Verzweigung')}'>
                ${drawButtonElement('decision', 'flow')}
             </button>
-            <button @click='${() => this.addGraphElement('connector', '')}'>
+            <button @click='${() => this.addGraphNode('connector', '')}'>
                ${drawButtonElement('connector', 'flow')}
             </button>
-            <button @click='${() => this.addGraphElement('i/o', 'Ein-/Ausgabe')}'>
+            <button @click='${() => this.addGraphNode('i/o', 'Ein-/Ausgabe')}'>
                ${drawButtonElement('i/o', 'flow')}
             </button>
-            <button @click='${() => this.addGraphElement('sub', 'Unterprogramm')}'>
+            <button @click='${() => this.addGraphNode('sub', 'Unterprogramm')}'>
                ${drawButtonElement('sub', 'flow')}
             </button>
-            <button @click='${() => this.addGraphElement('end', 'Ende')}'>
+            <button @click='${() => this.addGraphNode('end', 'Ende')}'>
                ${drawButtonElement('end', 'flow')} 
             </button>
-            <button @click='${() => this.addGraphElement('text', 'Text')}'>
+            <button @click='${() => this.addGraphNode('text', 'Kommentar')}'>
                ${drawButtonElement('text', 'flow')}
             </button>
          </div>
@@ -96,8 +100,11 @@ export class PAPWidget extends LitElementWw {
          </button>
 
          <div class='tool-menu'>
-            <button id="grab-button" @click='${this.grabCanvas}'>
+            <button id='grab-button' @click='${this.grabCanvas}'>
                ${drawButtonElement('grab', 'tool')}
+            </button>
+            <button id='select-button' @click='${this.selectSequence}'>
+               ${drawButtonElement('select', 'tool')}
             </button>
             <button @click='${() => this.clearAll()}'>
                ${drawButtonElement('delete', 'tool')}
@@ -163,6 +170,19 @@ export class PAPWidget extends LitElementWw {
 
    // ------------------------ User interface Funktionen ------------------------
 
+   private selectSequence() {
+      // Setze css style von Icon auf aktiv
+      const selectButton = this.shadowRoot.getElementById('select-button');
+      !this.isSelectingSequence ? selectButton?.classList.add('active') : selectButton?.classList.remove('active');
+
+      this.isSelectingSequence = !this.isSelectingSequence;
+
+      if (!this.isSelectingSequence) {
+         this.selectedSequence = [];
+      }
+      this.redrawCanvas();
+   }
+
    // Zeige oder verstecke die angefragten Benutzeroberflächen 
    private toggleMenu(menu: 'task' | 'flow' | 'context' | 'preset' | 'help') {
       toggleMenu(this, menu);
@@ -173,23 +193,23 @@ export class PAPWidget extends LitElementWw {
       const { x, y } = this.getMouseCoordinates(event);
 
       // Finde den angeklickten Knoten oder Verbindung und speichere sie
-      const clickedElement = findLastGraphElement(this.ctx, this.graphElements, x, y);
+      const clickedNode = findLastGraphNode(this.ctx, this.graphNodes, x, y);
       const clickedArrowIndex = this.arrows.findIndex((arrow) => isArrowClicked(x, y, arrow.points));
 
       // Falls ein Element angeklickt wurde, wird das Kontextmenü angezeigt
-      if (clickedElement || clickedArrowIndex !== -1) {
+      if (clickedNode || clickedArrowIndex !== -1) {
          const contextMenu = this.shadowRoot.getElementById('context-menu');
          if (contextMenu) {
             contextMenu.style.display = 'block';
             contextMenu.style.left = `${event.clientX}px`;
             contextMenu.style.top = `${event.clientY}px`;
 
-            if (clickedElement) {
-               this.selectedElement = clickedElement;
+            if (clickedNode) {
+               this.selectedNode = clickedNode;
                this.selectedArrow = undefined;
             } else {
                this.selectedArrow = this.arrows[clickedArrowIndex];
-               this.selectedElement = undefined;
+               this.selectedNode = undefined;
             }
          }
       }
@@ -207,10 +227,10 @@ export class PAPWidget extends LitElementWw {
       const preset = this.presetList.find((p) => p.name === presetName);
 
       if (preset) {
-         const updatedPreset = updatePresetIds(preset.graphElements);
+         const updatedPreset = updatePresetIds(preset.graphNodes);
 
-         this.graphElements = [...this.graphElements, ...updatedPreset];
-         this.arrows = createArrowsFromGraphElements(this.arrows, this.graphElements);
+         this.graphNodes = [...this.graphNodes, ...updatedPreset];
+         this.arrows = createArrowsFromGraphNodes(this.arrows, this.graphNodes);
          this.redrawCanvas();
       } else {
          console.error(`Preset "${presetName}" nicht gefunden`);
@@ -220,7 +240,7 @@ export class PAPWidget extends LitElementWw {
    // Aktiviere Bewegungsmodus für das Canvas
    private grabCanvas() {
       this.isGrabbing = grabCanvas(this, this.isGrabbing);
-      console.log("GraphNode: ", this.graphElements);
+      console.log("GraphNode: ", this.graphNodes);
       console.log("Arrows: ", this.arrows);
    }
 
@@ -231,15 +251,15 @@ export class PAPWidget extends LitElementWw {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
       // Zeichne alle Knoten 
-      this.graphElements.forEach((element) => {
-         drawGraphElement(this.ctx, element, this.selectedElement);
+      this.graphNodes.forEach((element) => {
+         drawGraphNode(this.ctx, element, this.selectedNode, this.selectedSequence);
       });
 
       // Zeichne alle Verbindungen 
       this.arrows.forEach((arrow) => {
          const fromCoordination = getArrowInformation(this.ctx, arrow.from, arrow.to);
          const toCoordination = getArrowInformation(this.ctx, arrow.to, arrow.from);
-         const updatedArrowPoints = drawArrow(this.ctx, fromCoordination, toCoordination, arrow.isSelected, this.hoveredArrowAnchor, true, arrow.text);
+         const updatedArrowPoints = drawArrow(this.ctx, fromCoordination, toCoordination, this.selectedSequence, arrow.isSelected, this.hoveredArrowAnchor, true, arrow.text);
          arrow.points = updatedArrowPoints;
          if (this.selectedArrow === arrow) {
             arrow.isSelected = true;
@@ -249,23 +269,23 @@ export class PAPWidget extends LitElementWw {
       });
 
       // Zeichne die Ankerpunkte für das ausgewählte Element, falls vorhanden
-      if (this.selectedElement) {
-         drawElementAnchors(this.ctx, this.selectedElement, this.hoveredAnchor);
+      if (this.selectedNode) {
+         drawNodeAnchors(this.ctx, this.selectedNode, this.hoveredAnchor);
       }
 
       //Zeichne eine temporäre Verbindung beim ziehen zwischen zwei Elementen, falls vorhanden
       if (this.isDrawingArrow && this.arrowStart && this.tempArrowEnd) {
-         const anchors = getAnchors(this.ctx, this.arrowStart.element);
+         const anchors = getAnchors(this.ctx, this.arrowStart.node);
          drawArrow(this.ctx, anchors[this.arrowStart.anchor], this.tempArrowEnd);
       }
    }
 
-   private addGraphElement(node: 'start' | 'end' | 'op' | 'decision' | 'connector' | 'i/o' | 'sub' | 'text', text: string) {
+   private addGraphNode(node: 'start' | 'end' | 'op' | 'decision' | 'connector' | 'i/o' | 'sub' | 'text', text: string) {
       const workspace = this.shadowRoot?.querySelector('.workspace') as HTMLElement;
       const centerX = this.canvas.width * 0.5 + workspace.scrollLeft;
       const centerY = this.canvas.height * 0.5 + workspace.scrollTop;
 
-      const element: GraphNodeData = {
+      const element: GraphNode = {
          id: uuidv4(),
          node: node,
          text: text,
@@ -273,8 +293,8 @@ export class PAPWidget extends LitElementWw {
          y: centerY
       };
 
-      this.graphElements = [...this.graphElements, element];
-      drawGraphElement(this.ctx, element, this.selectedElement);
+      this.graphNodes = [...this.graphNodes, element];
+      drawGraphNode(this.ctx, element, this.selectedNode, this.selectedSequence);
    }
 
 
@@ -290,11 +310,11 @@ export class PAPWidget extends LitElementWw {
          const offsetY = parseFloat(this.style.getPropertyValue('--offset-y'));
          this.grabStartOffset = { x: offsetX, y: offsetY };
       } else {
-         this.draggedElement = findLastGraphElement(this.ctx, this.graphElements, x, y);
+         this.draggedNode = findLastGraphNode(this.ctx, this.graphNodes, x, y);
 
-         if (this.draggedElement && !this.selectedArrow) {
+         if (this.draggedNode && !this.selectedArrow) {
             this.isDragging = true;
-            this.dragOffset = { x: x - this.draggedElement.x, y: y - this.draggedElement.y };
+            this.dragOffset = { x: x - this.draggedNode.x, y: y - this.draggedNode.y };
          }
 
          if (this.selectedArrow) {
@@ -306,9 +326,9 @@ export class PAPWidget extends LitElementWw {
             // Überprüfe ob einer der Ankerpunkte berührt wurde, wenn ja setze die Variablen zum ziehen.
             //if (isWithinCircle(x, y, points[0].x, points[0].y, 5) || isWithinCircle(x, y, points[points.length - 1].x, points[points.length - 1].y, 5)) {
             if (isWithinCircle(x, y, points[points.length - 1].x, points[points.length - 1].y, 5)) {
-               let tempElement: GraphNodeData;
+               let tempElement: GraphNode;
                let tempAnchor: number;
-               const nearestElement = findLastGraphElement(this.ctx, this.graphElements, x, y);
+               const nearestElement = findLastGraphNode(this.ctx, this.graphNodes, x, y);
 
                // Bestimme das Startelement von dem der temporäre Pfeil gesetzt werden soll
                if (nearestElement) {
@@ -344,29 +364,29 @@ export class PAPWidget extends LitElementWw {
          } else if (this.isDrawingArrow) {
             const { x, y } = this.getMouseCoordinates(event);
 
-            const targetElement = findLastGraphElement(this.ctx, this.graphElements, x, y);
+            const targetElement = findLastGraphNode(this.ctx, this.graphNodes, x, y);
 
             // Überprüft ob ein Zielelement gefunden wurde und dieser ungleich dem Startelement
-            if (this.arrowStart && targetElement && (this.arrowStart.element !== targetElement) && (targetElement.node !== 'text')) {
+            if (this.arrowStart && targetElement && (this.arrowStart.node !== targetElement) && (targetElement.node !== 'text')) {
 
                // Speichere die Pfeilverbindung am Startelement
-               if (!this.arrowStart.element.connections) {
-                  this.arrowStart.element.connections = [];
+               if (!this.arrowStart.node.connections) {
+                  this.arrowStart.node.connections = [];
                }
-               this.arrowStart.element.connections.push({ anchor: this.arrowStart.anchor, direction: 'to', connectedToId: targetElement.id });
+               this.arrowStart.node.connections.push({ anchor: this.arrowStart.anchor, direction: 'to', connectedToId: targetElement.id });
 
                // Speichere die Pfeilverbindung am Ziel-Element
                if (!targetElement.connections) {
                   targetElement.connections = [];
                }
                const nearestCircleIndex = getNearestCircle(this.ctx, { x, y }, targetElement);
-               targetElement.connections.push({ anchor: nearestCircleIndex, direction: 'from', connectedToId: this.arrowStart.element.id });
+               targetElement.connections.push({ anchor: nearestCircleIndex, direction: 'from', connectedToId: this.arrowStart.node.id });
 
                // Hole die Eckpunkte zum Zeichnen des Pfeils, um sie im arrows-Array abzuspeichern
-               const fromCoordination = getArrowInformation(this.ctx, this.arrowStart.element, targetElement);
-               const toCoordination = getArrowInformation(this.ctx, targetElement, this.arrowStart.element);
-               const points = drawArrow(this.ctx, fromCoordination, toCoordination, false, true);
-               this.arrows.push({ from: this.arrowStart.element, to: targetElement, points });
+               const fromCoordination = getArrowInformation(this.ctx, this.arrowStart.node, targetElement);
+               const toCoordination = getArrowInformation(this.ctx, targetElement, this.arrowStart.node);
+               const points = drawArrow(this.ctx, fromCoordination, toCoordination, this.selectedSequence, false, true);
+               this.arrows.push({ id: uuidv4(), from: this.arrowStart.node, to: targetElement, points });
                this.redrawCanvas();
             }
 
@@ -387,7 +407,7 @@ export class PAPWidget extends LitElementWw {
          const deltaY = y - this.grabStartPosition.y;
 
          // Aktualisiere die Koordinaten der Knoten und Verbindungen
-         this.graphElements.forEach(element => {
+         this.graphNodes.forEach(element => {
             element.x += deltaX;
             element.y += deltaY;
          });
@@ -412,13 +432,13 @@ export class PAPWidget extends LitElementWw {
          // Aktualisiere die grabStartPosition auf die aktuelle Mausposition
          this.grabStartPosition = { x, y };
       } else {
-         if (this.isDragging && this.draggedElement) {
+         if (this.isDragging && this.draggedNode) {
 
-            this.draggedElement.x = x - this.dragOffset.x;
-            this.draggedElement.y = y - this.dragOffset.y;
+            this.draggedNode.x = x - this.dragOffset.x;
+            this.draggedNode.y = y - this.dragOffset.y;
 
             this.redrawCanvas();
-         } else if (this.isDrawingArrow && this.arrowStart && (this.selectedElement || this.selectedArrow)) {
+         } else if (this.isDrawingArrow && this.arrowStart && (this.selectedNode || this.selectedArrow)) {
             const { x, y } = this.getMouseCoordinates(event);
 
             this.tempArrowEnd = { x, y };
@@ -428,7 +448,7 @@ export class PAPWidget extends LitElementWw {
       }
 
       // Highlighte den Ankerpunkt, falls der Benutzer über diesen kommt
-      const { hoveredAnchor, hoveredArrowAnchor } = highlightAnchor(this.ctx, this.selectedElement, this.selectedArrow, x, y);
+      const { hoveredAnchor, hoveredArrowAnchor } = highlightAnchor(this.ctx, this.selectedNode, this.selectedArrow, x, y);
       this.hoveredAnchor = hoveredAnchor;
       this.hoveredArrowAnchor = hoveredArrowAnchor;
       this.redrawCanvas();
@@ -437,50 +457,57 @@ export class PAPWidget extends LitElementWw {
    private handleClick(event: MouseEvent) {
       const { x, y } = this.getMouseCoordinates(event);
 
-      // Setze das angeklickte Element, oder entferne die Auswahl, wenn kein Element angeklickt wurde
-      this.selectedElement = findLastGraphElement(this.ctx, this.graphElements, x, y);
-      const selectedElementIndex = this.graphElements.lastIndexOf(this.selectedElement);
-      // Packe das ausgewählte Element ans Ende des Arrays, damit es über den anderen Elementen erscheint
-      if (this.selectedElement && !this.isDragging) {
-         this.graphElements.splice(selectedElementIndex, 1);
-         this.graphElements.push(this.selectedElement);
-      }
+      if (this.isSelectingSequence) {
+         handleSequenceSelection(this.ctx, this.selectedSequence, this.graphNodes, this.arrows, x, y);
+         console.log(this.selectedSequence);
+      } else {
 
-      this.updateAnchorListeners();
+         // Setze das angeklickte Element, oder entferne die Auswahl, wenn kein Element angeklickt wurde
+         this.selectedNode = findLastGraphNode(this.ctx, this.graphNodes, x, y);
+         const selectedNodeIndex = this.graphNodes.lastIndexOf(this.selectedNode);
+         // Packe das ausgewählte Element ans Ende des Arrays, damit es über den anderen Elementen erscheint
+         if (this.selectedNode && !this.isDragging) {
+            this.graphNodes.splice(selectedNodeIndex, 1);
+            this.graphNodes.push(this.selectedNode);
+         }
 
-      // Finde den angeklickte Pfeilindex, oder entferne die Auswahl, wenn kein Pfeil angeklickt wurde
-      const selectedArrowIndex = this.arrows.findIndex((arrow) => isArrowClicked(x, y, arrow.points));
-      // Wenn ein Pfeil angeklickt wurde, setze die property selectedArrow auf den angeklickten Pfeil 
-      // und verändere die Reihenfolge im Array, damit der angeklickte Pfeil immer vollständig gefärbt angezeigt wird
-      if (selectedArrowIndex !== -1) {
-         this.selectedArrow = this.arrows[selectedArrowIndex];
-         this.selectedArrow.isSelected = true;
-         this.arrows.splice(selectedArrowIndex, 1);
-         this.arrows.push(this.selectedArrow);
+         this.updateAnchorListeners();
+
+         // Finde den angeklickte Pfeilindex, oder entferne die Auswahl, wenn kein Pfeil angeklickt wurde
+         const selectedArrowIndex = this.arrows.findIndex((arrow) => isArrowClicked(x, y, arrow.points));
+         // Wenn ein Pfeil angeklickt wurde, setze die property selectedArrow auf den angeklickten Pfeil 
+         // und verändere die Reihenfolge im Array, damit der angeklickte Pfeil immer vollständig gefärbt angezeigt wird
+         if (selectedArrowIndex !== -1) {
+            this.selectedArrow = this.arrows[selectedArrowIndex];
+            this.selectedArrow.isSelected = true;
+            this.arrows.splice(selectedArrowIndex, 1);
+            this.arrows.push(this.selectedArrow);
+            this.redrawCanvas();
+         } else if (this.selectedArrow) {
+            this.selectedArrow.isSelected = false;
+            this.selectedArrow = undefined;
+            this.redrawCanvas();
+         }
+
+         // Zeichne den Canvas neu, um die aktualisierte Auswahl anzuzeigen
          this.redrawCanvas();
-      } else if (this.selectedArrow) {
-         this.selectedArrow.isSelected = false;
-         this.selectedArrow = undefined;
-         this.redrawCanvas();
-      }
 
-      // Zeichne den Canvas neu, um die aktualisierte Auswahl anzuzeigen
-      this.redrawCanvas();
+      }
    }
 
    private handleDoubleClick(event: MouseEvent) {
       const { x, y } = this.getMouseCoordinates(event);
 
       // Ermittle, ob das Doppelklick-Event auf einem der Rechtecke stattgefunden hat
-      const clickedElementIndex = findGraphElementLastIndex(this.ctx, this.graphElements, x, y);
+      const clickedNodeIndex = findGraphNodeLastIndex(this.ctx, this.graphNodes, x, y);
 
-      if (clickedElementIndex !== -1 && this.graphElements[clickedElementIndex].node !== 'connector') {
+      if (clickedNodeIndex !== -1 && this.graphNodes[clickedNodeIndex].node !== 'connector') {
          // Fordere den Benutzer auf, einen neuen Text einzugeben
          const newText = prompt('Bitte geben einen neuen Text ein:');
 
          if (newText !== null) {
             // Ersetze den Text des Elements
-            this.graphElements[clickedElementIndex].text = newText;
+            this.graphNodes[clickedNodeIndex].text = newText;
 
             // Zeichne das Canvas neu, um die Änderungen anzuzeigen
             this.redrawCanvas();
@@ -505,22 +532,22 @@ export class PAPWidget extends LitElementWw {
       }
    }
 
-   private handleAnchorClick(event: MouseEvent, element: GraphNodeData, anchor: number) {
+   private handleAnchorClick(event: MouseEvent, node: GraphNode, anchor: number) {
       event.stopPropagation();
       this.isDrawingArrow = true;
-      this.arrowStart = { element, anchor };
+      this.arrowStart = { node, anchor };
    }
 
    private updateAnchorListeners() {
-      if (this.selectedElement && this.selectedElement.node !== 'text') {
-         const anchors = getAnchors(this.ctx, this.selectedElement, 15);
+      if (this.selectedNode && this.selectedNode.node !== 'text') {
+         const anchors = getAnchors(this.ctx, this.selectedNode, 15);
 
          anchors.forEach((position, index) => {
             this.canvas?.addEventListener('mousedown', (event) => {
                const { x, y } = this.getMouseCoordinates(event);
                const distance = Math.sqrt((position.x - x) ** 2 + (position.y - y) ** 2);
                if (distance <= 8) {
-                  this.handleAnchorClick(event, this.selectedElement, index);
+                  this.handleAnchorClick(event, this.selectedNode, index);
                }
             });
          });
@@ -572,8 +599,8 @@ export class PAPWidget extends LitElementWw {
 
    // Lösche alle Elemente vom Canvas 
    private clearAll() {
-      this.graphElements = [];
-      this.selectedElement = undefined;
+      this.graphNodes = [];
+      this.selectedNode = undefined;
       this.arrows = [];
       this.arrowStart = undefined;
       this.redrawCanvas();
@@ -582,23 +609,23 @@ export class PAPWidget extends LitElementWw {
    // Lösche das ausgewählte Objekt 
    private deleteSelectedObject() {
       // Falls ein Knoten ausgewählt wurde, lösche den Knoten und alle zugehören Verbindungen 
-      if (this.selectedElement) {
+      if (this.selectedNode) {
          // Entferne ausgewählten Knoten
-         this.graphElements = this.graphElements.filter((element) => element !== this.selectedElement);
+         this.graphNodes = this.graphNodes.filter((node) => node !== this.selectedNode);
 
          // Entferne die Verbindungsinformationen für alle betroffenen Knoten
          this.arrows.forEach(arrow => {
-            if (arrow.from === this.selectedElement || arrow.to === this.selectedElement) {
+            if (arrow.from === this.selectedNode || arrow.to === this.selectedNode) {
                removeOldConnection(arrow.from, arrow.to);
             }
          });
 
          // Entferne alle Pfeile, die mit dem gelöschten Element verbunden sind
          this.arrows = this.arrows.filter(
-            (arrow) => arrow.from !== this.selectedElement && arrow.to !== this.selectedElement
+            (arrow) => arrow.from !== this.selectedNode && arrow.to !== this.selectedNode
          );
 
-         this.selectedElement = undefined;
+         this.selectedNode = undefined;
       } else if (this.selectedArrow) {
          // Entferne den ausgewählten Pfeil und die zugehörigen Informationen in den verbundenen Knoten
          removeOldConnection(this.selectedArrow.from, this.selectedArrow.to);

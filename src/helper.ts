@@ -2,22 +2,23 @@
 *   Allerlei Hilfsfunktionen 
 */
 
-import { GraphNodeData, Arrow } from "./definitions";
+import { GraphNode, Arrow } from "./definitions";
 import { v4 as uuidv4 } from 'uuid';
 
 // -------------------- Preset - Hilfsfunktionen --------------------
 
 // Erzeuge die Verbindungen anhand der gegebenen Knoten 
-export function createArrowsFromGraphElements(arrows: Arrow[], graphElements: GraphNodeData[]): Arrow[] {
+export function createArrowsFromGraphNodes(arrows: Arrow[], graphNodes: GraphNode[]): Arrow[] {
    arrows = [];
 
-   graphElements.forEach((fromElement) => {
+   graphNodes.forEach((fromElement) => {
       if (fromElement.connections) {
          fromElement.connections.forEach((connection) => {
-            const toElement = graphElements.find((element) => element.id === connection.connectedToId);
+            const toElement = graphNodes.find((element) => element.id === connection.connectedToId);
 
             if (toElement && connection.direction === 'to') {
                arrows.push({
+                  id: uuidv4(),
                   from: fromElement,
                   to: toElement,
                   points: [], // Initialisiere points als leeres Array, wird später in drawArrow aktualisiert
@@ -33,7 +34,7 @@ export function createArrowsFromGraphElements(arrows: Arrow[], graphElements: Gr
 }
 
 // Update die ID der Knoten von Preset
-export function updatePresetIds(preset: GraphNodeData[]): GraphNodeData[] {
+export function updatePresetIds(preset: GraphNode[]): GraphNode[] {
    // Erstelle eine Zuordnung zwischen alten und neuen IDs
    const idMap = new Map<string, string>();
    preset.forEach((element) => {
@@ -59,7 +60,7 @@ export function updatePresetIds(preset: GraphNodeData[]): GraphNodeData[] {
 // -------------------- Pfeile / Verbindungen --------------------
 
 // Gibt die Koordinaten und Ankerpunkt eines Pfeils zurück 
-export function getArrowInformation(ctx: CanvasRenderingContext2D, from: GraphNodeData, to: GraphNodeData) {
+export function getArrowInformation(ctx: CanvasRenderingContext2D, from: GraphNode, to: GraphNode) {
 
    let arrowInformation = {
       x: 0,
@@ -111,8 +112,12 @@ export function isArrowClicked(mouseX: number, mouseY: number, points: { x: numb
    return false;
 }
 
+export function findArrow(arrows: Arrow[], x: number, y: number) {
+   return arrows.find((arrow) => isArrowClicked(x, y, arrow.points));
+}
+
 // Entfernt die alten Verbindungsinformationen innerhalb der Knoten 
-export function removeOldConnection(fromNode: GraphNodeData, toNode: GraphNodeData) {
+export function removeOldConnection(fromNode: GraphNode, toNode: GraphNode) {
 
    // Entferne die Verbindungsinformation vom Startknoten 
    if (fromNode.connections) {
@@ -132,7 +137,7 @@ export function removeOldConnection(fromNode: GraphNodeData, toNode: GraphNodeDa
 // -------------------- Ankerpunkte --------------------
 
 // Gibt die Anker Positionen einen Knotens in einem Array zurück
-export function getAnchors(ctx: CanvasRenderingContext2D, element: GraphNodeData, d: number = 0) {
+export function getAnchors(ctx: CanvasRenderingContext2D, element: GraphNode, d: number = 0) {
    const anchors = [
       { x: element.x + measureTextSize(ctx, element.text).width / 2, y: element.y - d },
       { x: element.x + measureTextSize(ctx, element.text).width + d, y: element.y + measureTextSize(ctx, element.text).height / 2 },
@@ -143,7 +148,7 @@ export function getAnchors(ctx: CanvasRenderingContext2D, element: GraphNodeData
 }
 
 // Sucht den nähstgelegenten Ankerpunkt und gibt den Index zurück 
-export function getNearestCircle(ctx: CanvasRenderingContext2D, from: { x: number; y: number }, element: GraphNodeData): number {
+export function getNearestCircle(ctx: CanvasRenderingContext2D, from: { x: number; y: number }, element: GraphNode): number {
    const anchors = getAnchors(ctx, element);
 
    let minDistance = Infinity;
@@ -160,9 +165,9 @@ export function getNearestCircle(ctx: CanvasRenderingContext2D, from: { x: numbe
    return nearestCircleIndex;
 }
 
-export function highlightAnchor(ctx: CanvasRenderingContext2D, selectedElement: GraphNodeData | undefined, selectedArrow: Arrow | undefined, x: number, y: number) {
+export function highlightAnchor(ctx: CanvasRenderingContext2D, selectedElement: GraphNode | undefined, selectedArrow: Arrow | undefined, x: number, y: number) {
    let found = false;
-   let hoveredAnchor: { element: GraphNodeData; anchor: number };
+   let hoveredAnchor: { element: GraphNode; anchor: number };
    let hoveredArrowAnchor = false;
 
    // Highlight die Anker eines Knotens
@@ -212,10 +217,10 @@ export function measureTextSize(ctx: CanvasRenderingContext2D, text: string): { 
    return { width, height };
 }
 
-// Findet den letzten Knoten von GraphElements und gibt diesen zurück
-export function findLastGraphElement(ctx: CanvasRenderingContext2D, graphElements: GraphNodeData[], x: number, y: number) {
+// Findet den letzten Knoten von graphNodes und gibt diesen zurück
+export function findLastGraphNode(ctx: CanvasRenderingContext2D, graphNodes: GraphNode[], x: number, y: number) {
    const d = 5;  // Toleranzbereich
-   return findLast(graphElements, (element) =>
+   return findLast(graphNodes, (element) =>
       x >= element.x - d &&
       x <= element.x + measureTextSize(ctx, element.text).width + d &&
       y >= element.y - d &&
@@ -223,10 +228,10 @@ export function findLastGraphElement(ctx: CanvasRenderingContext2D, graphElement
    );
 }
 
-// Findet den letzten Knoten von GraphElements und gibt den entsprechenden Index zurück
-export function findGraphElementLastIndex(ctx: CanvasRenderingContext2D, graphElements: GraphNodeData[], x: number, y: number) {
+// Findet den letzten Knoten von graphNodes und gibt den entsprechenden Index zurück
+export function findGraphNodeLastIndex(ctx: CanvasRenderingContext2D, graphNodes: GraphNode[], x: number, y: number) {
    const d = 5;  // Toleranzbereich
-   return findLastIndex(graphElements, (element) =>
+   return findLastIndex(graphNodes, (element) =>
       x >= element.x - d &&
       x <= element.x + measureTextSize(ctx, element.text).width + d &&
       y >= element.y - d &&

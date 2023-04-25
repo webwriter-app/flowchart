@@ -1,6 +1,6 @@
 // --------------- Definitionen ---------------
 
-export interface GraphNodeData {
+export interface GraphNode {
    id: string;
    node: string;
    text: string;
@@ -10,8 +10,9 @@ export interface GraphNodeData {
 }
 
 export interface Arrow {
-   from: GraphNodeData;
-   to: GraphNodeData;
+   id: string;
+   from: GraphNode;
+   to: GraphNode;
    points?: { x: number; y: number }[];
    text?: string;
    isSelected?: boolean;
