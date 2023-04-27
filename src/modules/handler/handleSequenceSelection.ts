@@ -1,9 +1,7 @@
-/**
- * Handler Funktionen, die die verschieden Funktionalitäten der Click-Events übernehmen
- */
-
-import { GraphNode, Arrow } from "./definitions";
-import { findLastGraphNode, findArrow } from "./helper";
+import { GraphNode } from "../../domain/GraphNode";
+import { Arrow } from "../../domain/Arrow";
+import { findLastGraphNode } from "../helper/generalHelper";
+import { findArrow } from "../helper/arrowHelper";
 
 export function handleSequenceSelection(
    ctx: CanvasRenderingContext2D,

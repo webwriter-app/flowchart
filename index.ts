@@ -3,15 +3,28 @@ import { html, css } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { v4 as uuidv4 } from 'uuid';
 
-import { GraphNode, Arrow, ItemList } from './src/definitions'
-import { drawButtonElement, drawGraphNode, drawNodeAnchors, drawArrow } from './src/drawer'
+import { GraphNode } from './src/domain/GraphNode';
+import { Arrow } from './src/domain/Arrow';
+import { ItemList } from './src/domain/ItemList';
+
+import { drawButton } from './src/modules/drawer/drawButton';
+import { drawGraphNode } from './src/modules/drawer/drawGraphNode';
+import { drawNodeAnchors } from './src/modules/drawer/drawNodeAnchors';
+import { drawArrow } from './src/modules/drawer/drawArrow';
+
+import { handleSequenceSelection } from './src/modules/handler/handleSequenceSelection';
+
 import { toggleMenu, addTask, addHelp, updateDisabledState, grabCanvas } from './src/ui'
-import { createArrowsFromGraphNodes, updatePresetIds, getAnchors, getArrowInformation, getNearestCircle, highlightAnchor, isArrowClicked, removeOldConnection, findLastGraphNode, findGraphNodeLastIndex } from './src/helper'
-import { handleSequenceSelection } from './src/handler';
 
-import { defaultHelpItems, flowchartPresets } from './src/presets'
+import { removeOldConnection, findLastGraphNode, findGraphNodeLastIndex } from './src/modules/helper/generalHelper'
+import { getArrowInformation, isArrowClicked } from './src/modules/helper/arrowHelper';
+import { getAnchors, getNearestCircle, highlightAnchor } from './src/modules/helper/anchorHelper';
+import { createArrowsFromGraphNodes, updatePresetIds } from './src/modules/helper/presetHelper';
 
-import { papWidgetStyles } from './src/styles'
+import { flowchartPresets } from './src/modules/presets/flowchartPresets';
+import { helpPresets } from './src/modules/presets/helpPresets';
+
+import { papWidgetStyles } from './src/modules/styles/styles'
 
 
 @customElement('pap-widget')
@@ -70,28 +83,28 @@ export class PAPWidget extends LitElementWw {
                ×
             </button>
             <button @click='${() => this.addGraphNode('start', 'Start')}'>
-               ${drawButtonElement('start', 'flow')}
+               ${drawButton('start', 'flow')}
             </button>
             <button @click='${() => this.addGraphNode('op', 'Operation')}'>
-               ${drawButtonElement('op', 'flow')}
+               ${drawButton('op', 'flow')}
             </button>
             <button @click='${() => this.addGraphNode('decision', 'Verzweigung')}'>
-               ${drawButtonElement('decision', 'flow')}
+               ${drawButton('decision', 'flow')}
             </button>
             <button @click='${() => this.addGraphNode('connector', '')}'>
-               ${drawButtonElement('connector', 'flow')}
+               ${drawButton('connector', 'flow')}
             </button>
             <button @click='${() => this.addGraphNode('i/o', 'Ein-/Ausgabe')}'>
-               ${drawButtonElement('i/o', 'flow')}
+               ${drawButton('i/o', 'flow')}
             </button>
             <button @click='${() => this.addGraphNode('sub', 'Unterprogramm')}'>
-               ${drawButtonElement('sub', 'flow')}
+               ${drawButton('sub', 'flow')}
             </button>
             <button @click='${() => this.addGraphNode('end', 'Ende')}'>
-               ${drawButtonElement('end', 'flow')} 
+               ${drawButton('end', 'flow')} 
             </button>
             <button @click='${() => this.addGraphNode('text', 'Kommentar')}'>
-               ${drawButtonElement('text', 'flow')}
+               ${drawButton('text', 'flow')}
             </button>
          </div>
 
@@ -101,22 +114,22 @@ export class PAPWidget extends LitElementWw {
 
          <div class='tool-menu'>
             <button id='grab-button' @click='${this.grabCanvas}'>
-               ${drawButtonElement('grab', 'tool')}
+               ${drawButton('grab', 'tool')}
             </button>
             <button id='select-button' @click='${this.selectSequence}'>
-               ${drawButtonElement('select', 'tool')}
+               ${drawButton('select', 'tool')}
             </button>
             <button @click='${() => this.clearAll()}'>
-               ${drawButtonElement('delete', 'tool')}
+               ${drawButton('delete', 'tool')}
             </button>
             <button @click='${() => this.toggleMenu('task')}'>
-               ${drawButtonElement('task', 'tool')}
+               ${drawButton('task', 'tool')}
             </button>
             <button @click='${() => this.toggleMenu('preset')}'>
-               ${drawButtonElement('preset', 'tool')}
+               ${drawButton('preset', 'tool')}
             </button>
             <button @click='${() => this.toggleMenu('help')}'>
-               ${drawButtonElement('help', 'tool')}
+               ${drawButton('help', 'tool')}
             </button>
          </div>
 
@@ -127,7 +140,7 @@ export class PAPWidget extends LitElementWw {
             <div class='task-menu-wrapper'>
                <div class="task-container"></div>
                <button class="add-task-button editMode" @click='${this.addTask}'>
-                  ${drawButtonElement('addTask', 'task')}
+                  ${drawButton('addTask', 'task')}
                </button>
             </div>   
          </div> 
@@ -154,7 +167,7 @@ export class PAPWidget extends LitElementWw {
             </button>
             <div class="help-container"></div>
                <button class="add-help-button editMode" @click='${this.addHelp}'>
-                  ${drawButtonElement('addHelp', 'help')}
+                  ${drawButton('addHelp', 'help')}
                </button>
          </div>
 
@@ -564,11 +577,11 @@ export class PAPWidget extends LitElementWw {
       this.updateCanvasOffset(); // Offset aktualisieren
 
       // Fügen Sie standardmäßige Hilfeinformationen hinzu
-      defaultHelpItems.forEach((item) => {
+      helpPresets.forEach((item) => {
          this.helpList.push(item);
          addHelp(this, this.helpList);
       });
-      console.log(defaultHelpItems);
+      console.log(helpPresets);
       console.log(this.helpList);
    }
 

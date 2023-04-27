@@ -1,25 +1,4 @@
-/**
- * Hier sind die verschiedenen vorgespeicherten Informationen hinterlegt.
- * 
- * defaultHelpItems: Standardtipps zur Bedingung der Anwendung.
- * 
- * flowchartPresets: Presets von vorgefertigten Beispielen für verschiedene PAP Sequenzen.
- * 
- */
-
-import { GraphNode, ItemList } from "./definitions";
-
- 
-export const defaultHelpItems: ItemList[] = [
-   {
-      titel: 'Verbindungen zeichnen',
-      content: 'Klicke ein Element an. Es sollen verschiedene Ankerpunkte erscheinen. Fahre mit der Maus über einen dieser Ankerpunkte. Wenn dieser hervorgehoben wird, ziehe an diesem und führe die Linie zu dem gewünschten Knoten. Die Verbindungsstelle wird anhand des am nächsten liegenden Ankerpunkt gewählt. '
-   },
-   {
-      titel: 'Vorgefertige Beispiele',
-      content: 'Klicke oben rechts den Button links neben den ? an. Nun werden dir verschiedene Presets von PAP-Sequenzen angezeigt, welche du dir erzeugen lassen kannst. '
-   }
-];
+import { GraphNode } from "../../domain/GraphNode";
 
 // Presets von verschiedenen PAP-Sequenzen die erzeugt werden können
 export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
