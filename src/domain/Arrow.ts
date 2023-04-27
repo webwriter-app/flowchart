@@ -6,5 +6,4 @@ export interface Arrow {
    to: GraphNode;
    points?: { x: number; y: number }[];
    text?: string;
-   isSelected?: boolean;
 }

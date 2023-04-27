@@ -34,7 +34,7 @@ export function getNearestCircle(ctx: CanvasRenderingContext2D, from: { x: numbe
 export function highlightAnchor(ctx: CanvasRenderingContext2D, selectedElement: GraphNode | undefined, selectedArrow: Arrow | undefined, x: number, y: number) {
    let found = false;
    let hoveredAnchor: { element: GraphNode; anchor: number };
-   let hoveredArrowAnchor = false;
+   let isArrowAnchorHovered = false;
 
    // Highlight die Anker eines Knotens
    if (selectedElement && selectedElement.node !== 'text') {
@@ -57,15 +57,15 @@ export function highlightAnchor(ctx: CanvasRenderingContext2D, selectedElement: 
        const distance = Math.sqrt((endPoint.x - x) ** 2 + (endPoint.y - y) ** 2);
 
        if (distance <= 8) {
-           hoveredArrowAnchor = true;
+           isArrowAnchorHovered = true;
            found = true;
        }
    }
 
    if (!found) {
        hoveredAnchor = undefined;
-       hoveredArrowAnchor = false;
+       isArrowAnchorHovered = false;
    }
 
-   return { hoveredAnchor, hoveredArrowAnchor };
+   return { hoveredAnchor, isArrowAnchorHovered };
 }

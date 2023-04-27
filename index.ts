@@ -8,9 +8,8 @@ import { Arrow } from './src/domain/Arrow';
 import { ItemList } from './src/domain/ItemList';
 
 import { drawButton } from './src/modules/drawer/drawButton';
-import { drawGraphNode } from './src/modules/drawer/drawGraphNode';
-import { drawNodeAnchors } from './src/modules/drawer/drawNodeAnchors';
-import { drawArrow } from './src/modules/drawer/drawArrow';
+import { drawGraphNode, drawNodeAnchors } from './src/modules/drawer/drawGraphNode';
+import { drawArrow, drawTempArrow, generateArrowPoints, drawArrowAnchor } from './src/modules/drawer/drawArrow';
 
 import { handleSequenceSelection } from './src/modules/handler/handleSequenceSelection';
 
@@ -56,7 +55,7 @@ export class PAPWidget extends LitElementWw {
    private grabStartOffset?: { x: number; y: number };
 
    private hoveredAnchor?: { element: GraphNode; anchor: number };
-   private hoveredArrowAnchor: boolean;
+   private isArrowAnchorHovered: boolean;
 
    private isSelectingSequence = false;
    private selectedSequence: { id: string; order: number; type: string}[] = [];
@@ -268,18 +267,18 @@ export class PAPWidget extends LitElementWw {
          drawGraphNode(this.ctx, element, this.selectedNode, this.selectedSequence);
       });
 
-      // Zeichne alle Verbindungen 
+      // Zeichne alle Verbindungen
       this.arrows.forEach((arrow) => {
-         const fromCoordination = getArrowInformation(this.ctx, arrow.from, arrow.to);
-         const toCoordination = getArrowInformation(this.ctx, arrow.to, arrow.from);
-         const updatedArrowPoints = drawArrow(this.ctx, fromCoordination, toCoordination, this.selectedSequence, arrow.isSelected, this.hoveredArrowAnchor, true, arrow.text);
-         arrow.points = updatedArrowPoints;
-         if (this.selectedArrow === arrow) {
-            arrow.isSelected = true;
-         } else {
-            arrow.isSelected = false;
-         }
-      });
+      const isSelected = arrow === this.selectedArrow;
+      arrow.points = generateArrowPoints(this.ctx, arrow.from, arrow.to);
+      drawArrow(this.ctx, arrow.from, arrow.to, isSelected, arrow.text);
+
+      // Zeichne Ankerpunkte des Pfeils, wenn dieser ausgewählt ist
+      if (isSelected) {
+         const toArrowInfo = getArrowInformation(this.ctx, arrow.to, arrow.from);
+         drawArrowAnchor(this.ctx, toArrowInfo.anchor, toArrowInfo.x, toArrowInfo.y, this.isArrowAnchorHovered);
+      }
+   });
 
       // Zeichne die Ankerpunkte für das ausgewählte Element, falls vorhanden
       if (this.selectedNode) {
@@ -288,8 +287,7 @@ export class PAPWidget extends LitElementWw {
 
       //Zeichne eine temporäre Verbindung beim ziehen zwischen zwei Elementen, falls vorhanden
       if (this.isDrawingArrow && this.arrowStart && this.tempArrowEnd) {
-         const anchors = getAnchors(this.ctx, this.arrowStart.node);
-         drawArrow(this.ctx, anchors[this.arrowStart.anchor], this.tempArrowEnd);
+         drawTempArrow(this.ctx, this.arrowStart, this.tempArrowEnd);
       }
    }
 
@@ -395,10 +393,8 @@ export class PAPWidget extends LitElementWw {
                const nearestCircleIndex = getNearestCircle(this.ctx, { x, y }, targetElement);
                targetElement.connections.push({ anchor: nearestCircleIndex, direction: 'from', connectedToId: this.arrowStart.node.id });
 
-               // Hole die Eckpunkte zum Zeichnen des Pfeils, um sie im arrows-Array abzuspeichern
-               const fromCoordination = getArrowInformation(this.ctx, this.arrowStart.node, targetElement);
-               const toCoordination = getArrowInformation(this.ctx, targetElement, this.arrowStart.node);
-               const points = drawArrow(this.ctx, fromCoordination, toCoordination, this.selectedSequence, false, true);
+               // Erstelle die Pfeilpunkte und speichere die Pfeilverbindung
+               const points = generateArrowPoints(this.ctx, this.arrowStart.node, targetElement);
                this.arrows.push({ id: uuidv4(), from: this.arrowStart.node, to: targetElement, points });
                this.redrawCanvas();
             }
@@ -461,9 +457,9 @@ export class PAPWidget extends LitElementWw {
       }
 
       // Highlighte den Ankerpunkt, falls der Benutzer über diesen kommt
-      const { hoveredAnchor, hoveredArrowAnchor } = highlightAnchor(this.ctx, this.selectedNode, this.selectedArrow, x, y);
+      const { hoveredAnchor, isArrowAnchorHovered } = highlightAnchor(this.ctx, this.selectedNode, this.selectedArrow, x, y);
       this.hoveredAnchor = hoveredAnchor;
-      this.hoveredArrowAnchor = hoveredArrowAnchor;
+      this.isArrowAnchorHovered = isArrowAnchorHovered;
       this.redrawCanvas();
    }
 
@@ -492,12 +488,10 @@ export class PAPWidget extends LitElementWw {
          // und verändere die Reihenfolge im Array, damit der angeklickte Pfeil immer vollständig gefärbt angezeigt wird
          if (selectedArrowIndex !== -1) {
             this.selectedArrow = this.arrows[selectedArrowIndex];
-            this.selectedArrow.isSelected = true;
             this.arrows.splice(selectedArrowIndex, 1);
             this.arrows.push(this.selectedArrow);
             this.redrawCanvas();
          } else if (this.selectedArrow) {
-            this.selectedArrow.isSelected = false;
             this.selectedArrow = undefined;
             this.redrawCanvas();
          }

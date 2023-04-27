@@ -1,7 +1,62 @@
-// Zeichnet die Verbindungspfeile zwischen den Elementen
-export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: number; anchor?: number }, to: { x: number; y: number; anchor?: number }, selectedSequence?: { id: string; order: number; type: string}[], isSelected: boolean = false, hoveredArrowAnchor: boolean = false, returnPoints = false, text?: string) {
+import { GraphNode } from "../../domain/GraphNode";
+import { getArrowInformation } from "../helper/arrowHelper";
+import { getAnchors } from "../helper/anchorHelper";
 
-   const headLength = 7;
+export function drawArrow(ctx: CanvasRenderingContext2D, from: GraphNode, to: GraphNode, isSelected: boolean = false, text?: string) {
+ 
+   const points = generateArrowPoints(ctx, from, to);
+   applyArrowStyle(ctx, isSelected);
+
+   ctx.beginPath();
+   ctx.setLineDash([])
+   ctx.moveTo(points[0].x, points[0].y);
+   for (let i = 1; i < points.length; i++) {
+      ctx.lineTo(points[i].x, points[i].y);
+   }
+   ctx.stroke();
+
+   // Zeichne den Pfeilkopf
+   drawArrowHead(ctx, points[points.length - 1], points[points.length - 2]);
+
+   if (text) {
+      addArrowText(ctx, points, text);
+   }
+
+   //Hervorhebung der ausgewählten Sequenz und Anzeige des Counters
+   // const sequenceIndex = selectedSequence.findIndex((item) => item.type === 'node');
+   // if (sequenceIndex !== -1) {
+   //    ctx.save();
+   //    ctx.strokeStyle = 'gold';
+   //    ctx.lineWidth = 4;
+   //    ctx.stroke();
+
+   //    ctx.fillStyle = 'gold';
+   //    ctx.font = 'bold 16px Arial';
+   //    ctx.fillText(
+   //       selectedSequence[sequenceIndex].order.toString(),
+   //       x + width + 8,
+   //       y - 5
+   //    );
+   //    ctx.restore();
+   //}
+}
+
+export function generateArrowPoints(ctx: CanvasRenderingContext2D, fromNode: GraphNode, toNode: GraphNode) {
+   const fromArrowInfo = getArrowInformation(ctx, fromNode, toNode);
+   const toArrowInfo = getArrowInformation(ctx, toNode, fromNode);
+   
+   const from = {
+      x: fromArrowInfo.x,
+      y: fromArrowInfo.y,
+      anchor: fromArrowInfo.anchor
+   };
+
+   const to = {
+      x: toArrowInfo.x,
+      y: toArrowInfo.y,
+      anchor: toArrowInfo.anchor
+   };
+
    const padding = 15; // Raum zwischen Elementen und Pfeil
 
    let points: { x: number; y: number }[] = [from];
@@ -247,66 +302,26 @@ export function drawArrow(ctx: CanvasRenderingContext2D, from: { x: number; y: n
    }
 
    points.push(to);
+   return points;
+}
 
-   // Setze den Stil und zeichne die Verbindung
-   ctx.strokeStyle = isSelected ? '#5CACEE' : 'black'; 
+export function applyArrowStyle(ctx: CanvasRenderingContext2D, isSelected: boolean) {
+   ctx.strokeStyle = isSelected ? '#5CACEE' : 'black';
    ctx.fillStyle = isSelected ? '#5CACEE' : 'black';
    ctx.lineWidth = 2;
+}
 
+function drawArrowHead(ctx: CanvasRenderingContext2D, toPoint: { x: number; y: number }, prevPoint: { x: number; y: number }) {
+   const headLength = 7;
+   const angle = Math.atan2(toPoint.y - prevPoint.y, toPoint.x - prevPoint.x);
    ctx.beginPath();
-   // Zeichne gestrichelte Linien, falls noch kein Zielelement ausgewählt wurde
-   points.length > 2 ? ctx.setLineDash([]) : ctx.setLineDash([5, 10]);
-   ctx.moveTo(points[0].x, points[0].y);
-   for (let i = 1; i < points.length; i++) {
-      ctx.lineTo(points[i].x, points[i].y);
-   }
-   ctx.stroke();
-
-   // Zeichne den Pfeilkopf
-   const angle = Math.atan2(to.y - points[points.length - 2].y, to.x - points[points.length - 2].x);
-   ctx.beginPath();
-   ctx.moveTo(to.x, to.y);
-   ctx.lineTo(to.x - headLength * Math.cos(angle - Math.PI / 6), to.y - headLength * Math.sin(angle - Math.PI / 6));
-   ctx.lineTo(to.x - headLength * Math.cos(angle + Math.PI / 6), to.y - headLength * Math.sin(angle + Math.PI / 6));
+   ctx.moveTo(toPoint.x, toPoint.y);
+   ctx.lineTo(toPoint.x - headLength * Math.cos(angle - Math.PI / 6), toPoint.y - headLength * Math.sin(angle - Math.PI / 6));
+   ctx.lineTo(toPoint.x - headLength * Math.cos(angle + Math.PI / 6), toPoint.y - headLength * Math.sin(angle + Math.PI / 6));
    ctx.stroke();
    ctx.fill();
    ctx.closePath();
-
-   // Zeichne Ankerpunkte des Pfeils, wenn dieser angeklickt wurde
-   if (isSelected) {
-      // drawAnchorArrow(ctx, from.anchor, points[0].x, points[0].y); // Anfangspunkt nötig? Dafür benötigt man noch eine reverse drawArrow Function
-      drawArrowAnchor(ctx, to.anchor, points[points.length - 1].x, points[points.length - 1].y, hoveredArrowAnchor);
-   }
-
-    // Füge den Text hinzu, falls dieser vorhanden ist
-    if (text) {
-      addArrowText(ctx, points, text);
-    }
-
-   //Hervorhebung der ausgewählten Sequenz und Anzeige des Counters
-   // const sequenceIndex = selectedSequence.findIndex((item) => item.type === 'node');
-   // if (sequenceIndex !== -1) {
-   //    ctx.save();
-   //    ctx.strokeStyle = 'gold';
-   //    ctx.lineWidth = 4;
-   //    ctx.stroke();
-
-   //    ctx.fillStyle = 'gold';
-   //    ctx.font = 'bold 16px Arial';
-   //    ctx.fillText(
-   //       selectedSequence[sequenceIndex].order.toString(),
-   //       x + width + 8,
-   //       y - 5
-   //    );
-   //    ctx.restore();
-   //}
-   
-   // Gib die Eckpunkte des Pfeils zum abspeichern zurück, falls returnPoints auf true gesetzt wurde
-   if (returnPoints) {
-      return points;
-   }
-  
-}
+ }
 
 function addArrowText(ctx: CanvasRenderingContext2D, points: { x: number; y: number }[], text: string) {
    const midPointIndex = Math.floor(points.length / 2 - 0.5);
@@ -328,7 +343,7 @@ function addArrowText(ctx: CanvasRenderingContext2D, points: { x: number; y: num
  }
 
 // Zeichne die Ankerpunkte einer Verbindung
-function drawArrowAnchor(ctx: CanvasRenderingContext2D, anchor: number, x: number, y: number, hoveredArrowAnchor: boolean) {
+export function drawArrowAnchor(ctx: CanvasRenderingContext2D, anchor: number, x: number, y: number, ishovered: boolean) {
    const drawAnchor = (x: number, y: number, radius: number) => {
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, 2 * Math.PI);
@@ -342,7 +357,7 @@ function drawArrowAnchor(ctx: CanvasRenderingContext2D, anchor: number, x: numbe
       ctx.fillText('×', x, y);
    };
    // Falls ein Ankerpunkt gehovert wird, wird die Transparenz auf 1 gesetzt. 
-   hoveredArrowAnchor ? ctx.globalAlpha = 1 : ctx.globalAlpha = 0.6;    
+   ishovered ? ctx.globalAlpha = 1 : ctx.globalAlpha = 0.6;    
 
    const offSetAnchor = 0;
 
@@ -364,3 +379,18 @@ function drawArrowAnchor(ctx: CanvasRenderingContext2D, anchor: number, x: numbe
    ctx.globalAlpha = 1;
    ctx.font = 'bold 16px Courier New';
 };
+
+export function drawTempArrow(ctx: CanvasRenderingContext2D, arrowStart: { node: GraphNode; anchor: number }, tempArrowEnd?: { x: number; y: number }) {
+   const arrowAnchors = getAnchors(ctx, arrowStart.node);
+   const startPoint = arrowAnchors[arrowStart.anchor];
+   const endPoint = tempArrowEnd;
+
+   ctx.beginPath();
+   ctx.fillStyle = 'black';
+   ctx.setLineDash([5, 10]);
+   ctx.moveTo(startPoint.x, startPoint.y);
+   ctx.lineTo(endPoint.x, endPoint.y);
+   ctx.stroke();
+   drawArrowHead(ctx, endPoint, startPoint);
+   ctx.setLineDash([])
+}
