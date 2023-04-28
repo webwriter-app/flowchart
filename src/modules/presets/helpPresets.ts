@@ -1,4 +1,4 @@
-import { ItemList } from "../../domain/ItemList";
+import { ItemList } from "../../definitions/ItemList";
 
 export const helpPresets: ItemList[] = [
    {

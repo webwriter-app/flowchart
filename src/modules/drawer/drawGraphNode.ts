@@ -1,10 +1,10 @@
 
-import { GraphNode } from "../../domain/GraphNode";
+import { GraphNode } from "../../definitions/GraphNode";
 import { measureTextSize } from "../helper/utilities";
 import { getAnchors } from "../helper/anchorHelper";
 
 // Funktion zum Zeichnen von GraphNode-Elementen
-export function drawGraphNode(ctx: CanvasRenderingContext2D, element: GraphNode, selectedElement: GraphNode, selectedSequence: { id: string; order: number; type: string}[]) {
+export function drawGraphNode(ctx: CanvasRenderingContext2D, element: GraphNode, selectedElement: GraphNode, selectedSequence: any[]) {
 
    // Setze die Schriftart des Textes, dies muss vorher gesetzt werden, damit die größe des Textes richtig berechnet werden kann.
    ctx.font = 'bold 16px Courier New';

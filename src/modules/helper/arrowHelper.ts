@@ -1,5 +1,5 @@
-import { Arrow } from "../../domain/Arrow";
-import { GraphNode } from "../../domain/GraphNode";
+import { Arrow } from "../../definitions/Arrow";
+import { GraphNode } from "../../definitions/GraphNode";
 import { getAnchors } from "./anchorHelper";
 
 // Gibt die Koordinaten und Ankerpunkt eines Pfeils zurück 

@@ -1,5 +1,5 @@
-import { GraphNode } from "../../domain/GraphNode";
-import { Arrow } from "../../domain/Arrow";
+import { GraphNode } from "../../definitions/GraphNode";
+import { Arrow } from "../../definitions/Arrow";
 import { findLastGraphNode } from "../helper/utilities";
 import { findArrow } from "../helper/arrowHelper";
 

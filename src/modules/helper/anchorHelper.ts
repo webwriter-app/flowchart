@@ -1,5 +1,5 @@
-import { Arrow } from "../../domain/Arrow";
-import { GraphNode } from "../../domain/GraphNode";
+import { Arrow } from "../../definitions/Arrow";
+import { GraphNode } from "../../definitions/GraphNode";
 import { measureTextSize } from "./utilities";
 
 // Gibt die Anker Positionen einen Knotens in einem Array zurück

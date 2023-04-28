@@ -1,4 +1,4 @@
-import { GraphNode } from "../../domain/GraphNode";
+import { GraphNode } from "../../definitions/GraphNode";
 
 // Entfernt die alten Verbindungsinformationen innerhalb der Knoten 
 export function removeOldConnection(fromNode: GraphNode, toNode: GraphNode) {

@@ -1,5 +1,5 @@
-import { Arrow } from "../../domain/Arrow";
-import { GraphNode } from "../../domain/GraphNode";
+import { Arrow } from "../../definitions/Arrow";
+import { GraphNode } from "../../definitions/GraphNode";
 import { v4 as uuidv4 } from 'uuid';
 
 // Erzeuge die Verbindungen anhand der gegebenen Knoten 

@@ -3,9 +3,9 @@ import { html, css } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { v4 as uuidv4 } from 'uuid';
 
-import { GraphNode } from './src/domain/GraphNode';
-import { Arrow } from './src/domain/Arrow';
-import { ItemList } from './src/domain/ItemList';
+import { GraphNode } from './src/definitions/GraphNode';
+import { Arrow } from './src/definitions/Arrow';
+import { ItemList } from './src/definitions/ItemList';
 
 import { drawButton } from './src/modules/drawer/drawButton';
 import { drawGraphNode, drawNodeAnchors } from './src/modules/drawer/drawGraphNode';
@@ -14,12 +14,13 @@ import { drawArrow, drawTempArrow, generateArrowPoints, drawArrowAnchor } from '
 import { handleNodeDragStart, handleArrowDragStart } from './src/modules/handler/mouseDownHandler';
 import { handleGrabRelease, handleNodeDragStop, handleArrowCreation } from './src/modules/handler/mouseUpHandler';
 import { handleSequenceSelection } from './src/modules/handler/handleSequenceSelection';
+import { handleGraphNodeDoubleClick, handleArrowDoubleClick } from './src/modules/handler/doubleClickHandler';
 
 import { toggleMenu, addTask, addHelp, updateDisabledState, grabCanvas } from './src/ui'
 
 import { removeOldConnection, findLastGraphNode, findGraphNodeLastIndex } from './src/modules/helper/utilities'
-import { getArrowInformation, isArrowClicked } from './src/modules/helper/arrowHelper';
-import { getAnchors, getNearestCircle, highlightAnchor } from './src/modules/helper/anchorHelper';
+import { isArrowClicked } from './src/modules/helper/arrowHelper';
+import { getAnchors, highlightAnchor } from './src/modules/helper/anchorHelper';
 import { createArrowsFromGraphNodes, updatePresetIds } from './src/modules/helper/presetHelper';
 
 import { flowchartPresets } from './src/modules/presets/flowchartPresets';
@@ -272,13 +273,12 @@ export class PAPWidget extends LitElementWw {
       // Zeichne alle Verbindungen
       this.arrows.forEach((arrow) => {
       const isSelected = arrow === this.selectedArrow;
-      arrow.points = generateArrowPoints(this.ctx, arrow.from, arrow.to);
-      drawArrow(this.ctx, arrow.from, arrow.to, isSelected, arrow.text);
+      arrow.points = generateArrowPoints(this.ctx, arrow);
+      drawArrow(this.ctx, arrow, isSelected, this.selectedSequence);
 
       // Zeichne Ankerpunkte des Pfeils, wenn dieser ausgewählt ist
       if (isSelected) {
-         const toArrowInfo = getArrowInformation(this.ctx, arrow.to, arrow.from);
-         drawArrowAnchor(this.ctx, toArrowInfo.anchor, toArrowInfo.x, toArrowInfo.y, this.isArrowAnchorHovered);
+         drawArrowAnchor(this.ctx, arrow, this.isArrowAnchorHovered);
       }
    });
 
@@ -459,38 +459,13 @@ export class PAPWidget extends LitElementWw {
 
    private handleDoubleClick(event: MouseEvent) {
       const { x, y } = this.getMouseCoordinates(event);
-
-      // Ermittle, ob das Doppelklick-Event auf einem der Rechtecke stattgefunden hat
       const clickedNodeIndex = findGraphNodeLastIndex(this.ctx, this.graphNodes, x, y);
+      const selectedArrowIndex = this.arrows.findIndex((arrow) => isArrowClicked(x, y, arrow.points));
 
       if (clickedNodeIndex !== -1 && this.graphNodes[clickedNodeIndex].node !== 'connector') {
-         // Fordere den Benutzer auf, einen neuen Text einzugeben
-         const newText = prompt('Bitte geben einen neuen Text ein:');
-
-         if (newText !== null) {
-            // Ersetze den Text des Elements
-            this.graphNodes[clickedNodeIndex].text = newText;
-
-            // Zeichne das Canvas neu, um die Änderungen anzuzeigen
-            this.redrawCanvas();
-         }
-      } 
-
-      const selectedArrowIndex = this.arrows.findIndex((arrow) => isArrowClicked(x, y, arrow.points));
-      if (selectedArrowIndex !== -1) {
-         this.selectedArrow = this.arrows[selectedArrowIndex];
-
-         // Fordere den Benutzer auf, einen neuen Text für den Pfeil einzugeben
-         const newText = prompt('Bitte gebe einen  neuen Text für den Pfeil ein:');
-     
-         if (newText !== null) {
-           // Ersetze den Text des Pfeils
-           this.selectedArrow.text = newText;
-           this.arrows.splice(selectedArrowIndex, 1);
-           this.arrows.push(this.selectedArrow);
-
-           this.redrawCanvas();
-         }
+         handleGraphNodeDoubleClick(this.graphNodes, clickedNodeIndex, () => this.redrawCanvas());
+      } else if (selectedArrowIndex !== -1) {
+         handleArrowDoubleClick(this.arrows, selectedArrowIndex, () => this.redrawCanvas());
       }
    }
 

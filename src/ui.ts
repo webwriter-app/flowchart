@@ -2,7 +2,7 @@
 *   Hier finden sich die Funktionen für die Benutzeroberfläche 
 */
 
-import { ItemList } from "./domain/ItemList";
+import { ItemList } from "./definitions/ItemList";
 
 // Zeige oder verstecke die angefragten Benutzeroberflächen 
 export function toggleMenu(element: HTMLElement, menu: 'task' | 'flow' | 'context' | 'preset' | 'help') {

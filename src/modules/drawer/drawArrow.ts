@@ -1,11 +1,14 @@
-import { GraphNode } from "../../domain/GraphNode";
+import { GraphNode } from "../../definitions/GraphNode";
+import { Arrow } from "../../definitions/Arrow";
 import { getArrowInformation } from "../helper/arrowHelper";
 import { getAnchors } from "../helper/anchorHelper";
 
-export function drawArrow(ctx: CanvasRenderingContext2D, from: GraphNode, to: GraphNode, isSelected: boolean = false, text?: string) {
+// export function drawArrow(ctx: CanvasRenderingContext2D, from: GraphNode, to: GraphNode, isSelected: boolean = false, text: string, selectedSequence: any[]) {
+export function drawArrow(ctx: CanvasRenderingContext2D, arrow: Arrow, isSelected: boolean = false, selectedSequence: any[]) {
  
-   const points = generateArrowPoints(ctx, from, to);
-   applyArrowStyle(ctx, isSelected);
+   const points = generateArrowPoints(ctx, arrow);
+   ctx.save();
+   applyArrowStyle(ctx, isSelected, arrow, points, selectedSequence);
 
    ctx.beginPath();
    ctx.setLineDash([])
@@ -18,32 +21,17 @@ export function drawArrow(ctx: CanvasRenderingContext2D, from: GraphNode, to: Gr
    // Zeichne den Pfeilkopf
    drawArrowHead(ctx, points[points.length - 1], points[points.length - 2]);
 
-   if (text) {
-      addArrowText(ctx, points, text);
+   if (arrow.text) {
+      addArrowText(ctx, points, arrow.text);
    }
 
-   //Hervorhebung der ausgewählten Sequenz und Anzeige des Counters
-   // const sequenceIndex = selectedSequence.findIndex((item) => item.type === 'node');
-   // if (sequenceIndex !== -1) {
-   //    ctx.save();
-   //    ctx.strokeStyle = 'gold';
-   //    ctx.lineWidth = 4;
-   //    ctx.stroke();
+   ctx.restore();
 
-   //    ctx.fillStyle = 'gold';
-   //    ctx.font = 'bold 16px Arial';
-   //    ctx.fillText(
-   //       selectedSequence[sequenceIndex].order.toString(),
-   //       x + width + 8,
-   //       y - 5
-   //    );
-   //    ctx.restore();
-   //}
 }
 
-export function generateArrowPoints(ctx: CanvasRenderingContext2D, fromNode: GraphNode, toNode: GraphNode) {
-   const fromArrowInfo = getArrowInformation(ctx, fromNode, toNode);
-   const toArrowInfo = getArrowInformation(ctx, toNode, fromNode);
+export function generateArrowPoints(ctx: CanvasRenderingContext2D, arrow: Arrow) {
+   const fromArrowInfo = getArrowInformation(ctx, arrow.from, arrow.to);
+   const toArrowInfo = getArrowInformation(ctx, arrow.to, arrow.from);
    
    const from = {
       x: fromArrowInfo.x,
@@ -305,10 +293,33 @@ export function generateArrowPoints(ctx: CanvasRenderingContext2D, fromNode: Gra
    return points;
 }
 
-export function applyArrowStyle(ctx: CanvasRenderingContext2D, isSelected: boolean) {
+function applyArrowStyle(ctx: CanvasRenderingContext2D, isSelected: boolean, arrow: Arrow, points: { x: number, y: number }[], selectedSequence: any[]) {
    ctx.strokeStyle = isSelected ? '#5CACEE' : 'black';
    ctx.fillStyle = isSelected ? '#5CACEE' : 'black';
    ctx.lineWidth = 2;
+
+   if (selectedSequence.length > 0) {
+      const sequenceIndex = selectedSequence.findIndex((item) =>item.id === arrow.id && item.type === 'arrow');
+      if (sequenceIndex !== -1) {
+         const midPointIndex = Math.floor(points.length / 2 - 0.5);
+         const midPoint = {
+            x: (points[midPointIndex].x + points[midPointIndex + 1].x) / 2,
+            y: (points[midPointIndex].y + points[midPointIndex + 1].y) / 2,
+         };
+
+         ctx.strokeStyle = 'gold';
+         ctx.fillStyle = 'gold';
+         ctx.lineWidth = 4;
+         ctx.stroke();
+
+         ctx.font = 'bold 16px Arial';
+         ctx.fillText(
+            selectedSequence[sequenceIndex].order.toString(),
+            midPoint.x + 10,
+            midPoint.y + 10
+         );
+      }
+   }
 }
 
 function drawArrowHead(ctx: CanvasRenderingContext2D, toPoint: { x: number; y: number }, prevPoint: { x: number; y: number }) {
@@ -343,7 +354,13 @@ function addArrowText(ctx: CanvasRenderingContext2D, points: { x: number; y: num
  }
 
 // Zeichne die Ankerpunkte einer Verbindung
-export function drawArrowAnchor(ctx: CanvasRenderingContext2D, anchor: number, x: number, y: number, ishovered: boolean) {
+export function drawArrowAnchor(ctx: CanvasRenderingContext2D, arrow: Arrow, ishovered: boolean) {
+   
+   const arrowInfo = getArrowInformation(ctx, arrow.to, arrow.from);
+   const anchor = arrowInfo.anchor;
+   const x = arrowInfo.x;
+   const y = arrowInfo.y;
+
    const drawAnchor = (x: number, y: number, radius: number) => {
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, 2 * Math.PI);

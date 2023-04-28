@@ -1,4 +1,4 @@
-import { GraphNode } from "../../domain/GraphNode";
+import { GraphNode } from "../../definitions/GraphNode";
 
 // Presets von verschiedenen PAP-Sequenzen die erzeugt werden können
 export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
