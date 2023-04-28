@@ -124,6 +124,9 @@ export class PAPWidget extends LitElementWw {
             <button @click='${() => this.clearAll()}'>
                ${drawButton('delete', 'tool')}
             </button>
+            <button @click='${() => this.toggleMenu('translate')}'>
+               ${drawButton('translate', 'tool')}
+            </button>
             <button @click='${() => this.toggleMenu('task')}'>
                ${drawButton('task', 'tool')}
             </button>
@@ -135,7 +138,7 @@ export class PAPWidget extends LitElementWw {
             </button>
          </div>
 
-         <div class='task-menu'>
+         <div class='task-menu hidden'>
             <button class='close-button' @click='${() => this.toggleMenu('task')}'>
                ×
             </button>
@@ -173,6 +176,16 @@ export class PAPWidget extends LitElementWw {
                </button>
          </div>
 
+         <div class='translate-menu hidden'>
+            <button class='close-button' @click='${() => this.toggleMenu('translate')}'>
+               ×
+            </button>
+            <div class="translate-container"></div>
+               <button class="translate-button" @click='${this.translateToPseudoCode}'>
+                  ${drawButton('pseudoCode', 'translate')}
+               </button>
+         </div>
+
          <div id='context-menu' class='context-menu'>
             <div class='context-menu-item' @click='${() => this.deleteSelectedObject()}'>
                Löschen
@@ -184,6 +197,65 @@ export class PAPWidget extends LitElementWw {
    }
 
    // ------------------------ User interface Funktionen ------------------------
+
+   private translateToPseudoCode() {
+      const pseudocode = this.generatePseudoCode(this.graphNodes);
+      //console.log(pseudocode);
+   }
+
+   // Erzeuge aus den Informationen von GraphNode Pseudocode
+   private generatePseudoCode(nodes: GraphNode[]) {
+      const pseudoCodeLines: string[] = [];
+      const visitedNodes = new Set<string>();
+    
+      function traverseNode(node: GraphNode, indentLevel: number) {
+        if (visitedNodes.has(node.id)) return;
+    
+        visitedNodes.add(node.id);
+    
+        const indentation = "  ".repeat(indentLevel);
+    
+        switch (node.node) {
+          case "start":
+            pseudoCodeLines.push("BEGIN");
+            break;
+          case "i/o":
+            pseudoCodeLines.push(`${indentation}${node.text}`);
+            break;
+          case "op":
+            pseudoCodeLines.push(`${indentation}${node.text}`);
+            break;
+          case "decision":
+            pseudoCodeLines.push(`${indentation}IF ${node.text.trim()} THEN`);
+            break;
+          case "end":
+            pseudoCodeLines.push("END");
+            return;
+        }
+    
+        const connectionsTo = node.connections?.filter((conn) => conn.direction === "to") || [];
+        const connectedNodes = connectionsTo.map((conn) => nodes.find((n) => n.id === conn.connectedToId)).filter(Boolean) as GraphNode[];
+    
+        for (const connectedNode of connectedNodes) {
+          if (connectedNode.node === "decision" && node.node === "decision") {
+            pseudoCodeLines.push(`${indentation}ELSE`);
+          }
+          traverseNode(connectedNode, connectedNode.node === "decision" ? indentLevel + 1 : indentLevel);
+        }
+    
+        if (node.node === "decision") {
+          pseudoCodeLines.push(`${indentation}END IF`);
+        }
+      }
+    
+      const startNode = nodes.find((n) => n.node === "start");
+      if (startNode) {
+        traverseNode(startNode, 0);
+      }
+    
+      console.log(pseudoCodeLines.join("\n"));
+   }
+    
 
    private selectSequence() {
       // Setze css style von Icon auf aktiv
@@ -199,7 +271,7 @@ export class PAPWidget extends LitElementWw {
    }
 
    // Zeige oder verstecke die angefragten Benutzeroberflächen 
-   private toggleMenu(menu: 'task' | 'flow' | 'context' | 'preset' | 'help') {
+   private toggleMenu(menu: 'task' | 'flow' | 'context' | 'preset' | 'help' | 'translate') {
       toggleMenu(this, menu);
    }
 

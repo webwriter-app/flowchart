@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     //"target": "ES5",
-    "lib": ["DOM", "ES2015"],
+    "lib": ["DOM", "ES2016"],
     "experimentalDecorators": true,
     "useDefineForClassFields": false
   }

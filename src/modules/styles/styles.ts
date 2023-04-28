@@ -362,6 +362,54 @@ export const papWidgetStyles = css`
       background-color: var(--hover-color);
    }
 
+   .translate-menu {
+      position: fixed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      background-color: #2c3e50;
+      padding: 15px;
+      right: 1.5%;
+      top: 15%;
+      max-width: 250px;
+      max-height: 75%;
+      border-radius: var(--border-r);
+      overflow: hidden;
+   }
+
+   .translate-menu-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%; 
+      box-sizing: border-box; 
+      align-items: stretch;
+      flex-grow: 1;
+      overflow-y: auto;
+      margin-bottom: 10px;
+   }
+
+   .translate-button {
+      background-color: var(--button-color);
+      color: white;
+      border: none;
+      width: 100%;
+      border-radius: var(--border-r);
+      font-family: 'Arial';
+      font-size: 16px;
+      padding: 10px;
+      margin-bottom: 10px;
+      margin-top: 5px;
+      transition: background-color 0.3s;
+   }
+
+   .translate-button:hover {
+      background-color: var(--hover-color);
+   }
+
+
+
    input:disabled,
    textarea:disabled {
       background-color: #ffffff; 

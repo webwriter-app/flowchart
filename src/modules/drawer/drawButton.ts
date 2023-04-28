@@ -1,5 +1,5 @@
 // Funktion zum Zeichnen von Schaltflächenelementen
-export function drawButton(element: string, menu: 'flow' | 'tool' | 'task' | 'help') {
+export function drawButton(element: string, menu: 'flow' | 'tool' | 'task' | 'help' | 'translate') {
    
    // Funktion zum übersichtlichen setzen der Attribute der SVG Grafiken 
    function setAttributeList(element: SVGElement, attributes: { [key: string]: string }): void {
@@ -41,6 +41,7 @@ export function drawButton(element: string, menu: 'flow' | 'tool' | 'task' | 'he
          });
          break;
       case 'help':
+      case "translate":
          setAttributeList(svg, {
             width: '140',
             height: '30',
@@ -269,6 +270,33 @@ export function drawButton(element: string, menu: 'flow' | 'tool' | 'task' | 'he
          svg.appendChild(line3);
          break;
       
+      case 'translate':
+         const scaleTranslate = 0.85;
+         const translateX = 10;
+         const translateY = 4;
+
+         const rightArrow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+         setAttributeList(rightArrow, {
+            d: 'M28.75,17.77671a1.24991,1.24991,0,0,0-1.25,1.25,2.73109,2.73109,0,0,1-2.67578,2.77734H9.122l3.48254-3.57227a1.25,1.25,0,0,0-1.78906-1.74609L5.2627,22.181a1.25046,1.25046,0,0,0,0,1.7461l5.55273,5.69531a1.25,1.25,0,1,0,1.78906-1.7461L9.122,24.30405H24.8418c.00653,0,.0119-.00366.01837-.00366A5.23207,5.23207,0,0,0,30,19.02671,1.24991,1.24991,0,0,0,28.75,17.77671Z',
+            fill: 'white',
+            stroke: 'white',
+            'stroke-width': '0.1',
+            transform: `scale(${scaleTranslate}) translate(${translateX} ${translateY})` 
+         });
+
+         const leftArrow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+         setAttributeList(leftArrow, {
+            d: 'M20.87805,8.19467l-3.48254,3.57227A1.25,1.25,0,1,0,19.18457,13.513L24.7373,7.81772a1.25045,1.25045,0,0,0,0-1.74609L19.18457.37631a1.25,1.25,0,1,0-1.78906,1.7461l3.48254,3.57226H5.1582c-.00653,0-.0119.00367-.01837.00367A5.23207,5.23207,0,0,0,0,10.972a1.25,1.25,0,0,0,2.5,0A2.7311,2.7311,0,0,1,5.17578,8.19467Z',
+            fill: 'white',
+            stroke: 'white',
+            'stroke-width': '0.1',
+            transform: `scale(${scaleTranslate}) translate(${translateX} ${translateY})` 
+         });
+   
+         svg.appendChild(rightArrow);
+         svg.appendChild(leftArrow);
+         break;
+
       case 'preset':
          const scalePreset = 0.85;
          const presetX = 5;
@@ -354,6 +382,21 @@ export function drawButton(element: string, menu: 'flow' | 'tool' | 'task' | 'he
          text.textContent = 'Hilfe Hinzufügen';
          svg.appendChild(text);
          break;
+
+      // Translate Menü
+      case 'pseudoCode':
+         setAttributeList(text, {
+            x: '70',
+            y: '22',
+            fill: 'white',
+            'text-anchor': 'middle',
+            'font-size': '16',
+            'font-family': 'Arial'
+         });
+         text.textContent = 'Pseudo Code';
+         svg.appendChild(text);
+         break;
+
       default:
          console.log('Unbekannte SVG Bezeichnung');
    }
