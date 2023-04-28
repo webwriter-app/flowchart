@@ -1,6 +1,6 @@
 import { GraphNode } from "../../domain/GraphNode";
 import { Arrow } from "../../domain/Arrow";
-import { findLastGraphNode } from "../helper/generalHelper";
+import { findLastGraphNode } from "../helper/utilities";
 import { findArrow } from "../helper/arrowHelper";
 
 export function handleSequenceSelection(

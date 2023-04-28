@@ -18,6 +18,9 @@ export function removeOldConnection(fromNode: GraphNode, toNode: GraphNode) {
    }
 }
 
+export const isWithinCircle = ( x: number, y: number, circleX: number, circleY: number, radius: number): 
+   boolean => Math.sqrt(Math.pow(x - circleX, 2) + Math.pow(y - circleY, 2)) <= radius;
+
 // Bestimmt die Maße des Knotens anhand der Textgrößen
 export function measureTextSize(ctx: CanvasRenderingContext2D, text: string): { width: number; height: number } {
    const metrics = ctx.measureText(text);

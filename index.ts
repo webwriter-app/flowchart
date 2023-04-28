@@ -11,11 +11,13 @@ import { drawButton } from './src/modules/drawer/drawButton';
 import { drawGraphNode, drawNodeAnchors } from './src/modules/drawer/drawGraphNode';
 import { drawArrow, drawTempArrow, generateArrowPoints, drawArrowAnchor } from './src/modules/drawer/drawArrow';
 
+import { handleNodeDragStart, handleArrowDragStart } from './src/modules/handler/mouseDownHandler';
+import { handleGrabRelease, handleNodeDragStop, handleArrowCreation } from './src/modules/handler/mouseUpHandler';
 import { handleSequenceSelection } from './src/modules/handler/handleSequenceSelection';
 
 import { toggleMenu, addTask, addHelp, updateDisabledState, grabCanvas } from './src/ui'
 
-import { removeOldConnection, findLastGraphNode, findGraphNodeLastIndex } from './src/modules/helper/generalHelper'
+import { removeOldConnection, findLastGraphNode, findGraphNodeLastIndex } from './src/modules/helper/utilities'
 import { getArrowInformation, isArrowClicked } from './src/modules/helper/arrowHelper';
 import { getAnchors, getNearestCircle, highlightAnchor } from './src/modules/helper/anchorHelper';
 import { createArrowsFromGraphNodes, updatePresetIds } from './src/modules/helper/presetHelper';
@@ -316,96 +318,49 @@ export class PAPWidget extends LitElementWw {
       const { x, y } = this.getMouseCoordinates(event);
 
       if (this.isGrabbing) {
+         // Update Offset von Canvwas wenn dieser gezogen wird
          this.grabStartPosition = { x, y };
          const offsetX = parseFloat(this.style.getPropertyValue('--offset-x'));
          const offsetY = parseFloat(this.style.getPropertyValue('--offset-y'));
          this.grabStartOffset = { x: offsetX, y: offsetY };
       } else {
-         this.draggedNode = findLastGraphNode(this.ctx, this.graphNodes, x, y);
+         // Handhabung wenn Knoten gezogen wird
+         const { draggedNode, isDragging, dragOffset } = handleNodeDragStart(this.ctx, x, y, this.graphNodes, this.selectedArrow);
+         this.draggedNode = draggedNode;
+         this.isDragging = isDragging;
+         this.dragOffset = dragOffset;
 
-         if (this.draggedNode && !this.selectedArrow) {
-            this.isDragging = true;
-            this.dragOffset = { x: x - this.draggedNode.x, y: y - this.draggedNode.y };
-         }
-
-         if (this.selectedArrow) {
-            const { points } = this.selectedArrow;
-
-            const isWithinCircle = (x: number, y: number, circleX: number, circleY: number, radius: number) =>
-               Math.sqrt(Math.pow(x - circleX, 2) + Math.pow(y - circleY, 2)) <= radius;
-
-            // Überprüfe ob einer der Ankerpunkte berührt wurde, wenn ja setze die Variablen zum ziehen.
-            //if (isWithinCircle(x, y, points[0].x, points[0].y, 5) || isWithinCircle(x, y, points[points.length - 1].x, points[points.length - 1].y, 5)) {
-            if (isWithinCircle(x, y, points[points.length - 1].x, points[points.length - 1].y, 5)) {
-               let tempElement: GraphNode;
-               let tempAnchor: number;
-               const nearestElement = findLastGraphNode(this.ctx, this.graphNodes, x, y);
-
-               // Bestimme das Startelement von dem der temporäre Pfeil gesetzt werden soll
-               if (nearestElement) {
-                  // Auskommentierten Code sind für den Fall das an beiden Start- und Endpositionen der Pfeil verschoben werden kann
-                  //nearestElement === this.selectedArrow.from ? tempElement = this.selectedArrow.to : tempElement = this.selectedArrow.from
-                  tempElement = this.selectedArrow.from;
-                  for (let i = 0; i < tempElement.connections.length; i++) {
-                     if (tempElement.connections[i].connectedToId === nearestElement.id) { tempAnchor = tempElement.connections[i].anchor }
-                  }
-
-                  // Rufe handleAnchorClick auf um einen temporären Pfeil zu zeichnen.
-                  this.handleAnchorClick(event, tempElement, tempAnchor);
-
-                  // Lösche die alten Verbindungsinformationen innerhalb der Knoten und die Verbindung
-                  removeOldConnection(this.selectedArrow.from, this.selectedArrow.to);
-                  // Entferne den alte Verbindung 
-                  this.arrows = this.arrows.filter((arrow) => arrow.from !== this.selectedArrow.from || arrow.to !== this.selectedArrow.to);
-               }
-
-            }
-         }
+         // Wenn ein Pfeil gezogen wird, wird ein temporärer gestrichelter Pfeil gezeichnet
+         const { arrowToMove, arrowStart } = handleArrowDragStart( this.ctx, x, y, this.graphNodes, this.selectedArrow, this.handleAnchorClick.bind(this));
+    
+          if (arrowToMove && arrowStart) {
+            this.arrowStart = arrowStart;
+            this.arrows = this.arrows.filter((arrow) => arrow !== arrowToMove);
+          }
       }
    }
 
    private handleMouseUp(event: MouseEvent) {
       if (this.isGrabbing && this.grabStartPosition) {
-         this.grabStartPosition = undefined;
-         this.grabStartOffset = undefined;
+         // Setze die Grabposition des Canvas zurück, nachdem dieser gezogen wurde
+        const { grabStartPosition, grabStartOffset } = handleGrabRelease();
+        this.grabStartPosition = grabStartPosition;
+        this.grabStartOffset = grabStartOffset;
       } else {
-         if (this.isDragging) {
-            // Element loslassen nach dem ziehen
-            this.isDragging = false;
-         } else if (this.isDrawingArrow) {
-            const { x, y } = this.getMouseCoordinates(event);
-
-            const targetElement = findLastGraphNode(this.ctx, this.graphNodes, x, y);
-
-            // Überprüft ob ein Zielelement gefunden wurde und dieser ungleich dem Startelement
-            if (this.arrowStart && targetElement && (this.arrowStart.node !== targetElement) && (targetElement.node !== 'text')) {
-
-               // Speichere die Pfeilverbindung am Startelement
-               if (!this.arrowStart.node.connections) {
-                  this.arrowStart.node.connections = [];
-               }
-               this.arrowStart.node.connections.push({ anchor: this.arrowStart.anchor, direction: 'to', connectedToId: targetElement.id });
-
-               // Speichere die Pfeilverbindung am Ziel-Element
-               if (!targetElement.connections) {
-                  targetElement.connections = [];
-               }
-               const nearestCircleIndex = getNearestCircle(this.ctx, { x, y }, targetElement);
-               targetElement.connections.push({ anchor: nearestCircleIndex, direction: 'from', connectedToId: this.arrowStart.node.id });
-
-               // Erstelle die Pfeilpunkte und speichere die Pfeilverbindung
-               const points = generateArrowPoints(this.ctx, this.arrowStart.node, targetElement);
-               this.arrows.push({ id: uuidv4(), from: this.arrowStart.node, to: targetElement, points });
-               this.redrawCanvas();
-            }
-
-            this.isDrawingArrow = false;
-         }
-
-         // Resete die Informationen
-         this.tempArrowEnd = undefined;
-         this.arrowStart = undefined;
-         //this.selectedArrow = undefined;
+        if (this.isDragging) {
+         // Setze die Informationen zurück, nachdem ein Knoten gezogen wurde
+          const { isDragging } = handleNodeDragStop();
+          this.isDragging = isDragging;
+        } else if (this.isDrawingArrow) {
+         // Erstelle ggf. die Pfeilverbindung, nachdem ein Pfeil losgelassen wurde
+          const { x, y } = this.getMouseCoordinates(event);
+          const { tempArrowEnd, arrowStart, arrows } = handleArrowCreation( this.ctx, x, y, this.arrowStart, this.graphNodes, this.arrows );
+          
+          this.tempArrowEnd = tempArrowEnd;
+          this.arrowStart = arrowStart;
+          this.arrows = arrows;
+          this.isDrawingArrow = false;
+        }
       }
    }
 
@@ -539,8 +494,7 @@ export class PAPWidget extends LitElementWw {
       }
    }
 
-   private handleAnchorClick(event: MouseEvent, node: GraphNode, anchor: number) {
-      event.stopPropagation();
+   private handleAnchorClick( node: GraphNode, anchor: number) {
       this.isDrawingArrow = true;
       this.arrowStart = { node, anchor };
    }
@@ -554,7 +508,7 @@ export class PAPWidget extends LitElementWw {
                const { x, y } = this.getMouseCoordinates(event);
                const distance = Math.sqrt((position.x - x) ** 2 + (position.y - y) ** 2);
                if (distance <= 8) {
-                  this.handleAnchorClick(event, this.selectedNode, index);
+                  this.handleAnchorClick(this.selectedNode, index);
                }
             });
          });

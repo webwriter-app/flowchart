@@ -1,6 +1,6 @@
 
 import { GraphNode } from "../../domain/GraphNode";
-import { measureTextSize } from "../helper/generalHelper";
+import { measureTextSize } from "../helper/utilities";
 import { getAnchors } from "../helper/anchorHelper";
 
 // Funktion zum Zeichnen von GraphNode-Elementen

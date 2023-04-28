@@ -1,6 +1,6 @@
 import { Arrow } from "../../domain/Arrow";
 import { GraphNode } from "../../domain/GraphNode";
-import { measureTextSize } from "./generalHelper";
+import { measureTextSize } from "./utilities";
 
 // Gibt die Anker Positionen einen Knotens in einem Array zurück
 export function getAnchors(ctx: CanvasRenderingContext2D, element: GraphNode, d: number = 0) {
