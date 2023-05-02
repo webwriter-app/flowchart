@@ -18,16 +18,44 @@ export function removeOldConnection(fromNode: GraphNode, toNode: GraphNode) {
    }
 }
 
+export function snapNodePosition(ctx: CanvasRenderingContext2D, draggedNode: GraphNode, graphNodes: GraphNode[], threshold: number): void {
+   const draggedNodeSize = measureTextSize(ctx, draggedNode.text);
+ 
+   for (const node of graphNodes) {
+     if (node.id === draggedNode.id) {
+       continue;
+     }
+ 
+     const nodeSize = measureTextSize(ctx, node.text);
+ 
+     const xDifference = Math.abs((draggedNode.x + draggedNodeSize.width / 2) - (node.x + nodeSize.width / 2));
+     const yDifference = Math.abs((draggedNode.y + draggedNodeSize.height / 2) - (node.y + nodeSize.height / 2));
+ 
+     if (xDifference <= threshold) {
+       draggedNode.x = node.x + nodeSize.width / 2 - draggedNodeSize.width / 2;
+     }
+ 
+     if (yDifference <= threshold) {
+       draggedNode.y = node.y + nodeSize.height / 2 - draggedNodeSize.height / 2;
+     }
+   }
+ }
+
 export const isWithinCircle = ( x: number, y: number, circleX: number, circleY: number, radius: number): 
    boolean => Math.sqrt(Math.pow(x - circleX, 2) + Math.pow(y - circleY, 2)) <= radius;
 
 // Bestimmt die Maße des Knotens anhand der Textgrößen
 export function measureTextSize(ctx: CanvasRenderingContext2D, text: string): { width: number; height: number } {
    const metrics = ctx.measureText(text);
-   // const width = Math.max(metrics.width + 20, 80);
-   // const height = Math.max(metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent + 20, 60);
    const width = metrics.width + 30;
-   const height = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent + 30;
+   
+   // Extrahiere die Schriftgröße aus der Font-Eigenschaft des Canvas-Kontexts
+   const fontSizeMatch = ctx.font.match(/\d+px/);
+   const fontSize = fontSizeMatch ? parseInt(fontSizeMatch[0], 10) : 16;
+
+   // Berechne die Höhe basierend auf der Schriftgröße
+   const height = fontSize + 30;
+   
    return { width, height };
 }
 

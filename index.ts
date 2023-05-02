@@ -18,7 +18,7 @@ import { handleGraphNodeDoubleClick, handleArrowDoubleClick } from './src/module
 
 import { toggleMenu, addTask, addHelp, updateDisabledState, grabCanvas } from './src/ui'
 
-import { removeOldConnection, findLastGraphNode, findGraphNodeLastIndex } from './src/modules/helper/utilities'
+import { snapNodePosition, removeOldConnection, findLastGraphNode, findGraphNodeLastIndex } from './src/modules/helper/utilities'
 import { isArrowClicked } from './src/modules/helper/arrowHelper';
 import { getAnchors, highlightAnchor } from './src/modules/helper/anchorHelper';
 import { createArrowsFromGraphNodes, updatePresetIds } from './src/modules/helper/presetHelper';
@@ -30,6 +30,7 @@ import { papWidgetStyles } from './src/modules/styles/styles'
 
 import { CustomPrompt } from './src/components/custom-prompt';
 import './src/components/custom-prompt'
+
 
 @customElement('pap-widget')
 export class PAPWidget extends LitElementWw {
@@ -141,6 +142,9 @@ export class PAPWidget extends LitElementWw {
             </button>
             <button @click='${() => this.toggleMenu('help')}'>
                ${drawButton('help', 'tool')}
+            </button>
+            <button @click='${() => this.toggleMenu('help')}'>
+               ${drawButton('setting', 'tool')}
             </button>
          </div>
 
@@ -346,6 +350,8 @@ export class PAPWidget extends LitElementWw {
       drawGraphNode(this.ctx, element, this.selectedNode, this.selectedSequence);
    }
 
+  
+    
 
 
    // ------------------------ Mouse-Events ------------------------
@@ -384,6 +390,9 @@ export class PAPWidget extends LitElementWw {
          this.grabStartOffset = grabStartOffset;
       } else {
          if (this.isDragging) {
+            // Füge diese Zeile hinzu, um die Knotenposition basierend auf dem Schwellenwert zu aktualisieren
+            snapNodePosition(this.ctx, this.draggedNode, this.graphNodes, 6);
+
             // Setze die Informationen zurück, nachdem ein Knoten gezogen wurde
             const { isDragging } = handleNodeDragStop();
             this.isDragging = isDragging;
@@ -696,7 +705,6 @@ Weitere Funktionen:
 - Select All, verschieben mehrere Elemente durch drag and drop
 
 UI:
-- Größe der Elemente einheitlich gestalten
-- Verbindungen sollen locken in einem radius von 5px 
+- Zeilenumbrüche erlauben?
 
 */
