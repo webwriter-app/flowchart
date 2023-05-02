@@ -47,14 +47,18 @@ export const isWithinCircle = ( x: number, y: number, circleX: number, circleY: 
 // Bestimmt die Maße des Knotens anhand der Textgrößen
 export function measureTextSize(ctx: CanvasRenderingContext2D, text: string): { width: number; height: number } {
    const metrics = ctx.measureText(text);
-   const width = metrics.width + 30;
+   const width = metrics.width + 40;
    
    // Extrahiere die Schriftgröße aus der Font-Eigenschaft des Canvas-Kontexts
    const fontSizeMatch = ctx.font.match(/\d+px/);
    const fontSize = fontSizeMatch ? parseInt(fontSizeMatch[0], 10) : 16;
 
    // Berechne die Höhe basierend auf der Schriftgröße
-   const height = fontSize + 30;
+   const height = fontSize + 25;
+
+   if( text === ''){
+      return { width: 30, height: 30 };
+   }
    
    return { width, height };
 }

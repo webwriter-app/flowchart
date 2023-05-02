@@ -12,6 +12,8 @@ export const papWidgetStyles = css`
       --menu-color: #2c3e50;
       --button-color: #3a4f65;
       --hover-color: #1abc9c;
+      --hover-transition: background-color 0.3s;
+      --box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.6);
 
       --offset-x: 0;
       --offset-y: 0;
@@ -25,6 +27,7 @@ export const papWidgetStyles = css`
       display: none;
    }
 
+   /* Workspace */
    .workspace {
       display: block;
       position: relative;
@@ -33,60 +36,79 @@ export const papWidgetStyles = css`
       overflow: hidden;
    }
 
+    /* Menus */
    .flowchart-menu,
-   .tool-menu {
+   .tool-menu,
+   .task-menu,
+   .help-menu,
+   .preset-menu,
+   .translate-menu {
       display: flex;
       position: fixed;
       background-color: var(--menu-color);
+      box-shadow: var(--box-shadow);
       border-radius: var(--border-r);
       padding: 15px;
+      flex-direction: column;
    }
 
    .flowchart-menu {
       left: 1.5%;
       top: 15%;
-      flex-direction: column;
       gap: 10px;
       padding-top: 20px;
    }
 
    .tool-menu {
+      flex-direction: row;
       right: 1.5%;
       top: 3%;
-      flex-direction: row;
       gap: 10px;
    }
 
+   /* Buttons */
    .flowchart-menu button,
-   .tool-menu button {
+   .tool-menu button,
+   .add-task-button,
+   .delete-task-button,
+   .add-help-button,
+   .delete-help-button,
+   .show-help-button,
+   .preset-button,
+   .translate-button {
       background-color: var(--button-color);
       color: white;
       border: none;
       border-radius: var(--border-r);
-      transition: background-color 0.3s;
-   }
-
-   .flowchart-menu button,
-   .tool-menu button {
       font-size: 12px;
       padding: 5px;
+      transition: var(--hover-transition);
    }
 
    .flowchart-menu button:hover,
-   .tool-menu button:hover {
+   .tool-menu button:hover,
+   .add-task-button:hover,
+   .delete-task-button:hover,
+   .add-help-button:hover,
+   .delete-help-button:hover,
+   .show-help-button:hover,
+   .preset-button:hover,
+   .translate-button:hover {
       background-color: var(--hover-color);
    }
-
+   
+ 
    .tool-menu button.active {
       background-color: #EEC900;
    }
 
+   /* Context Menu */
    .context-menu {
       position: absolute;
       z-index: 1000;
       background-color: var(--menu-color);
       border-radius: var(--border-r);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      box-shadow: var(--box-shadow);
       padding: 8px 0;
       display: none;
 
@@ -108,17 +130,12 @@ export const papWidgetStyles = css`
    }
 
    .task-menu {
-      position: fixed;
-      display: flex;
-      flex-direction: column;
-      background-color: #2c3e50;
       padding: 15px;
       right: 1.5%;
       top: 15%;
       width: 300px;
       min-height: 60px;
       max-height: 75%;
-      border-radius: var(--border-r);
       resize: both;
       overflow: hidden;
    }
@@ -162,23 +179,14 @@ export const papWidgetStyles = css`
 
    .add-task-button,
    .delete-task-button {
-      background-color: var(--button-color);
-      color: white;
       border: none;
-      border-radius: var(--border-r);
       font-size: 13px;
-      padding: 5px;
-      transition: background-color 0.3s;
    }
  
    .delete-task-button {
      margin-left: 80%;
    }
 
-   .add-task-button:hover,
-   .delete-task-button:hover {
-      background-color: var(--hover-color);
-   }
 
    .flowchart-menu > .close-button,
    .close-button {
@@ -202,8 +210,9 @@ export const papWidgetStyles = css`
       transition: background-color 0.3s;
    }
 
+   .flowchart-menu > .close-button:hover, 
    .close-button:hover {
-      background-color: var(--hover-color);	
+      background-color: #ee695e;
    }
 
    .show-flowchart-button {
@@ -221,7 +230,8 @@ export const papWidgetStyles = css`
       font-weight: lighter;
       justify-content: center;
       align-items: center;
-      background-color: var(--button-color);;
+      background-color: var(--button-color);
+      box-shadow: var(--box-shadow);
       transition: background-color 0.3s;
    }
 
@@ -235,14 +245,11 @@ export const papWidgetStyles = css`
       align-items: center;
       justify-content: center;
       flex-direction: column;
-      background-color: #2c3e50;
-      padding: 15px;
       right: 1.5%;
       top: 15%;
       max-width: 250px;
       //min-height: 100px;
       max-height: 75%;
-      border-radius: var(--border-r);
       overflow: hidden;
    }
 
@@ -252,7 +259,6 @@ export const papWidgetStyles = css`
       height: 100%;
       width: 100%; 
       box-sizing: border-box; 
-      //align-items: stretch;
    }
 
    .help-container {
@@ -283,18 +289,6 @@ export const papWidgetStyles = css`
       border-radius: var(--border-r);
       resize: vertical;
    }
-
-   .add-help-button,
-   .delete-help-button, 
-   .show-help-button {
-      background-color: var(--button-color);
-      color: white;
-      border: none;
-      border-radius: var(--border-r);
-      font-size: 13px;
-      padding: 5px;
-      transition: background-color 0.3s;
-   }
  
    .delete-help-button {
      margin-left: 70%;
@@ -307,13 +301,6 @@ export const papWidgetStyles = css`
       font-size: 16px;
       padding: 10px;
       margin-bottom: 10px;
-      //margin-top: 10px;
-   }
-
-   .add-help-button:hover,
-   .delete-help-button:hover,
-   .show-help-button:hover {
-      background-color: var(--hover-color);
    }
 
    .preset-menu {
@@ -322,13 +309,11 @@ export const papWidgetStyles = css`
       align-items: center;
       justify-content: center;
       flex-direction: column;
-      background-color: #2c3e50;
       padding: 15px;
       right: 1.5%;
       top: 15%;
       max-width: 250px;
       max-height: 75%;
-      border-radius: var(--border-r);
       overflow: hidden;
    }
 
@@ -345,36 +330,25 @@ export const papWidgetStyles = css`
    }
 
    .preset-button {
-      background-color: var(--button-color);
-      color: white;
       border: none;
       width: 100%;
-      border-radius: var(--border-r);
       font-family: 'Arial';
       font-size: 16px;
       padding: 10px;
       margin-bottom: 10px;
       margin-top: 5px;
-      transition: background-color 0.3s;
    }
 
-   .preset-button:hover {
-      background-color: var(--hover-color);
-   }
 
    .translate-menu {
-      position: fixed;
-      display: flex;
       align-items: center;
       justify-content: center;
       flex-direction: column;
-      background-color: #2c3e50;
       padding: 15px;
       right: 1.5%;
       top: 15%;
       max-width: 250px;
       max-height: 75%;
-      border-radius: var(--border-r);
       overflow: hidden;
    }
 
@@ -391,24 +365,13 @@ export const papWidgetStyles = css`
    }
 
    .translate-button {
-      background-color: var(--button-color);
-      color: white;
-      border: none;
       width: 100%;
-      border-radius: var(--border-r);
       font-family: 'Arial';
       font-size: 16px;
       padding: 10px;
       margin-bottom: 10px;
       margin-top: 5px;
-      transition: background-color 0.3s;
    }
-
-   .translate-button:hover {
-      background-color: var(--hover-color);
-   }
-
-
 
    input:disabled,
    textarea:disabled {

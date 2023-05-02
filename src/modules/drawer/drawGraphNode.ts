@@ -10,8 +10,8 @@ export function drawGraphNode(ctx: CanvasRenderingContext2D, element: GraphNode,
    ctx.font = 'bold 16px Courier New';
 
    const { node, text, x, y } = element;
-   const { width, height } = measureTextSize(ctx, text);
-
+   let { width, height } = measureTextSize(ctx, text);
+  
    // Zeichne die passenden Knoten je nach Typ
    switch (node) {
       case 'start':  

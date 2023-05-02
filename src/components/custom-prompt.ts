@@ -15,7 +15,7 @@ export class CustomPrompt extends LitElement {
          transform: translate(-50%, -50%);
          padding: 20px;
          border-radius: 8px;
-         box-shadow: 2px 3px 8   px rgba(0, 0, 0, 0.2);
+         box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.6);
          z-index: 1000;
          background-color: var(--menu-color);
          border-radius: var(--border-r);

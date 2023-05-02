@@ -3,7 +3,7 @@ import { GraphNode } from "../../definitions/GraphNode";
 import { getAnchors } from "./anchorHelper";
 
 // Gibt die Koordinaten und Ankerpunkt eines Pfeils zurück 
-export function getArrowInformation(ctx: CanvasRenderingContext2D, from: GraphNode, to: GraphNode) {
+export function getArrowInformation(ctx: CanvasRenderingContext2D, from: GraphNode, to: GraphNode, direction: 'to' | 'from') {
 
    let arrowInformation = {
       x: 0,
@@ -18,7 +18,9 @@ export function getArrowInformation(ctx: CanvasRenderingContext2D, from: GraphNo
       return arrowInformation;
    }
 
-   const connection = from.connections.find(x => x.connectedToId === to.id);
+   const connection = from.connections.find(
+      x => x.connectedToId === to.id && x.direction === direction
+   );
    if (connection) {
       arrowInformation.x = anchors[connection.anchor].x;
       arrowInformation.y = anchors[connection.anchor].y;

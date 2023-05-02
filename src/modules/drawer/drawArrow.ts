@@ -3,7 +3,6 @@ import { Arrow } from "../../definitions/Arrow";
 import { getArrowInformation } from "../helper/arrowHelper";
 import { getAnchors } from "../helper/anchorHelper";
 
-// export function drawArrow(ctx: CanvasRenderingContext2D, from: GraphNode, to: GraphNode, isSelected: boolean = false, text: string, selectedSequence: any[]) {
 export function drawArrow(ctx: CanvasRenderingContext2D, arrow: Arrow, isSelected: boolean = false, selectedSequence: any[]) {
  
    const points = generateArrowPoints(ctx, arrow);
@@ -30,8 +29,8 @@ export function drawArrow(ctx: CanvasRenderingContext2D, arrow: Arrow, isSelecte
 }
 
 export function generateArrowPoints(ctx: CanvasRenderingContext2D, arrow: Arrow) {
-   const fromArrowInfo = getArrowInformation(ctx, arrow.from, arrow.to);
-   const toArrowInfo = getArrowInformation(ctx, arrow.to, arrow.from);
+   const fromArrowInfo = getArrowInformation(ctx, arrow.from, arrow.to, 'to');
+   const toArrowInfo = getArrowInformation(ctx, arrow.to, arrow.from, 'from');
    
    const from = {
       x: fromArrowInfo.x,
@@ -356,7 +355,7 @@ function addArrowText(ctx: CanvasRenderingContext2D, points: { x: number; y: num
 // Zeichne die Ankerpunkte einer Verbindung
 export function drawArrowAnchor(ctx: CanvasRenderingContext2D, arrow: Arrow, ishovered: boolean) {
    
-   const arrowInfo = getArrowInformation(ctx, arrow.to, arrow.from);
+   const arrowInfo = getArrowInformation(ctx, arrow.to, arrow.from, 'to');
    const anchor = arrowInfo.anchor;
    const x = arrowInfo.x;
    const y = arrowInfo.y;
