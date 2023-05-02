@@ -1,7 +1,7 @@
 import { css } from 'lit';
 
 export const papWidgetStyles = css`
- :host {
+   :host {
       display: block;
       position: relative;
       width: 100%;

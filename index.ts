@@ -28,6 +28,8 @@ import { helpPresets } from './src/modules/presets/helpPresets';
 
 import { papWidgetStyles } from './src/modules/styles/styles'
 
+import { CustomPrompt } from './src/components/custom-prompt';
+import './src/components/custom-prompt'
 
 @customElement('pap-widget')
 export class PAPWidget extends LitElementWw {
@@ -61,7 +63,11 @@ export class PAPWidget extends LitElementWw {
    private isArrowAnchorHovered: boolean;
 
    private isSelectingSequence = false;
-   private selectedSequence: { id: string; order: number; type: string}[] = [];
+   private selectedSequence: { id: string; order: number; type: string }[] = [];
+
+   private promptType: 'node' | 'arrow' | null;
+   private promptIndex: number | null;
+
 
    static styles = papWidgetStyles;
 
@@ -115,14 +121,14 @@ export class PAPWidget extends LitElementWw {
          </button>
 
          <div class='tool-menu'>
+            <button @click='${() => this.clearAll()}'>
+               ${drawButton('delete', 'tool')}
+            </button>
             <button id='grab-button' @click='${this.grabCanvas}'>
                ${drawButton('grab', 'tool')}
             </button>
             <button id='select-button' @click='${this.selectSequence}'>
                ${drawButton('select', 'tool')}
-            </button>
-            <button @click='${() => this.clearAll()}'>
-               ${drawButton('delete', 'tool')}
             </button>
             <button @click='${() => this.toggleMenu('translate')}'>
                ${drawButton('translate', 'tool')}
@@ -192,6 +198,13 @@ export class PAPWidget extends LitElementWw {
             </div>
          </div>
 
+         <custom-prompt
+            label="Geben Sie einen neuen Text ein:"
+            @submit="${(event: CustomEvent) => this.handlePromptSubmit(event)}"
+            @cancel="${this.hidePrompt}"
+            class="hidden"
+         ></custom-prompt>
+
       </div>
     `;
    }
@@ -200,62 +213,13 @@ export class PAPWidget extends LitElementWw {
 
    private translateToPseudoCode() {
       const pseudocode = this.generatePseudoCode(this.graphNodes);
-      //console.log(pseudocode);
+      console.log(pseudocode);
+
    }
 
-   // Erzeuge aus den Informationen von GraphNode Pseudocode
-   private generatePseudoCode(nodes: GraphNode[]) {
-      const pseudoCodeLines: string[] = [];
-      const visitedNodes = new Set<string>();
-    
-      function traverseNode(node: GraphNode, indentLevel: number) {
-        if (visitedNodes.has(node.id)) return;
-    
-        visitedNodes.add(node.id);
-    
-        const indentation = "  ".repeat(indentLevel);
-    
-        switch (node.node) {
-          case "start":
-            pseudoCodeLines.push("BEGIN");
-            break;
-          case "i/o":
-            pseudoCodeLines.push(`${indentation}${node.text}`);
-            break;
-          case "op":
-            pseudoCodeLines.push(`${indentation}${node.text}`);
-            break;
-          case "decision":
-            pseudoCodeLines.push(`${indentation}IF ${node.text.trim()} THEN`);
-            break;
-          case "end":
-            pseudoCodeLines.push("END");
-            return;
-        }
-    
-        const connectionsTo = node.connections?.filter((conn) => conn.direction === "to") || [];
-        const connectedNodes = connectionsTo.map((conn) => nodes.find((n) => n.id === conn.connectedToId)).filter(Boolean) as GraphNode[];
-    
-        for (const connectedNode of connectedNodes) {
-          if (connectedNode.node === "decision" && node.node === "decision") {
-            pseudoCodeLines.push(`${indentation}ELSE`);
-          }
-          traverseNode(connectedNode, connectedNode.node === "decision" ? indentLevel + 1 : indentLevel);
-        }
-    
-        if (node.node === "decision") {
-          pseudoCodeLines.push(`${indentation}END IF`);
-        }
-      }
-    
-      const startNode = nodes.find((n) => n.node === "start");
-      if (startNode) {
-        traverseNode(startNode, 0);
-      }
-    
-      console.log(pseudoCodeLines.join("\n"));
+   private generatePseudoCode(graphNodes: GraphNode[]) {
    }
-    
+
 
    private selectSequence() {
       // Setze css style von Icon auf aktiv
@@ -344,15 +308,15 @@ export class PAPWidget extends LitElementWw {
 
       // Zeichne alle Verbindungen
       this.arrows.forEach((arrow) => {
-      const isSelected = arrow === this.selectedArrow;
-      arrow.points = generateArrowPoints(this.ctx, arrow);
-      drawArrow(this.ctx, arrow, isSelected, this.selectedSequence);
+         const isSelected = arrow === this.selectedArrow;
+         arrow.points = generateArrowPoints(this.ctx, arrow);
+         drawArrow(this.ctx, arrow, isSelected, this.selectedSequence);
 
-      // Zeichne Ankerpunkte des Pfeils, wenn dieser ausgewählt ist
-      if (isSelected) {
-         drawArrowAnchor(this.ctx, arrow, this.isArrowAnchorHovered);
-      }
-   });
+         // Zeichne Ankerpunkte des Pfeils, wenn dieser ausgewählt ist
+         if (isSelected) {
+            drawArrowAnchor(this.ctx, arrow, this.isArrowAnchorHovered);
+         }
+      });
 
       // Zeichne die Ankerpunkte für das ausgewählte Element, falls vorhanden
       if (this.selectedNode) {
@@ -403,36 +367,36 @@ export class PAPWidget extends LitElementWw {
          this.dragOffset = dragOffset;
 
          // Wenn ein Pfeil gezogen wird, wird ein temporärer gestrichelter Pfeil gezeichnet
-         const { arrowToMove, arrowStart } = handleArrowDragStart( this.ctx, x, y, this.graphNodes, this.selectedArrow, this.handleAnchorClick.bind(this));
-    
-          if (arrowToMove && arrowStart) {
+         const { arrowToMove, arrowStart } = handleArrowDragStart(this.ctx, x, y, this.graphNodes, this.selectedArrow, this.handleAnchorClick.bind(this));
+
+         if (arrowToMove && arrowStart) {
             this.arrowStart = arrowStart;
             this.arrows = this.arrows.filter((arrow) => arrow !== arrowToMove);
-          }
+         }
       }
    }
 
    private handleMouseUp(event: MouseEvent) {
       if (this.isGrabbing && this.grabStartPosition) {
          // Setze die Grabposition des Canvas zurück, nachdem dieser gezogen wurde
-        const { grabStartPosition, grabStartOffset } = handleGrabRelease();
-        this.grabStartPosition = grabStartPosition;
-        this.grabStartOffset = grabStartOffset;
+         const { grabStartPosition, grabStartOffset } = handleGrabRelease();
+         this.grabStartPosition = grabStartPosition;
+         this.grabStartOffset = grabStartOffset;
       } else {
-        if (this.isDragging) {
-         // Setze die Informationen zurück, nachdem ein Knoten gezogen wurde
-          const { isDragging } = handleNodeDragStop();
-          this.isDragging = isDragging;
-        } else if (this.isDrawingArrow) {
-         // Erstelle ggf. die Pfeilverbindung, nachdem ein Pfeil losgelassen wurde
-          const { x, y } = this.getMouseCoordinates(event);
-          const { tempArrowEnd, arrowStart, arrows } = handleArrowCreation( this.ctx, x, y, this.arrowStart, this.graphNodes, this.arrows );
-          
-          this.tempArrowEnd = tempArrowEnd;
-          this.arrowStart = arrowStart;
-          this.arrows = arrows;
-          this.isDrawingArrow = false;
-        }
+         if (this.isDragging) {
+            // Setze die Informationen zurück, nachdem ein Knoten gezogen wurde
+            const { isDragging } = handleNodeDragStop();
+            this.isDragging = isDragging;
+         } else if (this.isDrawingArrow) {
+            // Erstelle ggf. die Pfeilverbindung, nachdem ein Pfeil losgelassen wurde
+            const { x, y } = this.getMouseCoordinates(event);
+            const { tempArrowEnd, arrowStart, arrows } = handleArrowCreation(this.ctx, x, y, this.arrowStart, this.graphNodes, this.arrows);
+
+            this.tempArrowEnd = tempArrowEnd;
+            this.arrowStart = arrowStart;
+            this.arrows = arrows;
+            this.isDrawingArrow = false;
+         }
       }
    }
 
@@ -535,13 +499,13 @@ export class PAPWidget extends LitElementWw {
       const selectedArrowIndex = this.arrows.findIndex((arrow) => isArrowClicked(x, y, arrow.points));
 
       if (clickedNodeIndex !== -1 && this.graphNodes[clickedNodeIndex].node !== 'connector') {
-         handleGraphNodeDoubleClick(this.graphNodes, clickedNodeIndex, () => this.redrawCanvas());
+         handleGraphNodeDoubleClick( clickedNodeIndex, (type, index) => this.showPrompt(type, index));
       } else if (selectedArrowIndex !== -1) {
-         handleArrowDoubleClick(this.arrows, selectedArrowIndex, () => this.redrawCanvas());
+         handleArrowDoubleClick( selectedArrowIndex, (type, index) => this.showPrompt(type, index));
       }
    }
 
-   private handleAnchorClick( node: GraphNode, anchor: number) {
+   private handleAnchorClick(node: GraphNode, anchor: number) {
       this.isDrawingArrow = true;
       this.arrowStart = { node, anchor };
    }
@@ -665,18 +629,74 @@ export class PAPWidget extends LitElementWw {
       this.style.setProperty('--offset-y', `${offsetY}px`);
    }
 
+   // ------------------------ Prompt Funktionen ------------------------
+
+   private showPrompt(type: 'node' | 'arrow', index: number) {
+      this.shadowRoot.querySelector('custom-prompt').classList.remove('hidden');
+
+      const onSubmit = (value: string) => {
+         if (type === 'node') {
+            this.graphNodes[index].text = value;
+         } else {
+            this.arrows[index].text = value;
+         }
+         this.redrawCanvas();
+         this.shadowRoot.querySelector('custom-prompt').classList.add('hidden');
+      };
+
+      const onCancel = () => {
+         this.shadowRoot.querySelector('custom-prompt').classList.add('hidden');
+      };
+
+      (this.shadowRoot.querySelector('custom-prompt') as CustomPrompt).onSubmit = onSubmit;
+      (this.shadowRoot.querySelector('custom-prompt') as CustomPrompt).onCancel = onCancel;
+   }
+
+   private hidePrompt() {
+      const prompt = this.shadowRoot.querySelector('custom-prompt');
+      if (prompt) {
+         prompt.classList.add('hidden');
+      }
+   }
+
+   private handlePromptSubmit(event: CustomEvent) {
+      const newText = event.detail.value;
+
+      if (this.promptType === 'node') {
+         this.graphNodes[this.promptIndex].text = newText;
+      } else if (this.promptType === 'arrow') {
+         this.arrows[this.promptIndex].text = newText;
+         const selectedArrow = this.arrows[this.promptIndex];
+         this.arrows.splice(this.promptIndex, 1);
+         this.arrows.push(selectedArrow);
+      }
+      this.redrawCanvas();
+      this.hidePrompt();
+   }
+
+
 }
 
 /*
 TODO Liste
 
-Funktionalitäten des PAP
-- Text ändern: Textarea vs prompt()? 
--> eigenes Promt erstellen. Textarea sieht nicht gut aus, kein svg
+Einstellungsmenü:
 - Schriftarten ändern
+- Colortheme ändern
+
+Hilfsmenü:
+- UI überarbeiten
+
+SelectionMode:
+- performance verbessern
+- abgleichen mit Musterlösung
+- Wiederholende Zahlen sollen nebeneinander angezeigt werden
+
+Weitere Funktionen:
 - Select All, verschieben mehrere Elemente durch drag and drop
-- Feedback Option 
-   - Erklärung der Aktionen
-   - Eigene Feedbackmöglichkeit für Lehrkräfte 
+
+UI:
+- Größe der Elemente einheitlich gestalten
+- Verbindungen sollen locken in einem radius von 5px 
 
 */

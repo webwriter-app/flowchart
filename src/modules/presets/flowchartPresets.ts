@@ -170,12 +170,23 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
       name: "For-Schleife",
       graphNodes: [
          {
+            id: "3b165c79-4247-4031-8399-edbff74ecc9a",
+            node: "start",
+            text: "Start",
+            x: 759,
+            y: 140.5,
+            connections: [
+               { anchor: 2, direction: "to", connectedToId: "421574d8-e295-4bd8-bbe1-de4b0a6da8a2" }
+            ],
+         },
+         {
             id: "421574d8-e295-4bd8-bbe1-de4b0a6da8a2",
             node: "op",
             text: "i = Anfangswert",
             x: 711,
             y: 240.5,
             connections: [
+               { anchor: 0, direction: "from", connectedToId: "3b165c79-4247-4031-8399-edbff74ecc9a" },
                { anchor: 2, direction: "to", connectedToId: "e7569340-e932-4ec9-a92f-5a3e0ebe51f1" }
             ],
          },
@@ -216,12 +227,13 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
          },
          {
             id: "b837b0ca-3e70-44c1-b434-01e34800ccfc",
-            node: "connector",
-            text: "",
+            node: "i/o",
+            text: "Ausgabe: 'Schleife beendet'",
             x: 972,
             y: 604.5,
             connections: [
-               { anchor: 0, direction: "from", connectedToId: "e7569340-e932-4ec9-a92f-5a3e0ebe51f1" }
+               { anchor: 0, direction: "from", connectedToId: "e7569340-e932-4ec9-a92f-5a3e0ebe51f1" },
+               { anchor: 2, direction: "to", connectedToId: "1a4bc46-e04a-48e5-a4c5-686105d034b9" }
             ],
          },
          {
@@ -235,6 +247,204 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
                { anchor: 2, direction: "to", connectedToId: "8816955c-00e6-4662-85cb-deaf2b8a8e22" }
             ],
          },
+         {
+            id: "1a4bc46-e04a-48e5-a4c5-686105d034b9",
+            node: "end",
+            text: "Ende",
+            x: 749,
+            y: 704.5,
+            connections: [
+               { anchor: 0, direction: "from", connectedToId: "b837b0ca-3e70-44c1-b434-01e34800ccfc" }
+            ],
+         },
+      ]
+   },
+   {
+      name: "Verschachtelte If-Else-Struktur",
+      graphNodes: [
+         {
+            id: "ec60c044-966d-4913-ba51-3a51f3c11b2d",
+            node: "start",
+            text: "Start",
+            x: 782,
+            y: 177.5,
+            connections: [
+               { anchor: 2, direction: "to", connectedToId: "6bdb42d6-e539-451b-80ac-0aa37fee1957" }
+            ],
+         },
+         {
+            id: "6bdb42d6-e539-451b-80ac-0aa37fee1957",
+            node: "i/o",
+            text: "Eingabe: x = true, y = true",
+            x: 676,
+            y: 255.5,
+            connections: [
+               { anchor: 0, direction: "from", connectedToId: "ec60c044-966d-4913-ba51-3a51f3c11b2d" },
+               { anchor: 2, direction: "to", connectedToId: "90357b4b-cb8b-4cdc-bd0e-9f63d3d7e8c8" }
+            ],
+         },
+         {
+            id: "90357b4b-cb8b-4cdc-bd0e-9f63d3d7e8c8",
+            node: "decision",
+            text: " x = true?",
+            x: 758,
+            y: 368.5,
+            connections: [
+               { anchor: 0, direction: "from", connectedToId: "6bdb42d6-e539-451b-80ac-0aa37fee1957" },
+               { anchor: 1, direction: "to", connectedToId: "b2a81fea-9f6f-47c2-a424-e921afb548e7" },
+               { anchor: 2, direction: "to", connectedToId: "8b4634a3-3d13-46ff-8052-a641e1dbd4b8" }
+            ],
+         },
+         {
+            id: "b2a81fea-9f6f-47c2-a424-e921afb548e7",
+            node: "decision",
+            text: " y = true?",
+            x: 912,
+            y: 409.5,
+            connections: [
+               { anchor: 0, direction: "from", connectedToId: "90357b4b-cb8b-4cdc-bd0e-9f63d3d7e8c8" },
+               { anchor: 1, direction: "to", connectedToId: "508afb60-e714-4617-a0fc-e46ba3e90216" },
+               { anchor: 2, direction: "to", connectedToId: "8b259ac0-53f4-4317-a181-16b7ace8b295" }
+            ],
+         },
+         {
+            id: "508afb60-e714-4617-a0fc-e46ba3e90216",
+            node: "sub",
+            text: "Unterprogramm",
+            x: 1092,
+            y: 469.5,
+            connections: [
+               { anchor: 0, direction: "from", connectedToId: "b2a81fea-9f6f-47c2-a424-e921afb548e7" },
+               { anchor: 2, direction: "to", connectedToId: "a45879cc-69ad-4f09-a611-91960c43a745" }
+            ],
+         },
+         {
+            id: "8b259ac0-53f4-4317-a181-16b7ace8b295",
+            node: "i/o",
+            text: "Ausgabe: y = true",
+            x: 878,
+            y: 484.5,
+            connections: [
+               { anchor: 0, direction: "from", connectedToId: "b2a81fea-9f6f-47c2-a424-e921afb548e7" },
+               { anchor: 2, direction: "to", connectedToId: "8b4634a3-3d13-46ff-8052-a641e1dbd4b8" }
+            ],
+         },
+         {
+            id: "8b4634a3-3d13-46ff-8052-a641e1dbd4b8",
+            node: "i/o",
+            text: "Ausgabe: x = true",
+            x: 725,
+            y: 553.5,
+            connections: [
+               { anchor: 0, direction: "from", connectedToId: "90357b4b-cb8b-4cdc-bd0e-9f63d3d7e8c8" },
+               { anchor: 1, direction: "from", connectedToId: "8b259ac0-53f4-4317-a181-16b7ace8b295" },
+               { anchor: 2, direction: "to", connectedToId: "a45879cc-69ad-4f09-a611-91960c43a745" }
+            ],
+         },
+         {
+            id: "a45879cc-69ad-4f09-a611-91960c43a745",
+            node: "end",
+            text: "Ende",
+            x: 981,
+            y: 693.5,
+            connections: [
+               { anchor: 0, direction: "from", connectedToId: "8b4634a3-3d13-46ff-8052-a641e1dbd4b8" },
+               { anchor: 0, direction: "from", connectedToId: "508afb60-e714-4617-a0fc-e46ba3e90216" }
+            ],
+         }
+      ]
+   },
+   {
+      name: "Switch",
+      graphNodes: [
+         {
+            id: "cedd5e2c-6d3c-4047-baa9-a319c9506e0a",
+            node: "start",
+            text: "Start",
+            x: 807,
+            y: 165.5,
+            connections: [{ anchor: 2, direction: 'to', connectedToId: '388566d6-b420-4565-852f-65a368f9af7e' }]
+          },
+          {
+            id: "388566d6-b420-4565-852f-65a368f9af7e",
+            node: "i/o",
+            text: "Eingabe: x = 1",
+            x: 764,
+            y: 258.5,
+            connections: [
+              { anchor: 0, direction: 'from', connectedToId: 'cedd5e2c-6d3c-4047-baa9-a319c9506e0a' },
+              { anchor: 2, direction: 'to', connectedToId: '7d0107b2-18d8-4156-bdbc-fb4275c1458c' }
+            ]
+          },
+          {
+            id: "7d0107b2-18d8-4156-bdbc-fb4275c1458c",
+            node: "decision",
+            text: "switch: x",
+            x: 788,
+            y: 343.5,
+            connections: [
+              { anchor: 0, direction: 'from', connectedToId: '388566d6-b420-4565-852f-65a368f9af7e' },
+              { anchor: 2, direction: 'to', connectedToId: '527d963a-f89c-4c74-8acd-99899d9f1c8d' },
+              { anchor: 2, direction: 'to', connectedToId: '985068da-17e3-4cbf-9552-25a42cbe8d92' },
+              { anchor: 2, direction: 'to', connectedToId: '8464cd27-869f-4ac5-bea5-14dd58360d3b' }
+            ]
+          },
+          {
+            id: "8464cd27-869f-4ac5-bea5-14dd58360d3b",
+            node: "op",
+            text: "y = \"Zwei\"",
+            x: 1027,
+            y: 421.5,
+            connections: [
+              { anchor: 0, direction: 'from', connectedToId: '7d0107b2-18d8-4156-bdbc-fb4275c1458c' },
+              { anchor: 2, direction: 'to', connectedToId: 'b9424689-e105-4870-ad62-8365a2175caf' }
+            ]
+          },
+          {
+            id: "527d963a-f89c-4c74-8acd-99899d9f1c8d",
+            node: "op",
+            text: "y = \"Null\"",
+            x: 585,
+            y: 421.5,
+            connections: [
+              { anchor: 0, direction: 'from', connectedToId: '7d0107b2-18d8-4156-bdbc-fb4275c1458c' },
+              { anchor: 2, direction: 'to', connectedToId: 'b9424689-e105-4870-ad62-8365a2175caf' }
+            ]
+          },
+          {
+            id: "b9424689-e105-4870-ad62-8365a2175caf",
+            node: "i/o",
+            text: "Ausgabe: y",
+            x: 786,
+            y: 580.5,
+            connections: [
+              { anchor: 0, direction: 'from', connectedToId: '527d963a-f89c-4c74-8acd-99899d9f1c8d' },
+              { anchor: 0, direction: 'from', connectedToId: '985068da-17e3-4cbf-9552-25a42cbe8d92' },
+              { anchor: 0, direction: 'from', connectedToId: '8464cd27-869f-4ac5-bea5-14dd58360d3b' },
+              { anchor: 2, direction: 'to', connectedToId: 'd56fbfac-55c6-4735-bd01-08ddf33c738d' }
+            ]
+          },
+          {
+            id: "d56fbfac-55c6-4735-bd01-08ddf33c738d",
+            node: "end",
+            text: "Ende",
+            x: 815,
+            y: 664.5,
+            connections: [
+              { anchor: 0, direction: 'from', connectedToId: 'b9424689-e105-4870-ad62-8365a2175caf' }
+            ]
+          },
+          {
+            id: "985068da-17e3-4cbf-9552-25a42cbe8d92",
+            node: "op",
+            text: "y = \"Eins\"",
+            x: 786,
+            y: 461.5,
+            connections: [
+              { anchor: 0, direction: 'from', connectedToId: '7d0107b2-18d8-4156-bdbc-fb4275c1458c' },
+              { anchor: 2, direction: 'to', connectedToId: 'b9424689-e105-4870-ad62-8365a2175caf' }
+            ]
+          }
       ]
    },
    // Füge hier weitere Presets hinzu
