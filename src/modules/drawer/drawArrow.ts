@@ -355,7 +355,7 @@ function addArrowText(ctx: CanvasRenderingContext2D, points: { x: number; y: num
 // Zeichne die Ankerpunkte einer Verbindung
 export function drawArrowAnchor(ctx: CanvasRenderingContext2D, arrow: Arrow, ishovered: boolean) {
    
-   const arrowInfo = getArrowInformation(ctx, arrow.to, arrow.from, 'to');
+   const arrowInfo = getArrowInformation(ctx, arrow.to, arrow.from, 'from');
    const anchor = arrowInfo.anchor;
    const x = arrowInfo.x;
    const y = arrowInfo.y;

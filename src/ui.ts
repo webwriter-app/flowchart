@@ -5,13 +5,14 @@
 import { ItemList } from "./definitions/ItemList";
 
 // Zeige oder verstecke die angefragten Benutzeroberflächen 
-export function toggleMenu(element: HTMLElement, menu: 'task' | 'flow' | 'context' | 'preset' | 'help' | 'translate') {
+export function toggleMenu(element: HTMLElement, menu: 'task' | 'flow' | 'context' | 'preset' | 'help' | 'translate' | 'setting') {
   const taskMenu = element.shadowRoot.querySelector('.task-menu');
   const helpMenu = element.shadowRoot.querySelector('.help-menu');
   const presetMenu = element.shadowRoot.querySelector('.preset-menu');
   const flowchartMenu = element.shadowRoot.querySelector('.flowchart-menu');
   const showFlowchartButton = element.shadowRoot.querySelector('.show-flowchart-button');
   const translateMenu = element.shadowRoot.querySelector('.translate-menu');
+  const settingMenu = element.shadowRoot.querySelector('.setting-menu');
   const contextMenu = element.shadowRoot.getElementById('context-menu');
 
   switch (menu) {
@@ -22,6 +23,7 @@ export function toggleMenu(element: HTMLElement, menu: 'task' | 'flow' | 'contex
           helpMenu.classList.add('hidden');
           presetMenu.classList.add('hidden');
           translateMenu.classList.add('hidden');
+          settingMenu.classList.add('hidden');
         }
       }
       break;
@@ -32,6 +34,7 @@ export function toggleMenu(element: HTMLElement, menu: 'task' | 'flow' | 'contex
           taskMenu.classList.add('hidden');
           presetMenu.classList.add('hidden');
           translateMenu.classList.add('hidden');
+          settingMenu.classList.add('hidden');
         }
       }
       break;
@@ -42,6 +45,7 @@ export function toggleMenu(element: HTMLElement, menu: 'task' | 'flow' | 'contex
           taskMenu.classList.add('hidden');
           helpMenu.classList.add('hidden');
           translateMenu.classList.add('hidden');
+          settingMenu.classList.add('hidden');
         }
       }
       break;
@@ -52,9 +56,21 @@ export function toggleMenu(element: HTMLElement, menu: 'task' | 'flow' | 'contex
           taskMenu.classList.add('hidden');
           helpMenu.classList.add('hidden');
           presetMenu.classList.add('hidden');
+          settingMenu.classList.add('hidden');
         }
       }
       break;
+    case 'setting':
+        if (settingMenu) {
+          settingMenu.classList.toggle('hidden');
+          if (!settingMenu.classList.contains('hidden')) {
+            taskMenu.classList.add('hidden');
+            helpMenu.classList.add('hidden');
+            presetMenu.classList.add('hidden');
+            translateMenu.classList.add('hidden');
+          }
+        }
+        break;
     case 'flow':
       if (flowchartMenu && showFlowchartButton) {
         flowchartMenu.classList.toggle('hidden');

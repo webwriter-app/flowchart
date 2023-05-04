@@ -143,7 +143,7 @@ export class PAPWidget extends LitElementWw {
             <button @click='${() => this.toggleMenu('help')}'>
                ${drawButton('help', 'tool')}
             </button>
-            <button @click='${() => this.toggleMenu('help')}'>
+            <button @click='${() => this.toggleMenu('setting')}'>
                ${drawButton('setting', 'tool')}
             </button>
          </div>
@@ -196,6 +196,39 @@ export class PAPWidget extends LitElementWw {
                </button>
          </div>
 
+         <div class='setting-menu hidden'>
+            <button class='close-button' @click='${() => this.toggleMenu('setting')}'>
+               ×
+            </button>
+            <div class="setting-menu-container">
+               <div class="setting-item">
+                  <label>Schriftart:</label>
+                  <select id="font-selector">
+                     <option value="Arial">Arial</option>
+                     <option value="Verdana">Verdana</option>
+                     <option value="Times New Roman">Times New Roman</option>
+                     <option value="Courier New">Courier New</option>
+                  </select>
+               </div>
+               <div class="setting-item">
+                  <label>Schriftgröße:</label>
+                  <select id="font-size-selector">
+                     <option value="12">12</option>
+                     <option value="14">14</option>
+                     <option value="16">16</option>
+                     <option value="18">18</option>
+                  </select>
+               </div>
+               <div class="setting-item">
+                  <label>Farbthema:</label>
+                  <select id="color-theme-selector">
+                     <option value="light">Light</option>
+                     <option value="dark">Dark</option>
+                  </select>
+               </div>
+            </div>
+         </div>
+
          <div id='context-menu' class='context-menu'>
             <div class='context-menu-item' @click='${() => this.deleteSelectedObject()}'>
                Löschen
@@ -239,7 +272,7 @@ export class PAPWidget extends LitElementWw {
    }
 
    // Zeige oder verstecke die angefragten Benutzeroberflächen 
-   private toggleMenu(menu: 'task' | 'flow' | 'context' | 'preset' | 'help' | 'translate') {
+   private toggleMenu(menu: 'task' | 'flow' | 'context' | 'preset' | 'help' | 'translate' | 'setting') {
       toggleMenu(this, menu);
    }
 

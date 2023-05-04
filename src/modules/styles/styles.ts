@@ -42,7 +42,8 @@ export const papWidgetStyles = css`
    .task-menu,
    .help-menu,
    .preset-menu,
-   .translate-menu {
+   .translate-menu,
+   .setting-menu {
       display: flex;
       position: fixed;
       background-color: var(--menu-color);
@@ -52,6 +53,7 @@ export const papWidgetStyles = css`
       flex-direction: column;
    }
 
+   /*Side Menus */
    .flowchart-menu {
       left: 1.5%;
       top: 15%;
@@ -102,37 +104,18 @@ export const papWidgetStyles = css`
       background-color: #EEC900;
    }
 
-   /* Context Menu */
-   .context-menu {
-      position: absolute;
-      z-index: 1000;
-      background-color: var(--menu-color);
-      border-radius: var(--border-r);
-      box-shadow: var(--box-shadow);
-      padding: 8px 0;
-      display: none;
-
-      font-family: 'Courier New';
-      font-size: 12px;
-      font-weight: bold;
-      color: #ffffff;
-   }
-
-   .context-menu-item {
-      display: block;
-      padding: 4px 16px;
-      background-color: var(--button-color);
-      transition: background-color 0.3s;
-   }
-
-   .context-menu-item:hover {
-      background-color: var(--hover-color);
-   }
-
-   .task-menu {
-      padding: 15px;
+    /* Tool Menu - Items */
+   .help-menu, 
+   .task-menu,
+   .translate-menu,
+   .preset-menu, 
+   .setting-menu {
       right: 1.5%;
-      top: 15%;
+      top: 12%;
+   }
+
+   /* Task Menu */
+   .task-menu {
       width: 300px;
       min-height: 60px;
       max-height: 75%;
@@ -175,12 +158,6 @@ export const papWidgetStyles = css`
       border: 1px solid #34495e;
       border-radius: var(--border-r);
       resize: vertical;
-   }
-
-   .add-task-button,
-   .delete-task-button {
-      border: none;
-      font-size: 13px;
    }
  
    .delete-task-button {
@@ -240,13 +217,10 @@ export const papWidgetStyles = css`
    }
 
    .help-menu {
-      position: fixed;
-      display: flex;
       align-items: center;
       justify-content: center;
       flex-direction: column;
-      right: 1.5%;
-      top: 15%;
+  
       max-width: 250px;
       //min-height: 100px;
       max-height: 75%;
@@ -304,14 +278,9 @@ export const papWidgetStyles = css`
    }
 
    .preset-menu {
-      position: fixed;
-      display: flex;
       align-items: center;
       justify-content: center;
       flex-direction: column;
-      padding: 15px;
-      right: 1.5%;
-      top: 15%;
       max-width: 250px;
       max-height: 75%;
       overflow: hidden;
@@ -344,9 +313,7 @@ export const papWidgetStyles = css`
       align-items: center;
       justify-content: center;
       flex-direction: column;
-      padding: 15px;
-      right: 1.5%;
-      top: 15%;
+
       max-width: 250px;
       max-height: 75%;
       overflow: hidden;
@@ -371,6 +338,80 @@ export const papWidgetStyles = css`
       padding: 10px;
       margin-bottom: 10px;
       margin-top: 5px;
+   }
+
+   .setting-menu {
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+   }
+
+   .setting-menu-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      margin-top: 5px;
+   }
+
+   .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+   }
+
+   .setting-item label {
+      color: white;
+      font-family: 'Arial';
+      font-size: 14px;
+      flex: 1;
+      text-align: left;
+      margin-right: 10px;
+   }
+
+   .setting-item select {
+      background-color: var(--button-color);
+      color: white;
+      border: none;
+      border-radius: var(--border-r);
+      font-size: 12px;
+      padding: 5px;
+      transition: var(--hover-transition);
+      flex: 1;
+      text-align: left;
+      margin-left: 10px;
+   }
+
+   .setting-item select:hover {
+      background-color: var(--hover-color);
+   }
+
+    /* Context Menu */
+    .context-menu {
+      position: absolute;
+      z-index: 1000;
+      background-color: var(--menu-color);
+      border-radius: var(--border-r);
+      box-shadow: var(--box-shadow);
+      padding: 8px 0;
+      display: none;
+
+      font-family: 'Courier New';
+      font-size: 12px;
+      font-weight: bold;
+      color: #ffffff;
+   }
+
+   .context-menu-item {
+      display: block;
+      padding: 4px 16px;
+      background-color: var(--button-color);
+      transition: background-color 0.3s;
+   }
+
+   .context-menu-item:hover {
+      background-color: var(--hover-color);
    }
 
    input:disabled,

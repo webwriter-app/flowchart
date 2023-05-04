@@ -14,7 +14,6 @@ export class CustomPrompt extends LitElement {
          left: 50%;
          transform: translate(-50%, -50%);
          padding: 20px;
-         border-radius: 8px;
          box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.6);
          z-index: 1000;
          background-color: var(--menu-color);
@@ -29,7 +28,8 @@ export class CustomPrompt extends LitElement {
          margin-right: 10px;
       }
       input {
-         background-color:	#5f829c;
+         background-color:	#546c7e;
+         border-radius: var(--border-r);
          color: white;
          margin-bottom: 10px;
          padding: 10px;

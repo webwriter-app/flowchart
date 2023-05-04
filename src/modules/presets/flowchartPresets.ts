@@ -9,7 +9,7 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
             id: "0ac439b0-7b5e-4648-989d-61712e63ee57",
             node: "start",
             text: "Start",
-            x: 769,
+            x: 771.20703125,
             y: 86.5,
             connections: [
                { anchor: 2, direction: "to", connectedToId: "4fcfbda4-65e6-489b-825e-0641d358c087" }
@@ -19,7 +19,7 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
             id: "4fcfbda4-65e6-489b-825e-0641d358c087",
             node: "i/o",
             text: 'Eingabe: Tipp = "Kopf" oder "Zahl"',
-            x: 630,
+            x: 631.984375,
             y: 154.5,
             connections: [
                { anchor: 0, direction: "from", connectedToId: "0ac439b0-7b5e-4648-989d-61712e63ee57" },
@@ -30,7 +30,7 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
             id: "04893012-47f7-4e75-93b9-cbe58910e18a",
             node: "op",
             text: "Zufallszahl: randInt (0, 1)",
-            x: 664,
+            x: 665.58984375,
             y: 240.5,
             connections: [
                { anchor: 0, direction: "from", connectedToId: "4fcfbda4-65e6-489b-825e-0641d358c087" },
@@ -41,7 +41,7 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
             id: "7f76385a-caf3-4c65-a72e-665b50ef9787",
             node: "decision",
             text: " Zufallszahl == 0? ",
-            x: 702,
+            x: 703.99609375,
             y: 316.5,
             connections: [
                { anchor: 0, direction: "from", connectedToId: "04893012-47f7-4e75-93b9-cbe58910e18a" },
@@ -108,7 +108,7 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
             id: "9775752f-d69b-4fd2-9232-6bc4c377bd92",
             node: "decision",
             text: " Seite == Tipp? ",
-            x: 719,
+            x: 718.3984375,
             y: 603.5,
             connections: [
                { anchor: 0, direction: "from", connectedToId: "812ce303-a1a3-46e1-84b4-ff2cdc5c819a" },
