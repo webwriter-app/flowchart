@@ -44,6 +44,8 @@ export class PAPWidget extends LitElementWw {
 
    @property({ type: Array }) presetList: { name: string, graphNodes: GraphNode[] }[] = flowchartPresets;
 
+   @property({ type: Object }) graphSettings = { font: 'Courier New', fontSize: 16, theme: 'standard' };
+
 
    private canvas: HTMLCanvasElement;
    private ctx: CanvasRenderingContext2D;
@@ -97,7 +99,7 @@ export class PAPWidget extends LitElementWw {
             <button @click='${() => this.addGraphNode('op', 'Operation')}'>
                ${drawButton('op', 'flow')}
             </button>
-            <button @click='${() => this.addGraphNode('decision', 'Verzweigung')}'>
+            <button @click='${() => this.addGraphNode('decision', '  Verzweigung  ')}'>
                ${drawButton('decision', 'flow')}
             </button>
             <button @click='${() => this.addGraphNode('connector', '')}'>
@@ -207,7 +209,7 @@ export class PAPWidget extends LitElementWw {
                      <option value="Arial">Arial</option>
                      <option value="Verdana">Verdana</option>
                      <option value="Times New Roman">Times New Roman</option>
-                     <option value="Courier New">Courier New</option>
+                     <option value="Courier New" selected>Courier New</option>
                   </select>
                </div>
                <div class="setting-item">
@@ -215,15 +217,16 @@ export class PAPWidget extends LitElementWw {
                   <select id="font-size-selector">
                      <option value="12">12</option>
                      <option value="14">14</option>
-                     <option value="16">16</option>
+                     <option value="16" selected>16</option>
                      <option value="18">18</option>
+                     <option value="20">20</option>
                   </select>
                </div>
                <div class="setting-item">
                   <label>Farbthema:</label>
                   <select id="color-theme-selector">
-                     <option value="light">Light</option>
-                     <option value="dark">Dark</option>
+                     <option value="standard" selected>Standard</option>
+                     <option value="pastel">Pastel</option>
                   </select>
                </div>
             </div>
@@ -247,6 +250,17 @@ export class PAPWidget extends LitElementWw {
    }
 
    // ------------------------ User interface Funktionen ------------------------
+
+   private getUserSettings() {
+      const fontSelector = this.shadowRoot?.querySelector('#font-selector') as HTMLSelectElement;
+      const fontSizeSelector = this.shadowRoot?.querySelector('#font-size-selector') as HTMLSelectElement;
+      const themeSelector = this.shadowRoot?.querySelector('#color-theme-selector') as HTMLSelectElement;
+
+      this.graphSettings.font = fontSelector.value;
+      this.graphSettings.fontSize = parseInt(fontSizeSelector.value);
+      this.graphSettings.theme = themeSelector.value;
+   }
+
 
    private translateToPseudoCode() {
       const pseudocode = this.generatePseudoCode(this.graphNodes);
@@ -337,17 +351,18 @@ export class PAPWidget extends LitElementWw {
    private redrawCanvas() {
       // Bereinige das Canvas
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.getUserSettings();
 
       // Zeichne alle Knoten 
       this.graphNodes.forEach((element) => {
-         drawGraphNode(this.ctx, element, this.selectedNode, this.selectedSequence);
+         drawGraphNode(this.ctx, element, this.graphSettings, this.selectedNode, this.selectedSequence);
       });
 
       // Zeichne alle Verbindungen
       this.arrows.forEach((arrow) => {
          const isSelected = arrow === this.selectedArrow;
          arrow.points = generateArrowPoints(this.ctx, arrow);
-         drawArrow(this.ctx, arrow, isSelected, this.selectedSequence);
+         drawArrow(this.ctx, arrow, this.graphSettings, isSelected, this.selectedSequence);
 
          // Zeichne Ankerpunkte des Pfeils, wenn dieser ausgewählt ist
          if (isSelected) {
@@ -380,11 +395,11 @@ export class PAPWidget extends LitElementWw {
       };
 
       this.graphNodes = [...this.graphNodes, element];
-      drawGraphNode(this.ctx, element, this.selectedNode, this.selectedSequence);
+      drawGraphNode(this.ctx, element, this.graphSettings, this.selectedNode, this.selectedSequence);
    }
 
-  
-    
+
+
 
 
    // ------------------------ Mouse-Events ------------------------
@@ -541,9 +556,9 @@ export class PAPWidget extends LitElementWw {
       const selectedArrowIndex = this.arrows.findIndex((arrow) => isArrowClicked(x, y, arrow.points));
 
       if (clickedNodeIndex !== -1 && this.graphNodes[clickedNodeIndex].node !== 'connector') {
-         handleGraphNodeDoubleClick( clickedNodeIndex, (type, index) => this.showPrompt(type, index));
+         handleGraphNodeDoubleClick(clickedNodeIndex, (type, index) => this.showPrompt(type, index));
       } else if (selectedArrowIndex !== -1) {
-         handleArrowDoubleClick( selectedArrowIndex, (type, index) => this.showPrompt(type, index));
+         handleArrowDoubleClick(selectedArrowIndex, (type, index) => this.showPrompt(type, index));
       }
    }
 
@@ -678,13 +693,18 @@ export class PAPWidget extends LitElementWw {
 
       const onSubmit = (value: string) => {
          if (type === 'node') {
-            this.graphNodes[index].text = value;
+            if (this.graphNodes[index].node === 'decision') {
+               this.graphNodes[index].text = '  ' + value + '  ';
+            } else {
+               this.graphNodes[index].text = value;
+            }
          } else {
             this.arrows[index].text = value;
          }
          this.redrawCanvas();
          this.shadowRoot.querySelector('custom-prompt').classList.add('hidden');
       };
+
 
       const onCancel = () => {
          this.shadowRoot.querySelector('custom-prompt').classList.add('hidden');
@@ -728,6 +748,8 @@ Einstellungsmenü:
 
 Hilfsmenü:
 - UI überarbeiten
+- Wechsel durch klick zwischen Lehrer und Schüler Ansicht
+- Input Felder anpassen 
 
 SelectionMode:
 - performance verbessern
@@ -737,7 +759,7 @@ SelectionMode:
 Weitere Funktionen:
 - Select All, verschieben mehrere Elemente durch drag and drop
 
-UI:
-- Zeilenumbrüche erlauben?
+- Cursor anpassen, je nach dem was gehovert wird
+
 
 */

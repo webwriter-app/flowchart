@@ -3,7 +3,7 @@ import { Arrow } from "../../definitions/Arrow";
 import { getArrowInformation } from "../helper/arrowHelper";
 import { getAnchors } from "../helper/anchorHelper";
 
-export function drawArrow(ctx: CanvasRenderingContext2D, arrow: Arrow, isSelected: boolean = false, selectedSequence: any[]) {
+export function drawArrow(ctx: CanvasRenderingContext2D, arrow: Arrow, settings: { font: string; fontSize: number; theme: string }, isSelected: boolean = false, selectedSequence: any[]) {
  
    const points = generateArrowPoints(ctx, arrow);
    ctx.save();
@@ -21,7 +21,7 @@ export function drawArrow(ctx: CanvasRenderingContext2D, arrow: Arrow, isSelecte
    drawArrowHead(ctx, points[points.length - 1], points[points.length - 2]);
 
    if (arrow.text) {
-      addArrowText(ctx, points, arrow.text);
+      addArrowText(ctx, points, arrow.text, settings);
    }
 
    ctx.restore();
@@ -333,7 +333,7 @@ function drawArrowHead(ctx: CanvasRenderingContext2D, toPoint: { x: number; y: n
    ctx.closePath();
  }
 
-function addArrowText(ctx: CanvasRenderingContext2D, points: { x: number; y: number }[], text: string) {
+function addArrowText(ctx: CanvasRenderingContext2D, points: { x: number; y: number }[], text: string, settings: { font: string; fontSize: number; theme: string }) {
    const midPointIndex = Math.floor(points.length / 2 - 0.5);
    const midPoint = {
      x: (points[midPointIndex].x + points[midPointIndex + 1].x) / 2,
@@ -341,7 +341,7 @@ function addArrowText(ctx: CanvasRenderingContext2D, points: { x: number; y: num
    };
  
    ctx.save();
-   ctx.font = 'bold 16px Courier New';
+   ctx.font  = `bold ${settings.fontSize}px ${settings.font}`;
    ctx.textAlign = 'center';
    ctx.textBaseline = 'middle';
    ctx.translate(midPoint.x, midPoint.y);

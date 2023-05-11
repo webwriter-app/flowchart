@@ -2,12 +2,17 @@
 import { GraphNode } from "../../definitions/GraphNode";
 import { measureTextSize } from "../helper/utilities";
 import { getAnchors } from "../helper/anchorHelper";
+import { ThemeManager } from "../styles/ThemeManager";
 
 // Funktion zum Zeichnen von GraphNode-Elementen
-export function drawGraphNode(ctx: CanvasRenderingContext2D, element: GraphNode, selectedElement: GraphNode, selectedSequence: any[]) {
+export function drawGraphNode(ctx: CanvasRenderingContext2D, element: GraphNode, settings: { font: string; fontSize: number; theme: string }, selectedElement: GraphNode, selectedSequence: any[]) {
+
+   const themeManager: ThemeManager = new ThemeManager();
+   const theme = themeManager.getTheme(settings.theme);
 
    // Setze die Schriftart des Textes, dies muss vorher gesetzt werden, damit die größe des Textes richtig berechnet werden kann.
-   ctx.font = 'bold 16px Courier New';
+   ctx.font  = `bold ${settings.fontSize}px ${settings.font}`;
+  
 
    const { node, text, x, y } = element;
    let { width, height } = measureTextSize(ctx, text);
@@ -17,7 +22,7 @@ export function drawGraphNode(ctx: CanvasRenderingContext2D, element: GraphNode,
       case 'start':  
       case 'end':
          // abgerundestes Rechteck
-         ctx.fillStyle = '#FF6961'
+         ctx.fillStyle = theme.startEndColor;
          const radius = 25; 
          ctx.beginPath();
          ctx.moveTo(x + radius, y);
@@ -34,7 +39,7 @@ export function drawGraphNode(ctx: CanvasRenderingContext2D, element: GraphNode,
          break;
       case 'op':  
          // Rechteck
-         ctx.fillStyle = '#FFEC8B';
+         ctx.fillStyle = theme.opColor;
          ctx.beginPath();
          ctx.moveTo(x, y);
          ctx.lineTo(x + width, y);
@@ -45,18 +50,18 @@ export function drawGraphNode(ctx: CanvasRenderingContext2D, element: GraphNode,
          break;
       case 'decision':     
          // Diamant
-         ctx.fillStyle = '#4F94CD';
+         ctx.fillStyle = theme.decisionColor;
          ctx.beginPath();
          ctx.moveTo(x + width / 2, y);
          ctx.lineTo(x + width, y + height / 2);
          ctx.lineTo(x + width / 2, y + height);
-         ctx.lineTo(x, y + height / 2);
+         ctx.lineTo(x , y + height / 2);
          ctx.closePath();
          ctx.fill();
          break;
       case 'connector':    
          // Kreis
-         ctx.fillStyle = '#C6CBC4';
+         ctx.fillStyle = theme.connectorColor;
          const circleRadius = Math.min(width, height) / 3;
          ctx.beginPath();
          ctx.arc(x + width / 2, y + height / 2, circleRadius, 0, 2 * Math.PI);
@@ -64,7 +69,7 @@ export function drawGraphNode(ctx: CanvasRenderingContext2D, element: GraphNode,
          break;
       case 'i/o':
          // Parallelogramm
-         ctx.fillStyle = '#49B675'; 
+         ctx.fillStyle = theme.ioColor;
          const skew = 20;  
          ctx.beginPath();
          ctx.moveTo(x + skew, y);
@@ -76,7 +81,7 @@ export function drawGraphNode(ctx: CanvasRenderingContext2D, element: GraphNode,
          break;
       case 'sub':
          // Rechteck mit 2 vertikalen Linien
-         ctx.fillStyle = '#C6CBC4';
+         ctx.fillStyle = theme.subColor;
          const d = 6; // Abstand der Linien
          ctx.beginPath();
          ctx.moveTo(x, y);
