@@ -12,8 +12,11 @@ export const papWidgetStyles = css`
       --menu-color: #2c3e50;
       --button-color: #3a4f65;
       --hover-color: #1abc9c;
+      --active-color: #1ccfab;
       --hover-transition: background-color 0.3s;
       --box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.6);
+
+      --ui-font: 'Arial';
 
       --offset-x: 0;
       --offset-y: 0;
@@ -85,6 +88,7 @@ export const papWidgetStyles = css`
       font-size: 12px;
       padding: 5px;
       transition: var(--hover-transition);
+      cursor: pointer;
    }
 
    .flowchart-menu button:hover,
@@ -97,6 +101,20 @@ export const papWidgetStyles = css`
    .preset-button:hover,
    .translate-button:hover {
       background-color: var(--hover-color);
+   }
+
+   /* Add active state */
+   .flowchart-menu button:active,
+   .tool-menu button:active,
+   .add-task-button:active,
+   .delete-task-button:active,
+   .add-help-button:active,
+   .delete-help-button:active,
+   .show-help-button:active,
+   .preset-button:active,
+   .translate-button:active {
+      background-color: var(--button-color); 
+      box-shadow: 0px 0px 5px var(--hover-color);
    }
    
  
@@ -151,7 +169,7 @@ export const papWidgetStyles = css`
    .task-content {
       width: 100%;
       box-sizing: border-box;
-      font-family: 'Arial';
+      font-family: var(--ui-font);
       font-size: 14px;
       padding: 5px;
       margin-bottom: 5px;
@@ -190,6 +208,12 @@ export const papWidgetStyles = css`
    .flowchart-menu > .close-button:hover, 
    .close-button:hover {
       background-color: #ee695e;
+   }
+
+   .flowchart-menu > .close-button:active, 
+   .close-button:active {
+      background-color: #fc8b80;
+      box-shadow: none;
    }
 
    .show-flowchart-button {
@@ -255,7 +279,7 @@ export const papWidgetStyles = css`
    .help-content {
       width: 100%;
       box-sizing: border-box;
-      font-family: 'Arial';
+      font-family: var(--ui-font);
       font-size: 14px;
       padding: 5px;
       margin-bottom: 5px;
@@ -271,7 +295,7 @@ export const papWidgetStyles = css`
    .show-help-button {
       width: 100%;
       box-sizing: border-box;
-      font-family: 'Arial';
+      font-family: var(--ui-font);
       font-size: 16px;
       padding: 10px;
       margin-bottom: 10px;
@@ -301,7 +325,7 @@ export const papWidgetStyles = css`
    .preset-button {
       border: none;
       width: 100%;
-      font-family: 'Arial';
+      font-family: var(--ui-font);
       font-size: 16px;
       padding: 10px;
       margin-bottom: 10px;
@@ -333,7 +357,7 @@ export const papWidgetStyles = css`
 
    .translate-button {
       width: 100%;
-      font-family: 'Arial';
+      font-family: var(--ui-font);
       font-size: 16px;
       padding: 10px;
       margin-bottom: 10px;
@@ -363,7 +387,7 @@ export const papWidgetStyles = css`
 
    .setting-item label {
       color: white;
-      font-family: 'Arial';
+      font-family: var(--ui-font);
       font-size: 14px;
       flex: 1;
       text-align: left;
@@ -397,9 +421,8 @@ export const papWidgetStyles = css`
       padding: 8px 0;
       display: none;
 
-      font-family: 'Courier New';
+      font-family: var(--ui-font);
       font-size: 12px;
-      font-weight: bold;
       color: #ffffff;
    }
 
@@ -412,6 +435,16 @@ export const papWidgetStyles = css`
 
    .context-menu-item:hover {
       background-color: var(--hover-color);
+   }
+
+   input,
+   textarea {
+      background-color:	#546c7e;
+      border-radius: var(--border-r);
+      color: white;
+      margin-bottom: 10px;
+      padding: 10px;
+     
    }
 
    input:disabled,

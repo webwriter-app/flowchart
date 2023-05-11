@@ -54,6 +54,10 @@ export class CustomPrompt extends LitElement {
       button:last-child {
          margin-left: 10px;
       }
+      button:active {
+         background-color: var(--button-color); 
+         box-shadow: 0px 0px 5px var(--hover-color);
+      }
       .button-container {
          display: flex;
       }

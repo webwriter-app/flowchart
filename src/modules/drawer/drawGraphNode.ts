@@ -1,4 +1,3 @@
-
 import { GraphNode } from "../../definitions/GraphNode";
 import { measureTextSize } from "../helper/utilities";
 import { getAnchors } from "../helper/anchorHelper";
@@ -11,8 +10,11 @@ export function drawGraphNode(ctx: CanvasRenderingContext2D, element: GraphNode,
    const theme = themeManager.getTheme(settings.theme);
 
    // Setze die Schriftart des Textes, dies muss vorher gesetzt werden, damit die größe des Textes richtig berechnet werden kann.
-   ctx.font  = `bold ${settings.fontSize}px ${settings.font}`;
-  
+   if (settings.font === 'Courier New') {
+      ctx.font = `bold ${settings.fontSize}px ${settings.font}`;
+   } else {
+      ctx.font  = `${settings.fontSize}px ${settings.font}`;
+   }
 
    const { node, text, x, y } = element;
    let { width, height } = measureTextSize(ctx, text);
@@ -144,10 +146,12 @@ export function drawGraphNode(ctx: CanvasRenderingContext2D, element: GraphNode,
 
 }
 
-export function drawNodeAnchors(ctx: CanvasRenderingContext2D, element: GraphNode,  hoveredAnchor: { element: GraphNode; anchor: number } | undefined, d: number = 20) {
+export function drawNodeAnchors(ctx: CanvasRenderingContext2D, element: GraphNode,  hoveredAnchor: { element: GraphNode; anchor: number } | undefined) {
    if (element.node !== 'text') {
       ctx.fillStyle = '#5CACEE';
-      const anchors = getAnchors(ctx, element, d);
+
+      const distance = 25;
+      const anchors = getAnchors(ctx, element, distance);
 
       // Zeichne die Ankerpunkte
       anchors.forEach((position, index) => {
@@ -179,8 +183,8 @@ export function drawNodeAnchors(ctx: CanvasRenderingContext2D, element: GraphNod
 
 // Zeichne den Ankerpunkt als Pfeilspitze für die Knoten 
 function drawArrowHead(ctx: CanvasRenderingContext2D, x: number, y: number, angle: number) {
-   const length = 10;
-   const width = 6;
+   const length = 15;
+   const width = 10;
 
    ctx.save();
    ctx.translate(x, y);

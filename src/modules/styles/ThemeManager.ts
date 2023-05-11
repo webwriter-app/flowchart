@@ -22,7 +22,15 @@ export class ThemeManager {
          ioColor: '#baffc9',
          subColor: '#c0c5ce',
       });
-
+      this.addTheme({
+         name: 'mono',
+         startEndColor: '#87C3E7',
+         opColor: '#87C3E7',
+         decisionColor: '#87C3E7',
+         connectorColor: '#87C3E7',
+         ioColor: '#87C3E7',
+         subColor: '#87C3E7',
+      });
    }
 
    getTheme(name: string) {

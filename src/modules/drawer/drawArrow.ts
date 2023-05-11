@@ -53,7 +53,7 @@ export function generateArrowPoints(ctx: CanvasRenderingContext2D, arrow: Arrow)
       // Halte die Positionen der Knoten zueinander fest
       const isAbove = to.y  < from.y;
       const isLeft = to.x < from.x;
-
+      
       // Zum Zeichnen der Verbindungen zwischen zwei Knoten 
       // werden verschiedene Punkte in dem Array points festgehalten.
       // Je nach Position zueinander sind die Punkte anders und müssen daher überprüft werden.
@@ -341,7 +341,11 @@ function addArrowText(ctx: CanvasRenderingContext2D, points: { x: number; y: num
    };
  
    ctx.save();
-   ctx.font  = `bold ${settings.fontSize}px ${settings.font}`;
+   if (settings.font === 'Courier New') {
+      ctx.font = `bold ${settings.fontSize}px ${settings.font}`;
+   } else {
+      ctx.font  = `${settings.fontSize}px ${settings.font}`;
+   }
    ctx.textAlign = 'center';
    ctx.textBaseline = 'middle';
    ctx.translate(midPoint.x, midPoint.y);

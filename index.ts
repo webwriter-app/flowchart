@@ -30,6 +30,8 @@ import { papWidgetStyles } from './src/modules/styles/styles'
 
 import { CustomPrompt } from './src/components/custom-prompt';
 import './src/components/custom-prompt'
+import { ConfirmPrompt } from './src/components/confirm-prompt';
+import './src/components/confirm-prompt'
 
 
 @customElement('pap-widget')
@@ -70,7 +72,6 @@ export class PAPWidget extends LitElementWw {
 
    private promptType: 'node' | 'arrow' | null;
    private promptIndex: number | null;
-
 
    static styles = papWidgetStyles;
 
@@ -124,7 +125,7 @@ export class PAPWidget extends LitElementWw {
          </button>
 
          <div class='tool-menu'>
-            <button @click='${() => this.clearAll()}'>
+            <button @click='${this.showConfirmPrompt}'>
                ${drawButton('delete', 'tool')}
             </button>
             <button id='grab-button' @click='${this.grabCanvas}'>
@@ -227,6 +228,7 @@ export class PAPWidget extends LitElementWw {
                   <select id="color-theme-selector">
                      <option value="standard" selected>Standard</option>
                      <option value="pastel">Pastel</option>
+                     <option value="mono">Mono</option>
                   </select>
                </div>
             </div>
@@ -244,6 +246,13 @@ export class PAPWidget extends LitElementWw {
             @cancel="${this.hidePrompt}"
             class="hidden"
          ></custom-prompt>
+
+         <confirm-prompt
+            label="Sind Sie sicher, dass Sie alles löschen möchten?"
+            @confirm="${this.clearAll}"
+            @cancel="${this.hidePrompt}"
+            class="hidden"
+         ></confirm-prompt>
 
       </div>
     `;
@@ -398,10 +407,6 @@ export class PAPWidget extends LitElementWw {
       drawGraphNode(this.ctx, element, this.graphSettings, this.selectedNode, this.selectedSequence);
    }
 
-
-
-
-
    // ------------------------ Mouse-Events ------------------------
 
    private handleMouseDown(event: MouseEvent) {
@@ -439,7 +444,7 @@ export class PAPWidget extends LitElementWw {
       } else {
          if (this.isDragging) {
             // Füge diese Zeile hinzu, um die Knotenposition basierend auf dem Schwellenwert zu aktualisieren
-            snapNodePosition(this.ctx, this.draggedNode, this.graphNodes, 6);
+            snapNodePosition(this.ctx, this.draggedNode, this.graphNodes, 8);
 
             // Setze die Informationen zurück, nachdem ein Knoten gezogen wurde
             const { isDragging } = handleNodeDragStop();
@@ -556,9 +561,9 @@ export class PAPWidget extends LitElementWw {
       const selectedArrowIndex = this.arrows.findIndex((arrow) => isArrowClicked(x, y, arrow.points));
 
       if (clickedNodeIndex !== -1 && this.graphNodes[clickedNodeIndex].node !== 'connector') {
-         handleGraphNodeDoubleClick(clickedNodeIndex, (type, index) => this.showPrompt(type, index));
+         handleGraphNodeDoubleClick(clickedNodeIndex, (type, index) => this.showCustomPrompt(type, index));
       } else if (selectedArrowIndex !== -1) {
-         handleArrowDoubleClick(selectedArrowIndex, (type, index) => this.showPrompt(type, index));
+         handleArrowDoubleClick(selectedArrowIndex, (type, index) => this.showCustomPrompt(type, index));
       }
    }
 
@@ -633,6 +638,7 @@ export class PAPWidget extends LitElementWw {
       this.arrows = [];
       this.arrowStart = undefined;
       this.redrawCanvas();
+      //this.isClearingAll = false;
    }
 
    // Lösche das ausgewählte Objekt 
@@ -688,7 +694,7 @@ export class PAPWidget extends LitElementWw {
 
    // ------------------------ Prompt Funktionen ------------------------
 
-   private showPrompt(type: 'node' | 'arrow', index: number) {
+   private showCustomPrompt(type: 'node' | 'arrow', index: number) {
       this.shadowRoot.querySelector('custom-prompt').classList.remove('hidden');
 
       const onSubmit = (value: string) => {
@@ -714,10 +720,32 @@ export class PAPWidget extends LitElementWw {
       (this.shadowRoot.querySelector('custom-prompt') as CustomPrompt).onCancel = onCancel;
    }
 
+   private showConfirmPrompt() {
+      this.shadowRoot.querySelector('confirm-prompt').classList.remove('hidden');
+
+      const onSubmit = () => {
+         this.clearAll();
+         this.shadowRoot.querySelector('confirm-prompt').classList.add('hidden');
+      };
+
+      const onCancel = () => {
+         this.shadowRoot.querySelector('confirm-prompt').classList.add('hidden');
+      };
+
+      (this.shadowRoot.querySelector('confirm-prompt') as ConfirmPrompt).onConfirm = onSubmit;
+      (this.shadowRoot.querySelector('confirm-prompt') as ConfirmPrompt).onCancel = onCancel;
+   }
+
    private hidePrompt() {
-      const prompt = this.shadowRoot.querySelector('custom-prompt');
-      if (prompt) {
-         prompt.classList.add('hidden');
+      const customPrompt = this.shadowRoot.querySelector('custom-prompt');
+      const confirmPrompt = this.shadowRoot.querySelector('confirm-prompt');
+      
+      if (customPrompt) {
+         customPrompt.classList.add('hidden');
+      }
+
+      if (confirmPrompt) {
+         confirmPrompt.classList.add('hidden');
       }
    }
 
@@ -741,10 +769,6 @@ export class PAPWidget extends LitElementWw {
 
 /*
 TODO Liste
-
-Einstellungsmenü:
-- Schriftarten ändern
-- Colortheme ändern
 
 Hilfsmenü:
 - UI überarbeiten
