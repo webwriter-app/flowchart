@@ -437,6 +437,17 @@ export const papWidgetStyles = css`
       background-color: var(--hover-color);
    }
 
+   .tooltip {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #f9f9f9;
+      border: 1px solid #ccc;
+      padding: 5px;
+      z-index: 15;
+   }
+
    input,
    textarea {
       background-color:	#546c7e;

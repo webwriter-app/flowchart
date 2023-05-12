@@ -16,7 +16,10 @@ import { handleGrabRelease, handleNodeDragStop, handleArrowCreation } from './sr
 import { handleSequenceSelection } from './src/modules/handler/handleSequenceSelection';
 import { handleGraphNodeDoubleClick, handleArrowDoubleClick } from './src/modules/handler/doubleClickHandler';
 
-import { toggleMenu, addTask, addHelp, updateDisabledState, grabCanvas } from './src/ui'
+import { toggleMenu } from './src/modules/ui/toggleMenu';
+import { addHelp } from './src/modules/ui/helpMenu';
+import { addTask } from './src/modules/ui/taskMenu';
+import { createTooltip, removeTooltip, updateDisabledState, grabCanvas } from './src/modules/ui/generalUI'
 
 import { snapNodePosition, removeOldConnection, findLastGraphNode, findGraphNodeLastIndex } from './src/modules/helper/utilities'
 import { isArrowClicked } from './src/modules/helper/arrowHelper';
@@ -125,10 +128,17 @@ export class PAPWidget extends LitElementWw {
          </button>
 
          <div class='tool-menu'>
-            <button @click='${this.showConfirmPrompt}'>
+            
+            <button 
+               @mouseenter='${(e) => createTooltip(e, 'Lösche alles')}'
+               @mouseleave='${removeTooltip}'
+               @click='${this.showConfirmPrompt}'>
                ${drawButton('delete', 'tool')}
             </button>
-            <button id='grab-button' @click='${this.grabCanvas}'>
+            <button id='grab-button' 
+               @mouseenter='${(e) => createTooltip(e, 'Bewegen des Canvas')}'
+               @mouseleave='${removeTooltip}'
+               @click='${this.grabCanvas}'>
                ${drawButton('grab', 'tool')}
             </button>
             <button id='select-button' @click='${this.selectSequence}'>
@@ -523,7 +533,7 @@ export class PAPWidget extends LitElementWw {
          handleSequenceSelection(this.ctx, this.selectedSequence, this.graphNodes, this.arrows, x, y);
          console.log(this.selectedSequence);
       } else {
-
+         
          // Setze das angeklickte Element, oder entferne die Auswahl, wenn kein Element angeklickt wurde
          this.selectedNode = findLastGraphNode(this.ctx, this.graphNodes, x, y);
          const selectedNodeIndex = this.graphNodes.lastIndexOf(this.selectedNode);
