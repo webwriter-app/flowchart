@@ -7,9 +7,7 @@ export function createTooltip(event: MouseEvent, message: string) {
     tooltip.classList.add('tooltip');
     tooltip.innerText = message;
 
-    button.parentNode.appendChild(tooltip);
-    //button.appendChild(tooltip);
-    console.log(button.parentNode);
+    button.appendChild(tooltip);
   }, 1000);
 }
 
@@ -18,8 +16,7 @@ export function removeTooltip(event: MouseEvent) {
   const button = event.currentTarget as HTMLElement;
   const tooltip = button.parentNode.querySelector('.tooltip');
   if (tooltip) {
-    button.parentNode.removeChild(tooltip);
-    //button.removeChild(tooltip);
+    button.removeChild(tooltip);
   }
 }
 

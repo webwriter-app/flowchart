@@ -127,8 +127,7 @@ export class PAPWidget extends LitElementWw {
             +
          </button>
 
-         <div class='tool-menu'>
-            
+         <div class='tool-menu'> 
             <button 
                @mouseenter='${(e) => createTooltip(e, 'Lösche alles')}'
                @mouseleave='${removeTooltip}'
@@ -141,22 +140,40 @@ export class PAPWidget extends LitElementWw {
                @click='${this.grabCanvas}'>
                ${drawButton('grab', 'tool')}
             </button>
-            <button id='select-button' @click='${this.selectSequence}'>
+            <button id='select-button' 
+               @mouseenter='${(e) => createTooltip(e, 'Auswahlmodus')}'
+               @mouseleave='${removeTooltip}'
+               @click='${this.selectSequence}'>
                ${drawButton('select', 'tool')}
             </button>
-            <button @click='${() => this.toggleMenu('translate')}'>
+            <button 
+               @mouseenter='${(e) => createTooltip(e, 'Übersetzungsmenü')}'
+               @mouseleave='${removeTooltip}'
+               @click='${() => this.toggleMenu('translate')}'>
                ${drawButton('translate', 'tool')}
             </button>
-            <button @click='${() => this.toggleMenu('task')}'>
+            <button 
+               @mouseenter='${(e) => createTooltip(e, 'Aufgabenmenü')}'
+               @mouseleave='${removeTooltip}'
+               @click='${() => this.toggleMenu('task')}'>
                ${drawButton('task', 'tool')}
             </button>
-            <button @click='${() => this.toggleMenu('preset')}'>
+            <button 
+               @mouseenter='${(e) => createTooltip(e, 'Vorgefertigte Beispiele')}'
+               @mouseleave='${removeTooltip}'
+               @click='${() => this.toggleMenu('preset')}'>
                ${drawButton('preset', 'tool')}
             </button>
-            <button @click='${() => this.toggleMenu('help')}'>
+            <button 
+               @mouseenter='${(e) => createTooltip(e, 'Hilfe')}'
+               @mouseleave='${removeTooltip}'
+               @click='${() => this.toggleMenu('help')}'>
                ${drawButton('help', 'tool')}
             </button>
-            <button @click='${() => this.toggleMenu('setting')}'>
+            <button 
+               @mouseenter='${(e) => createTooltip(e, 'Einstellungen')}'
+               @mouseleave='${removeTooltip}'
+               @click='${() => this.toggleMenu('setting')}'>
                ${drawButton('setting', 'tool')}
             </button>
          </div>

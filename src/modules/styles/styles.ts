@@ -439,13 +439,12 @@ export const papWidgetStyles = css`
 
    .tooltip {
       position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #f9f9f9;
-      border: 1px solid #ccc;
-      padding: 5px;
-      z-index: 15;
+      background-color: var(--menu-color);
+      border-radius: var(--border-r);
+      box-shadow: var(--box-shadow);
+      padding: 10px;
+      z-index: 10;
+      font-family: var(--ui-font);
    }
 
    input,
