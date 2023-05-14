@@ -37,7 +37,7 @@ import { ConfirmPrompt } from './src/components/confirm-prompt';
 import './src/components/confirm-prompt'
 
 
-@customElement('pap-widget')
+@customElement('ww-flowchart')
 export class PAPWidget extends LitElementWw {
    @property({ type: Array }) graphNodes: GraphNode[] = [];
    @property({ type: Object }) selectedNode?: GraphNode;

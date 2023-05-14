@@ -12,9 +12,9 @@
     "typescript": "^4.8.4",
     "vite": "^3.1.6"
   },
-  "name": "pap-widget",
+  "name": "ww-flowchart",
   "version": "0.1.0",
-  "description": "",
+  "description": "Create programme flowcharts!",
   "keywords": [
     "webwriter"
   ],
