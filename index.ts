@@ -10,6 +10,7 @@ import { ItemList } from './src/definitions/ItemList';
 import { drawButton } from './src/modules/drawer/drawButton';
 import { drawGraphNode, drawNodeAnchors } from './src/modules/drawer/drawGraphNode';
 import { drawArrow, drawTempArrow, generateArrowPoints, drawArrowAnchor } from './src/modules/drawer/drawArrow';
+import { drawSelectionField } from './src/modules/drawer/drawSelectionField';
 
 import { handleNodeDragStart, handleArrowDragStart } from './src/modules/handler/mouseDownHandler';
 import { handleGrabRelease, handleNodeDragStop, handleArrowCreation } from './src/modules/handler/mouseUpHandler';
@@ -35,6 +36,7 @@ import { CustomPrompt } from './src/components/custom-prompt';
 import './src/components/custom-prompt'
 import { ConfirmPrompt } from './src/components/confirm-prompt';
 import './src/components/confirm-prompt'
+
 
 
 @customElement('ww-flowchart')
@@ -75,6 +77,9 @@ export class PAPWidget extends LitElementWw {
 
    private promptType: 'node' | 'arrow' | null;
    private promptIndex: number | null;
+
+   @property({ type: Array }) selectedNodes: GraphNode[] = [];
+   private selectionRectangle?: { x: number, y: number, width: number, height: number };
 
    static styles = papWidgetStyles;
 
@@ -416,6 +421,10 @@ export class PAPWidget extends LitElementWw {
          drawTempArrow(this.ctx, this.arrowStart, this.tempArrowEnd);
       }
 
+      if (this.selectionRectangle) {
+         drawSelectionField(this.ctx, this.selectionRectangle);
+       }
+
       // Speichere die aktuellen Knoten und Verbindungen als Attribute
       this.setAttribute('graph-nodes', JSON.stringify(this.graphNodes));
    }
@@ -439,9 +448,19 @@ export class PAPWidget extends LitElementWw {
 
    // ------------------------ Mouse-Events ------------------------
 
+   private isNodeInRectangle(node: GraphNode, rect: { x: number, y: number, width: number, height: number }): boolean {
+      return node.x >= rect.x && node.y >= rect.y && node.x <= rect.x + rect.width && node.y <= rect.y + rect.height;
+    }
+
    private handleMouseDown(event: MouseEvent) {
       const { x, y } = this.getMouseCoordinates(event);
-
+   
+      // Handhabung wenn Knoten gezogen wird
+      const { draggedNode, isDragging, dragOffset } = handleNodeDragStart(this.ctx, x, y, this.graphNodes, this.selectedArrow);
+      this.draggedNode = draggedNode;
+      this.isDragging = isDragging;
+      this.dragOffset = dragOffset;
+   
       if (this.isGrabbing) {
          // Update Offset von Canvwas wenn dieser gezogen wird
          this.grabStartPosition = { x, y };
@@ -449,24 +468,27 @@ export class PAPWidget extends LitElementWw {
          const offsetY = parseFloat(this.style.getPropertyValue('--offset-y'));
          this.grabStartOffset = { x: offsetX, y: offsetY };
       } else {
-         // Handhabung wenn Knoten gezogen wird
-         const { draggedNode, isDragging, dragOffset } = handleNodeDragStart(this.ctx, x, y, this.graphNodes, this.selectedArrow);
-         this.draggedNode = draggedNode;
-         this.isDragging = isDragging;
-         this.dragOffset = dragOffset;
-
          // Wenn ein Pfeil gezogen wird, wird ein temporärer gestrichelter Pfeil gezeichnet
          const { arrowToMove, arrowStart } = handleArrowDragStart(this.ctx, x, y, this.graphNodes, this.selectedArrow, this.handleAnchorClick.bind(this));
-
+   
          if (arrowToMove && arrowStart) {
             this.arrowStart = arrowStart;
             this.arrows = this.arrows.filter((arrow) => arrow !== arrowToMove);
          }
       }
+
+      if (!this.draggedNode && !this.isGrabbing && !this.selectedNode) {
+         this.selectionRectangle = { x, y, width: 0, height: 0 };
+      }
    }
 
    private handleMouseUp(event: MouseEvent) {
-      if (this.isGrabbing && this.grabStartPosition) {
+      if (this.selectionRectangle) {
+         this.selectionRectangle = undefined;
+         if (this.selectedNodes.length === 0) {
+           this.dragOffset = { x: 0, y: 0 };
+         }
+      } else if (this.isGrabbing && this.grabStartPosition) {
          // Setze die Grabposition des Canvas zurück, nachdem dieser gezogen wurde
          const { grabStartPosition, grabStartOffset } = handleGrabRelease();
          this.grabStartPosition = grabStartPosition;
@@ -494,6 +516,21 @@ export class PAPWidget extends LitElementWw {
 
    private handleMouseMove(event: MouseEvent) {
       const { x, y } = this.getMouseCoordinates(event);
+      if (this.selectionRectangle) {
+         this.selectionRectangle.width = x - this.selectionRectangle.x;
+         this.selectionRectangle.height = y - this.selectionRectangle.y;
+         this.selectedNodes = this.graphNodes.filter(node => this.isNodeInRectangle(node, this.selectionRectangle));
+         this.redrawCanvas();
+       } else if (this.selectedNodes.length > 0) {
+         const deltaX = x - this.dragOffset.x;
+         const deltaY = y - this.dragOffset.y;
+         this.selectedNodes.forEach(node => {
+           node.x += deltaX;
+           node.y += deltaY;
+         });
+         this.dragOffset = { x, y };
+         this.redrawCanvas();
+       } else 
       if (this.isGrabbing && this.grabStartPosition && this.grabStartOffset) {
          const deltaX = x - this.grabStartPosition.x;
          const deltaY = y - this.grabStartPosition.y;
