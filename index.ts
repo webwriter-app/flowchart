@@ -415,6 +415,9 @@ export class PAPWidget extends LitElementWw {
       if (this.isDrawingArrow && this.arrowStart && this.tempArrowEnd) {
          drawTempArrow(this.ctx, this.arrowStart, this.tempArrowEnd);
       }
+
+      // Speichere die aktuellen Knoten und Verbindungen als Attribute
+      this.setAttribute('graph-nodes', JSON.stringify(this.graphNodes));
    }
 
    private addGraphNode(node: 'start' | 'end' | 'op' | 'decision' | 'connector' | 'i/o' | 'sub' | 'text', text: string) {
@@ -636,6 +639,9 @@ export class PAPWidget extends LitElementWw {
    connectedCallback() {
       super.connectedCallback();
       window.addEventListener('resize', this.updateCanvasSize);
+
+       // Konvertiert das Array in einen String und setzt es als Attribut
+      this.setAttribute('graph-nodes', JSON.stringify(this.graphNodes));
    }
 
    disconnectedCallback() {
@@ -646,6 +652,19 @@ export class PAPWidget extends LitElementWw {
    updated(changedProperties: Map<string, any>) {
       if (changedProperties.has('editable')) {
          updateDisabledState(this, this.editable);
+      }
+   }
+
+   // Wird aufgerufen, wenn ein Attribut des Elements geändert wird
+   attributeChangedCallback(name: string, oldVal: string, newVal: string) {
+      super.attributeChangedCallback(name, oldVal, newVal);
+      if (name === 'graph-nodes') {
+      try {
+         // Konvertiert den String zurück in ein Array
+         this.graphNodes = JSON.parse(newVal);
+      } catch (e) {
+         console.error('Invalid JSON in graph-nodes attribute:', e);
+      }
       }
    }
 
