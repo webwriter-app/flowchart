@@ -4,6 +4,7 @@ import { findLastGraphNode, removeOldConnection, isWithinCircle } from "../helpe
 
 
 export function handleNodeDragStart( ctx: CanvasRenderingContext2D, x: number, y: number, graphNodes: GraphNode[], selectedArrow?: Arrow ) {
+   
    const draggedNode = findLastGraphNode(ctx, graphNodes, x, y);
    let isDragging = false;
    let dragOffset: { x: number; y: number } | undefined;
@@ -14,6 +15,23 @@ export function handleNodeDragStart( ctx: CanvasRenderingContext2D, x: number, y
    }
 
    return { draggedNode, isDragging, dragOffset };
+}
+
+export function handleMultipleNodesDragStart( ctx: CanvasRenderingContext2D, x: number, y: number, selectedNodes: GraphNode[],
+ selectedArrow?: Arrow ) {
+
+   let draggedNodes: GraphNode[] = [];
+   let isDragging = false;
+   let dragOffset: { x: number; y: number } | undefined;
+
+   const nodeUnderMouse = findLastGraphNode(ctx, selectedNodes, x, y);
+   if (nodeUnderMouse && !selectedArrow) {
+      isDragging = true;
+      dragOffset = { x: x - nodeUnderMouse.x, y: y - nodeUnderMouse.y };
+      draggedNodes = selectedNodes;
+   }
+
+   return { draggedNodes, isDragging, dragOffset };
 }
 
 export function handleArrowDragStart( ctx: CanvasRenderingContext2D, x: number, y: number, graphNodes: GraphNode[], selectedArrow: Arrow, handleAnchorClick: ( tempElement: GraphNode, tempAnchor: number) => void) {

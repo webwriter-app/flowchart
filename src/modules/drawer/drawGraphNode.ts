@@ -4,7 +4,7 @@ import { getAnchors } from "../helper/anchorHelper";
 import { ThemeManager } from "../styles/ThemeManager";
 
 // Funktion zum Zeichnen von GraphNode-Elementen
-export function drawGraphNode(ctx: CanvasRenderingContext2D, element: GraphNode, settings: { font: string; fontSize: number; theme: string }, selectedElement: GraphNode, selectedSequence: any[]) {
+export function drawGraphNode(ctx: CanvasRenderingContext2D, element: GraphNode, settings: { font: string; fontSize: number; theme: string }, selectedNodes: GraphNode[], selectedSequence: any[]) {
 
    const themeManager: ThemeManager = new ThemeManager();
    const theme = themeManager.getTheme(settings.theme);
@@ -119,7 +119,8 @@ export function drawGraphNode(ctx: CanvasRenderingContext2D, element: GraphNode,
    ctx.fillText(text, textX, textY);
 
    // Hervorhebung eines ausgewählten Knoten
-   if (selectedElement === element && selectedElement.node === 'text') {
+   //if (selectedElement === element && selectedElement.node === 'text') {
+   if (selectedNodes.some(node => node.id === element.id)) {  
       ctx.strokeStyle = '#87cefa';
       ctx.setLineDash([5, 10]);
       ctx.lineWidth = 2;
