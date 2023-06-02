@@ -89,6 +89,7 @@ export function generateArrowPoints(ctx: CanvasRenderingContext2D, arrow: Arrow)
             }
          } else if (to.anchor === 2) {   // SA oben -> ZA unten
             if (isAbove) {
+               points.pop();
                points.push({ x: from.x, y: (from.y + to.y) / 2 });
                points.push({ x: to.x, y: (from.y + to.y) / 2 });
             } else {
@@ -124,6 +125,7 @@ export function generateArrowPoints(ctx: CanvasRenderingContext2D, arrow: Arrow)
                   points.push({ x: from.x + padding, y: to.y - padding });
                   points.push({ x: to.x, y: to.y - padding });
                } else {
+                  points.pop();
                   points.push({ x: (from.x + to.x) / 2, y: from.y });
                   points.push({ x: (from.x + to.x) / 2, y: to.y - padding });
                   points.push({ x: to.x, y: to.y - padding });
@@ -133,6 +135,7 @@ export function generateArrowPoints(ctx: CanvasRenderingContext2D, arrow: Arrow)
                   points.push({ x: from.x + padding, y: to.y - padding });
                   points.push({ x: to.x, y: to.y - padding });
                } else {
+                  points.pop();
                   points.push({ x: to.x, y: from.y });
                }
             }
@@ -153,6 +156,7 @@ export function generateArrowPoints(ctx: CanvasRenderingContext2D, arrow: Arrow)
                   points.push({ x: to.x, y: to.y + padding });
                }
             } else {
+               points.pop();
                if (isAbove) {
                   points.push({ x: to.x, y: from.y });
                } else {
@@ -167,6 +171,7 @@ export function generateArrowPoints(ctx: CanvasRenderingContext2D, arrow: Arrow)
                points.push({ x: to.x - padding, y: (from.y + to.y) / 2 });
                points.push({ x: to.x - padding, y: to.y });
             } else {
+               points.pop();
                points.push({ x: (from.x + to.x) / 2, y: from.y });
                points.push({ x: (from.x + to.x) / 2, y: to.y });
             }
@@ -180,8 +185,9 @@ export function generateArrowPoints(ctx: CanvasRenderingContext2D, arrow: Arrow)
                points.push({ x: (from.x + to.x) / 2, y: to.y - padding });
                points.push({ x: to.x, y: to.y - padding });
             } else {
-               points.push({ x: from.x, y: (from.y + to.y) / 2 });
-               points.push({ x: to.x, y: (from.y + to.y) / 2 });
+               points.pop();
+               points.push({ x: from.x, y: (from.y + to.y - 7) / 2 });
+               points.push({ x: to.x, y: (from.y + to.y - 7) / 2 });
             }
          } else if (to.anchor === 1) {   // SA unten -> ZA rechts
             if (!isLeft) {
@@ -189,6 +195,7 @@ export function generateArrowPoints(ctx: CanvasRenderingContext2D, arrow: Arrow)
                   points.push({ x: to.x + padding, y: from.y + padding });
                   points.push({ x: to.x + padding, y: to.y });
                } else {
+                  points.pop();
                   points.push({ x: from.x, y: (from.y + to.y) / 2 });
                   points.push({ x: to.x + padding, y: (from.y + to.y) / 2 });
                   points.push({ x: to.x + padding, y: to.y });
@@ -198,6 +205,7 @@ export function generateArrowPoints(ctx: CanvasRenderingContext2D, arrow: Arrow)
                   points.push({ x: (from.x + to.x) / 2, y: from.y + padding });
                   points.push({ x: (from.x + to.x) / 2, y: to.y });
                } else {
+                  points.pop();
                   points.push({ x: from.x, y: to.y })
                }
             }
@@ -214,6 +222,7 @@ export function generateArrowPoints(ctx: CanvasRenderingContext2D, arrow: Arrow)
                   points.push({ x: to.x - padding, y: from.y + padding });
                   points.push({ x: to.x - padding, y: to.y });
                } else {
+                  points.pop();
                   points.push({ x: from.x, y: (from.y + to.y) / 2 });
                   points.push({ x: to.x - padding, y: (from.y + to.y) / 2 });
                   points.push({ x: to.x - padding, y: to.y });
@@ -223,6 +232,7 @@ export function generateArrowPoints(ctx: CanvasRenderingContext2D, arrow: Arrow)
                   points.push({ x: (from.x + to.x) / 2, y: from.y + padding });
                   points.push({ x: (from.x + to.x) / 2, y: to.y });
                } else {
+                  points.pop();
                   points.push({ x: from.x, y: to.y })
                }
             }
@@ -240,15 +250,18 @@ export function generateArrowPoints(ctx: CanvasRenderingContext2D, arrow: Arrow)
                }
             } else {
                if (isAbove) {
+                  points.pop();
                   points.push({ x: (from.x + to.x) / 2, y: from.y });
                   points.push({ x: (from.x + to.x) / 2, y: to.y - padding });
                   points.push({ x: to.x, y: to.y - padding });
                } else {
+                  points.pop();
                   points.push({ x: to.x, y: from.y });
                }
             }
          } else if (to.anchor === 1) {   // SA links -> ZA rechts
             if (isLeft) {
+               points.pop();
                points.push({ x: (from.x + to.x) / 2, y: from.y });
                points.push({ x: (from.x + to.x) / 2, y: to.y });
             } else {
@@ -259,6 +272,7 @@ export function generateArrowPoints(ctx: CanvasRenderingContext2D, arrow: Arrow)
          } else if (to.anchor === 2) {   // SA links -> ZA unten
             if (isAbove) {
                if (isLeft) {
+                  points.pop();
                   points.push({ x: to.x, y: from.y });
                } else {
                   points.push({ x: from.x - padding, y: (from.y + to.y) / 2 });
@@ -266,6 +280,7 @@ export function generateArrowPoints(ctx: CanvasRenderingContext2D, arrow: Arrow)
                }
             } else {
                if (isLeft) {
+                  points.pop();
                   points.push({ x: (from.x + to.x) / 2, y: from.y });
                   points.push({ x: (from.x + to.x) / 2, y: to.y + padding });
                   points.push({ x: to.x, y: to.y + padding });
@@ -357,7 +372,7 @@ function addArrowText(ctx: CanvasRenderingContext2D, points: { x: number; y: num
  }
 
 // Zeichne die Ankerpunkte einer Verbindung
-export function drawArrowAnchor(ctx: CanvasRenderingContext2D, arrow: Arrow, ishovered: boolean) {
+export function drawArrowAnchor(ctx: CanvasRenderingContext2D, arrow: Arrow, ishovered: boolean, settings: { font: string; fontSize: number; theme: string }) {
    
    const arrowInfo = getArrowInformation(ctx, arrow.to, arrow.from, 'from');
    const anchor = arrowInfo.anchor;
@@ -397,7 +412,12 @@ export function drawArrowAnchor(ctx: CanvasRenderingContext2D, arrow: Arrow, ish
    }
    // Resette Einstellungen. 
    ctx.globalAlpha = 1;
-   ctx.font = 'bold 16px Courier New';
+
+   if (settings.font === 'Courier New') {
+      ctx.font = `bold ${settings.fontSize}px ${settings.font}`;
+   } else {
+      ctx.font  = `${settings.fontSize}px ${settings.font}`;
+   }
 };
 
 export function drawTempArrow(ctx: CanvasRenderingContext2D, arrowStart: { node: GraphNode; anchor: number }, tempArrowEnd?: { x: number; y: number }) {

@@ -396,27 +396,30 @@ export class PAPWidget extends LitElementWw {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       this.getUserSettings();
 
-      // Zeichne alle Knoten 
-      this.graphNodes.forEach((element) => {
-         drawGraphNode(this.ctx, element, this.graphSettings, this.selectedNodes, this.selectedSequence);
-      });
-
       // Zeichne alle Verbindungen
       this.arrows.forEach((arrow) => {
          const isSelected = arrow === this.selectedArrow;
          arrow.points = generateArrowPoints(this.ctx, arrow);
          drawArrow(this.ctx, arrow, this.graphSettings, isSelected, this.selectedSequence);
+      });
 
-         // Zeichne Ankerpunkte des Pfeils, wenn dieser ausgewählt ist
-         if (isSelected) {
-            drawArrowAnchor(this.ctx, arrow, this.isArrowAnchorHovered);
-         }
+       // Zeichne alle Knoten 
+       this.graphNodes.forEach((element) => {
+         drawGraphNode(this.ctx, element, this.graphSettings, this.selectedNodes, this.selectedSequence);
       });
 
       // Zeichne die Ankerpunkte für das ausgewählte Element, falls vorhanden
       if (this.selectedNode) {
          drawNodeAnchors(this.ctx, this.selectedNode, this.hoveredAnchor);
       }
+
+      // Zeichne Ankerpunkte des Pfeils, wenn dieser ausgewählt ist
+      this.arrows.forEach((arrow) => {
+         const isSelected = arrow === this.selectedArrow;
+         if (isSelected) {
+            drawArrowAnchor(this.ctx, arrow, this.isArrowAnchorHovered, this.graphSettings);
+         }
+      });
 
       //Zeichne eine temporäre Verbindung beim ziehen zwischen zwei Elementen, falls vorhanden
       if (this.isDrawingArrow && this.arrowStart && this.tempArrowEnd) {
