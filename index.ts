@@ -255,6 +255,7 @@ export class PAPWidget extends LitElementWw {
                      <option value="16" selected>16</option>
                      <option value="18">18</option>
                      <option value="20">20</option>
+                     <option value="22">22</option>
                   </select>
                </div>
                <div class="setting-item">
@@ -283,8 +284,8 @@ export class PAPWidget extends LitElementWw {
 
          <confirm-prompt
             label="Sind Sie sicher, dass Sie alles löschen möchten?"
-            @confirm="${this.clearAll}"
-            @cancel="${this.hidePrompt}"
+            .onConfirm="${this.clearAll}"
+            .onCancel="${this.hidePrompt}"
             class="hidden"
          ></confirm-prompt>
 
@@ -441,7 +442,7 @@ export class PAPWidget extends LitElementWw {
       const workspace = this.shadowRoot?.querySelector('.workspace') as HTMLElement;
       let centerX = this.canvas.width * 0.45 + workspace.scrollLeft;
       let centerY = this.canvas.height * 0.45 + workspace.scrollTop;
-      console.log(this.addGraphNodeIndex);
+
       switch (this.addGraphNodeIndex) {
          case 0:
             centerX += 0;
@@ -744,6 +745,7 @@ export class PAPWidget extends LitElementWw {
    connectedCallback() {
       super.connectedCallback();
       window.addEventListener('resize', this.updateCanvasSize);
+      window.addEventListener('keydown', this.handleKeyDown);
 
        // Konvertiert das Array in einen String und setzt es als Attribut
       this.setAttribute('graph-nodes', JSON.stringify(this.graphNodes));
@@ -751,6 +753,7 @@ export class PAPWidget extends LitElementWw {
 
    disconnectedCallback() {
       window.removeEventListener('resize', this.updateCanvasSize);
+      window.removeEventListener('keydown', this.handleKeyDown);
       super.disconnectedCallback();
    }
 
@@ -795,7 +798,7 @@ export class PAPWidget extends LitElementWw {
    // Lösche das ausgewählte Objekt 
    private deleteSelectedObject() {
       // Falls ein Knoten ausgewählt wurde, lösche den Knoten und alle zugehören Verbindungen 
-      if(this.selectedNode && this.selectedNodes.includes(this.selectedNode)){
+      if(this.selectedNodes){
          this.selectedNodes.forEach((node) => {
             // Entferne ausgewählten Knoten
             this.graphNodes = this.graphNodes.filter((n) => n !== node);
@@ -812,10 +815,11 @@ export class PAPWidget extends LitElementWw {
                 (arrow) => arrow.from !== node && arrow.to !== node
             );
         });
-
+        
         this.selectedNodes = [];
-        this.selectedNode = undefined;
-      } else if (this.selectedNode) {
+      } 
+
+      if (this.selectedNode) {
          this.graphNodes = this.graphNodes.filter((node) => node !== this.selectedNode);
 
          this.arrows.forEach(arrow => {
@@ -860,6 +864,12 @@ export class PAPWidget extends LitElementWw {
       this.style.setProperty('--offset-x', `${offsetX}px`);
       this.style.setProperty('--offset-y', `${offsetY}px`);
    }
+
+   private handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' || event.key === 'Backspace') {
+          this.deleteSelectedObject();
+      }
+  }
 
    // ------------------------ Prompt Funktionen ------------------------
 
@@ -949,10 +959,11 @@ SelectionMode:
 - abgleichen mit Musterlösung
 - Wiederholende Zahlen sollen nebeneinander angezeigt werden
 
-Weitere Funktionen:
-- Select All, verschieben mehrere Elemente durch drag and drop
 
 - Cursor anpassen, je nach dem was gehovert wird
+
+Eventslistener mit Tasten esc, delete für löschen
+
 
 
 */

@@ -365,7 +365,7 @@ function addArrowText(ctx: CanvasRenderingContext2D, points: { x: number; y: num
    ctx.textBaseline = 'middle';
    ctx.translate(midPoint.x, midPoint.y);
    ctx.fillStyle = 'white';
-   ctx.fillRect(-ctx.measureText(text).width / 2 - 4, -8, ctx.measureText(text).width + 8, 16);
+   ctx.fillRect(-ctx.measureText(text).width / 2 - 5, -10, ctx.measureText(text).width + 10, 18);
    ctx.fillStyle = 'black';
    ctx.fillText(text, 0, 0);
    ctx.restore();
