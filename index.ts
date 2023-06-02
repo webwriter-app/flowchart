@@ -431,10 +431,31 @@ export class PAPWidget extends LitElementWw {
       this.setAttribute('graph-nodes', JSON.stringify(this.graphNodes));
    }
 
+   // Speichere die Position für den nächsten Knoten
+   private addGraphNodeIndex = 0;
+
    private addGraphNode(node: 'start' | 'end' | 'op' | 'decision' | 'connector' | 'i/o' | 'sub' | 'text', text: string) {
       const workspace = this.shadowRoot?.querySelector('.workspace') as HTMLElement;
-      const centerX = this.canvas.width * 0.5 + workspace.scrollLeft;
-      const centerY = this.canvas.height * 0.5 + workspace.scrollTop;
+      let centerX = this.canvas.width * 0.45 + workspace.scrollLeft;
+      let centerY = this.canvas.height * 0.45 + workspace.scrollTop;
+      console.log(this.addGraphNodeIndex);
+      switch (this.addGraphNodeIndex) {
+         case 0:
+            centerX += 0;
+            centerY += 0;
+            break;
+         case 1:
+            centerX -= 40;
+            centerY += 20;
+            break;
+         case 2:
+            centerX += 40;
+            centerY += 40;
+            break;
+         default: 
+            centerX += 0;
+            centerY += 0;
+      };
 
       const element: GraphNode = {
          id: uuidv4(),
@@ -444,9 +465,14 @@ export class PAPWidget extends LitElementWw {
          y: centerY
       };
 
+      this.addGraphNodeIndex = (this.addGraphNodeIndex + 1) % 3;
+
       this.graphNodes = [...this.graphNodes, element];
       drawGraphNode(this.ctx, element, this.graphSettings, this.selectedNodes, this.selectedSequence);
    }
+
+  
+  
 
    // ------------------------ Mouse-Events ------------------------
 
@@ -585,16 +611,22 @@ export class PAPWidget extends LitElementWw {
             if(this.checkOffset){
                deltaX = this.dragOffset.x;
                deltaY = this.dragOffset.y;
+               
+               const nodeUnderCursor = findLastGraphNode(this.ctx, this.graphNodes, x, y);
+               this.draggedNodes.forEach(node => {
+                  node.x = node.x + deltaX + (nodeUnderCursor.x - x);
+                  node.y = node.y + deltaY + (nodeUnderCursor.y - y);
+               });
+
                this.checkOffset = false;
             } else {
                deltaX = x - this.dragOffset.x;
                deltaY = y - this.dragOffset.y;
+               this.draggedNodes.forEach(node => {
+                  node.x += deltaX;
+                  node.y += deltaY;
+               });
             }
-           
-            this.draggedNodes.forEach(node => {
-               node.x += deltaX;
-               node.y += deltaY;
-            });
    
             this.dragOffset = { x, y };
         
@@ -760,18 +792,35 @@ export class PAPWidget extends LitElementWw {
    // Lösche das ausgewählte Objekt 
    private deleteSelectedObject() {
       // Falls ein Knoten ausgewählt wurde, lösche den Knoten und alle zugehören Verbindungen 
-      if (this.selectedNode) {
-         // Entferne ausgewählten Knoten
+      if(this.selectedNode && this.selectedNodes.includes(this.selectedNode)){
+         this.selectedNodes.forEach((node) => {
+            // Entferne ausgewählten Knoten
+            this.graphNodes = this.graphNodes.filter((n) => n !== node);
+
+            // Entferne die Verbindungsinformationen für alle betroffenen Knoten
+            this.arrows.forEach(arrow => {
+                if (arrow.from === node || arrow.to === node) {
+                    removeOldConnection(arrow.from, arrow.to);
+                }
+            });
+
+            // Entferne alle Pfeile, die mit den gelöschten Elementen verbunden sind
+            this.arrows = this.arrows.filter(
+                (arrow) => arrow.from !== node && arrow.to !== node
+            );
+        });
+
+        this.selectedNodes = [];
+        this.selectedNode = undefined;
+      } else if (this.selectedNode) {
          this.graphNodes = this.graphNodes.filter((node) => node !== this.selectedNode);
 
-         // Entferne die Verbindungsinformationen für alle betroffenen Knoten
          this.arrows.forEach(arrow => {
             if (arrow.from === this.selectedNode || arrow.to === this.selectedNode) {
                removeOldConnection(arrow.from, arrow.to);
             }
          });
 
-         // Entferne alle Pfeile, die mit dem gelöschten Element verbunden sind
          this.arrows = this.arrows.filter(
             (arrow) => arrow.from !== this.selectedNode && arrow.to !== this.selectedNode
          );
@@ -783,7 +832,8 @@ export class PAPWidget extends LitElementWw {
          this.arrows = this.arrows.filter((arrow) => arrow !== this.selectedArrow);
          this.selectedArrow = undefined;
       }
-
+      console.log(this.graphNodes);
+      console.log(this.arrows);
       this.toggleMenu('context');
       this.redrawCanvas();
    }

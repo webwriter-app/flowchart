@@ -431,6 +431,7 @@ export const papWidgetStyles = css`
       padding: 4px 16px;
       background-color: var(--button-color);
       transition: background-color 0.3s;
+      cursor: pointer;
    }
 
    .context-menu-item:hover {
