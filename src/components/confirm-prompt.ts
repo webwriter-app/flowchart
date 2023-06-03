@@ -68,26 +68,26 @@ export class ConfirmPrompt extends LitElement {
       `;
    }
 
-   // private boundHandleKeyUp: (event: KeyboardEvent) => void;
+   private boundHandleKeyUp: (event: KeyboardEvent) => void;
 
-   // connectedCallback() {
-   //    super.connectedCallback();
-   //    this.boundHandleKeyUp = this.handleKeyUp.bind(this);
-   //    window.addEventListener('keyup', this.boundHandleKeyUp);
-   // }
+   public enableKeyListener() {
+      console.log("Hinzu");
+      this.boundHandleKeyUp = this.handleKeyUp.bind(this);
+      window.addEventListener('keyup', this.boundHandleKeyUp);
+  }
 
-   // disconnectedCallback() {
-   //    window.removeEventListener('keyup', this.boundHandleKeyUp);
-   //    super.disconnectedCallback();
-   // }
+  public disableKeyListener() {
+      console.log("Lösche");
+      window.removeEventListener('keyup', this.boundHandleKeyUp);
+   }
 
-   // handleKeyUp(event: KeyboardEvent) {
-   //    if (event.key === 'Enter') {
-   //       this.handleConfirm();
-   //    } else if (event.key === 'Escape') {
-   //       this.handleCancel();
-   //    }
-   // }
+   handleKeyUp(event: KeyboardEvent) {
+      if (event.key === 'Enter') {
+         this.handleConfirm();
+      } else if (event.key === 'Escape') {
+         this.handleCancel();
+      }
+   }
 
    handleConfirm() {
       this.onConfirm();

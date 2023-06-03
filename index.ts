@@ -388,7 +388,7 @@ export class PAPWidget extends LitElementWw {
    // Aktiviere Bewegungsmodus für das Canvas
    private grabCanvas() {
       this.isGrabbing = grabCanvas(this, this.isGrabbing);
-      console.log(this.editable);
+      console.log(this.graphNodes);
    }
 
    // ------------------------ Drawer Funktionen ------------------------
@@ -808,7 +808,6 @@ export class PAPWidget extends LitElementWw {
       this.arrows = [];
       this.arrowStart = undefined;
       this.redrawCanvas();
-      //this.isClearingAll = false;
    }
 
    // Lösche das ausgewählte Objekt 
@@ -855,8 +854,7 @@ export class PAPWidget extends LitElementWw {
          this.arrows = this.arrows.filter((arrow) => arrow !== this.selectedArrow);
          this.selectedArrow = undefined;
       }
-      console.log(this.graphNodes);
-      console.log(this.arrows);
+    
       this.toggleMenu('context');
       this.redrawCanvas();
    }
@@ -882,10 +880,13 @@ export class PAPWidget extends LitElementWw {
    }
 
    private handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' || event.key === 'Backspace') {
-         this.deleteSelectedObject();
+      const customPrompt = this.shadowRoot?.querySelector('custom-prompt');
+      const confirmPrompt = this.shadowRoot?.querySelector('confirm-prompt');
+
+      if ( (event.key === 'Escape' || event.key === 'Backspace') && customPrompt?.classList.contains('hidden') && confirmPrompt?.classList.contains('hidden') ) {
+        this.deleteSelectedObject();
       }
-   }
+    }
 
    // ------------------------ Prompt Funktionen ------------------------
 
@@ -916,15 +917,19 @@ export class PAPWidget extends LitElementWw {
    }
 
    private showConfirmPrompt() {
-      this.shadowRoot.querySelector('confirm-prompt').classList.remove('hidden');
-
+      const confirmPrompt = this.shadowRoot.querySelector('confirm-prompt') as ConfirmPrompt;
+      confirmPrompt.classList.remove('hidden');
+      confirmPrompt.enableKeyListener();
+   
       const onSubmit = () => {
+         confirmPrompt.disableKeyListener();
          this.clearAll();
-         this.shadowRoot.querySelector('confirm-prompt').classList.add('hidden');
+         confirmPrompt.classList.add('hidden');
       };
 
       const onCancel = () => {
-         this.shadowRoot.querySelector('confirm-prompt').classList.add('hidden');
+         confirmPrompt.classList.add('hidden');
+         confirmPrompt.disableKeyListener();
       };
 
       (this.shadowRoot.querySelector('confirm-prompt') as ConfirmPrompt).onConfirm = onSubmit;
@@ -933,7 +938,7 @@ export class PAPWidget extends LitElementWw {
 
    private hidePrompt() {
       const customPrompt = this.shadowRoot.querySelector('custom-prompt');
-      const confirmPrompt = this.shadowRoot.querySelector('confirm-prompt');
+      const confirmPrompt = this.shadowRoot.querySelector('confirm-prompt') as ConfirmPrompt;
 
       if (customPrompt) {
          customPrompt.classList.add('hidden');
@@ -941,6 +946,7 @@ export class PAPWidget extends LitElementWw {
 
       if (confirmPrompt) {
          confirmPrompt.classList.add('hidden');
+         confirmPrompt.disableKeyListener();
       }
    }
 
