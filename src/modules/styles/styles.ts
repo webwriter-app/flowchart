@@ -137,7 +137,7 @@ export const papWidgetStyles = css`
       width: 300px;
       min-height: 60px;
       max-height: 75%;
-      resize: both;
+      //resize: both;
       overflow: hidden;
    }
 
@@ -147,6 +147,8 @@ export const papWidgetStyles = css`
       height: 100%;
       width: 100%; 
       box-sizing: border-box; 
+      justify-content: space-between;
+      overflow-y: auto;
    }
 
    .task-container {
@@ -158,8 +160,9 @@ export const papWidgetStyles = css`
    .task-title {
       width: 100%;
       box-sizing: border-box;
-      font-size: 14px;
-      font-weight: bold;
+      font-family: var(--ui-font);
+      font-size: 18px;
+      //font-weight: bold;
       padding: 5px;
       margin: 10px 0;
       border: 1px solid #34495e;
@@ -168,9 +171,12 @@ export const papWidgetStyles = css`
 
    .task-content {
       width: 100%;
+      min-height: 100px; 
+      //max-height: 200px; /* Die maximale Größe der Textarea festlegen */
+      height: auto; 
       box-sizing: border-box;
       font-family: var(--ui-font);
-      font-size: 14px;
+      font-size: 16px;
       padding: 5px;
       margin-bottom: 5px;
       border: 1px solid #34495e;
@@ -182,6 +188,14 @@ export const papWidgetStyles = css`
      margin-left: 80%;
    }
 
+   .no-tasks-message {
+      color: #ffffff;
+      font-family: var(--ui-font);
+      font-size: 18px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+   }
 
    .flowchart-menu > .close-button,
    .close-button {
@@ -245,7 +259,7 @@ export const papWidgetStyles = css`
       justify-content: center;
       flex-direction: column;
   
-      max-width: 250px;
+      max-width: 300px;
       //min-height: 100px;
       max-height: 75%;
       overflow: hidden;
@@ -268,8 +282,7 @@ export const papWidgetStyles = css`
    .help-title {
       width: 100%;
       box-sizing: border-box;
-      font-size: 14px;
-      font-weight: bold;
+      font-size: 18px;
       padding: 5px;
       margin: 10px 0;
       border: 1px solid #34495e;
@@ -278,9 +291,10 @@ export const papWidgetStyles = css`
 
    .help-content {
       width: 100%;
+      min-height: 100px; 
       box-sizing: border-box;
       font-family: var(--ui-font);
-      font-size: 14px;
+      font-size: 16px;
       padding: 5px;
       margin-bottom: 5px;
       border: 1px solid #34495e;
@@ -289,7 +303,7 @@ export const papWidgetStyles = css`
    }
  
    .delete-help-button {
-     margin-left: 70%;
+     margin-left: 80%;
    }
 
    .show-help-button {
@@ -452,17 +466,21 @@ export const papWidgetStyles = css`
    textarea {
       background-color:	#546c7e;
       border-radius: var(--border-r);
-      color: white;
+      color: #ffffff;
       margin-bottom: 10px;
       padding: 10px;
-     
    }
 
    input:disabled,
    textarea:disabled {
-      background-color: #ffffff; 
-      color: #000000; 
+      background-color: #546c7e; 
+      color: #ffffff; 
       opacity: 1; 
+   }
+
+   input::placeholder,
+   textarea::placeholder {
+      color: #c0c0c0;
    }
 
    .hidden {

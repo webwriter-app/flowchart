@@ -30,7 +30,6 @@ export function updateDisabledState(element: HTMLElement, editable: boolean | un
 
     taskTitles.forEach((taskTitle: HTMLInputElement) => {
       taskTitle.disabled = editable;
-      console.log(taskTitle.disabled);
     });
 
     taskContents.forEach((taskContent: HTMLTextAreaElement) => {
@@ -67,3 +66,25 @@ export function grabCanvas(element: HTMLElement, isGrabbing: boolean): boolean {
   return !isGrabbing;
 }
 
+export function autoDeleteEmptyItems(
+  element: HTMLElement,
+  itemList: any[],
+  containerSelector: string,
+  wrapperSelector: string,
+  titleSelector: string,
+  contentSelector: string
+) {
+  const containers = element.shadowRoot.querySelectorAll(containerSelector);
+  containers.forEach((container) => {
+    const wrappers = Array.from(container.querySelectorAll(wrapperSelector));
+    wrappers.forEach((wrapper: HTMLElement) => {
+      const title = wrapper.querySelector(titleSelector) as HTMLInputElement;
+      const content = wrapper.querySelector(contentSelector) as HTMLTextAreaElement;
+      if ((title.value.trim() === '') && (content.value.trim() === '')) {
+        const index = parseInt(wrapper.dataset.index);
+        itemList.splice(index, 1);
+        container.removeChild(wrapper);
+      }
+    });
+  });
+}

@@ -6,6 +6,8 @@ export function addTask(element: HTMLElement, taskList: ItemList[]) {
 
   const taskWrapper = document.createElement('div');
   taskWrapper.style.position = 'relative';
+  taskWrapper.dataset.index = taskList.length.toString();  
+  taskWrapper.className = 'task-wrapper';
 
   const taskTitle = document.createElement('input');
   taskTitle.type = 'text';
@@ -19,6 +21,11 @@ export function addTask(element: HTMLElement, taskList: ItemList[]) {
   const taskContent = document.createElement('textarea');
   taskContent.className = 'task-content';
   taskContent.placeholder = 'Inhalt';
+  taskContent.addEventListener('input', (event) => {
+    const target = event.target as HTMLTextAreaElement;
+    target.style.height = 'auto';
+    target.style.height = `${target.scrollHeight}px`;
+  });
   taskContent.addEventListener('change', (event) => {
     const index = Array.from(taskContainer.children).indexOf(taskWrapper);
     taskList[index].content = (event.target as HTMLTextAreaElement).value;

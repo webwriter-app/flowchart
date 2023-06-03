@@ -20,7 +20,7 @@ import { handleGraphNodeDoubleClick, handleArrowDoubleClick } from './src/module
 import { toggleMenu } from './src/modules/ui/toggleMenu';
 import { addHelp } from './src/modules/ui/helpMenu';
 import { addTask } from './src/modules/ui/taskMenu';
-import { createTooltip, removeTooltip, updateDisabledState, grabCanvas } from './src/modules/ui/generalUI'
+import { createTooltip, removeTooltip, updateDisabledState, grabCanvas, autoDeleteEmptyItems } from './src/modules/ui/generalUI'
 
 import { snapNodePosition, removeOldConnection, findLastGraphNode, findGraphNodeLastIndex } from './src/modules/helper/utilities'
 import { isArrowClicked } from './src/modules/helper/arrowHelper';
@@ -190,7 +190,9 @@ export class PAPWidget extends LitElementWw {
                ×
             </button>
             <div class='task-menu-wrapper'>
-               <div class="task-container"></div>
+            ${this.taskList.length === 0 && this.editable
+            ? html`<p class="no-tasks-message">Keine Aufgaben!</p>`
+            : html`<div class="task-container"></div>`}
                <button class="add-task-button editMode" @click='${this.addTask}'>
                   ${drawButton('addTask', 'task')}
                </button>
@@ -386,8 +388,7 @@ export class PAPWidget extends LitElementWw {
    // Aktiviere Bewegungsmodus für das Canvas
    private grabCanvas() {
       this.isGrabbing = grabCanvas(this, this.isGrabbing);
-      console.log("GraphNode: ", this.graphNodes);
-      console.log("Arrows: ", this.arrows);
+      console.log(this.editable);
    }
 
    // ------------------------ Drawer Funktionen ------------------------
@@ -404,8 +405,8 @@ export class PAPWidget extends LitElementWw {
          drawArrow(this.ctx, arrow, this.graphSettings, isSelected, this.selectedSequence);
       });
 
-       // Zeichne alle Knoten 
-       this.graphNodes.forEach((element) => {
+      // Zeichne alle Knoten 
+      this.graphNodes.forEach((element) => {
          drawGraphNode(this.ctx, element, this.graphSettings, this.selectedNodes, this.selectedSequence);
       });
 
@@ -429,7 +430,7 @@ export class PAPWidget extends LitElementWw {
 
       if (this.selectionRectangle) {
          drawSelectionField(this.ctx, this.selectionRectangle);
-       }
+      }
 
       // Speichere die aktuellen Knoten und Verbindungen als Attribute
       this.setAttribute('graph-nodes', JSON.stringify(this.graphNodes));
@@ -456,7 +457,7 @@ export class PAPWidget extends LitElementWw {
             centerX += 40;
             centerY += 40;
             break;
-         default: 
+         default:
             centerX += 0;
             centerY += 0;
       };
@@ -475,20 +476,17 @@ export class PAPWidget extends LitElementWw {
       drawGraphNode(this.ctx, element, this.graphSettings, this.selectedNodes, this.selectedSequence);
    }
 
-  
-  
-
    // ------------------------ Mouse-Events ------------------------
 
    private isNodeInRectangle(node: GraphNode, rect: { x: number, y: number, width: number, height: number }): boolean {
       const rectStartX = rect.width >= 0 ? rect.x : rect.x + rect.width;
       const rectStartY = rect.height >= 0 ? rect.y : rect.y + rect.height;
-  
+
       const rectEndX = rect.width >= 0 ? rect.x + rect.width : rect.x;
       const rectEndY = rect.height >= 0 ? rect.y + rect.height : rect.y;
-  
+
       return node.x >= rectStartX && node.y >= rectStartY && node.x <= rectEndX && node.y <= rectEndY;
-  }
+   }
 
    private handleMouseDown(event: MouseEvent) {
       const { x, y } = this.getMouseCoordinates(event);
@@ -501,7 +499,7 @@ export class PAPWidget extends LitElementWw {
 
       // Handhabung wenn Knoten gezogen wird
       if (this.selectedNodes.length > 1) {
-        
+
          const { draggedNodes, isDragging, dragOffset } = handleMultipleNodesDragStart(this.ctx, x, y, this.selectedNodes, this.selectedArrow);
          this.draggedNodes = draggedNodes;
          this.isDragging = isDragging;
@@ -513,7 +511,7 @@ export class PAPWidget extends LitElementWw {
          this.isDragging = isDragging;
          this.dragOffset = dragOffset;
       }
-   
+
       if (this.isGrabbing) {
          // Update Offset von Canvwas wenn dieser gezogen wird
          this.grabStartPosition = { x, y };
@@ -523,7 +521,7 @@ export class PAPWidget extends LitElementWw {
       } else {
          // Wenn ein Pfeil gezogen wird, wird ein temporärer gestrichelter Pfeil gezeichnet
          const { arrowToMove, arrowStart } = handleArrowDragStart(this.ctx, x, y, this.graphNodes, this.selectedArrow, this.handleAnchorClick.bind(this));
-   
+
          if (arrowToMove && arrowStart) {
             this.arrowStart = arrowStart;
             this.arrows = this.arrows.filter((arrow) => arrow !== arrowToMove);
@@ -546,7 +544,7 @@ export class PAPWidget extends LitElementWw {
       } else {
          if (this.isDragging) {
             // Füge diese Zeile hinzu, um die Knotenposition basierend auf dem Schwellenwert zu aktualisieren
-            if(this.selectedNodes.length === 0 ){
+            if (this.selectedNodes.length === 0) {
                snapNodePosition(this.ctx, this.draggedNode, this.graphNodes, 8);
             }
 
@@ -569,7 +567,7 @@ export class PAPWidget extends LitElementWw {
       // Resette einmalige Schranke fürs draggen mehrerer Knoten
       this.checkOffset = true;
    }
-   
+
    private handleMouseMove(event: MouseEvent) {
       const { x, y } = this.getMouseCoordinates(event);
       if (this.selectionRectangle) {
@@ -577,76 +575,76 @@ export class PAPWidget extends LitElementWw {
          this.selectionRectangle.height = y - this.selectionRectangle.y;
          this.selectedNodes = this.graphNodes.filter(node => this.isNodeInRectangle(node, this.selectionRectangle));
          this.redrawCanvas();
-       } else 
-      if (this.isGrabbing && this.grabStartPosition && this.grabStartOffset) {
-         const deltaX = x - this.grabStartPosition.x;
-         const deltaY = y - this.grabStartPosition.y;
+      } else
+         if (this.isGrabbing && this.grabStartPosition && this.grabStartOffset) {
+            const deltaX = x - this.grabStartPosition.x;
+            const deltaY = y - this.grabStartPosition.y;
 
-         // Aktualisiere die Koordinaten der Knoten und Verbindungen
-         this.graphNodes.forEach(element => {
-            element.x += deltaX;
-            element.y += deltaY;
-         });
-         this.arrows.forEach(arrow => {
-            if (arrow.points) {
-               arrow.points.forEach(point => {
-                  point.x += deltaX;
-                  point.y += deltaY;
-               });
+            // Aktualisiere die Koordinaten der Knoten und Verbindungen
+            this.graphNodes.forEach(element => {
+               element.x += deltaX;
+               element.y += deltaY;
+            });
+            this.arrows.forEach(arrow => {
+               if (arrow.points) {
+                  arrow.points.forEach(point => {
+                     point.x += deltaX;
+                     point.y += deltaY;
+                  });
+               }
+            });
+
+            // Aktualisiere das Canvas anhand der Mausbewegung
+            const offsetX = parseFloat(this.style.getPropertyValue('--offset-x'));
+            const offsetY = parseFloat(this.style.getPropertyValue('--offset-y'));
+            this.style.setProperty('--offset-x', `${offsetX + deltaX}px`);
+            this.style.setProperty('--offset-y', `${offsetY + deltaY}px`);
+
+            // Zeichne das aktualisierte Canvas
+            this.redrawCanvas();
+
+            // Aktualisiere die grabStartPosition auf die aktuelle Mausposition
+            this.grabStartPosition = { x, y };
+         } else {
+            if (this.isDragging && this.draggedNodes.length > 1) {
+               let deltaX: number;
+               let deltaY: number;
+
+               if (this.checkOffset) {
+                  deltaX = this.dragOffset.x;
+                  deltaY = this.dragOffset.y;
+
+                  const nodeUnderCursor = findLastGraphNode(this.ctx, this.graphNodes, x, y);
+                  this.draggedNodes.forEach(node => {
+                     node.x = node.x + deltaX + (nodeUnderCursor.x - x);
+                     node.y = node.y + deltaY + (nodeUnderCursor.y - y);
+                  });
+
+                  this.checkOffset = false;
+               } else {
+                  deltaX = x - this.dragOffset.x;
+                  deltaY = y - this.dragOffset.y;
+                  this.draggedNodes.forEach(node => {
+                     node.x += deltaX;
+                     node.y += deltaY;
+                  });
+               }
+
+               this.dragOffset = { x, y };
+
+               this.redrawCanvas();
+            } else if (this.isDragging && this.draggedNode) {
+               this.draggedNode.x = x - this.dragOffset.x;
+               this.draggedNode.y = y - this.dragOffset.y;
+               this.redrawCanvas();
+            } else if (this.isDrawingArrow && this.arrowStart && (this.selectedNode || this.selectedArrow)) {
+               const { x, y } = this.getMouseCoordinates(event);
+
+               this.tempArrowEnd = { x, y };
+
+               this.redrawCanvas();
             }
-         });
-
-         // Aktualisiere das Canvas anhand der Mausbewegung
-         const offsetX = parseFloat(this.style.getPropertyValue('--offset-x'));
-         const offsetY = parseFloat(this.style.getPropertyValue('--offset-y'));
-         this.style.setProperty('--offset-x', `${offsetX + deltaX}px`);
-         this.style.setProperty('--offset-y', `${offsetY + deltaY}px`);
-
-         // Zeichne das aktualisierte Canvas
-         this.redrawCanvas();
-
-         // Aktualisiere die grabStartPosition auf die aktuelle Mausposition
-         this.grabStartPosition = { x, y };
-      } else {
-         if (this.isDragging && this.draggedNodes.length > 1) {
-            let deltaX: number;
-            let deltaY: number;
-
-            if(this.checkOffset){
-               deltaX = this.dragOffset.x;
-               deltaY = this.dragOffset.y;
-               
-               const nodeUnderCursor = findLastGraphNode(this.ctx, this.graphNodes, x, y);
-               this.draggedNodes.forEach(node => {
-                  node.x = node.x + deltaX + (nodeUnderCursor.x - x);
-                  node.y = node.y + deltaY + (nodeUnderCursor.y - y);
-               });
-
-               this.checkOffset = false;
-            } else {
-               deltaX = x - this.dragOffset.x;
-               deltaY = y - this.dragOffset.y;
-               this.draggedNodes.forEach(node => {
-                  node.x += deltaX;
-                  node.y += deltaY;
-               });
-            }
-   
-            this.dragOffset = { x, y };
-        
-            this.redrawCanvas();
-         } else if (this.isDragging && this.draggedNode) {
-            this.draggedNode.x = x - this.dragOffset.x;
-            this.draggedNode.y = y - this.dragOffset.y;
-            this.redrawCanvas();
-         } else if (this.isDrawingArrow && this.arrowStart && (this.selectedNode || this.selectedArrow)) {
-            const { x, y } = this.getMouseCoordinates(event);
-
-            this.tempArrowEnd = { x, y };
-
-            this.redrawCanvas();
          }
-      }
 
       // Highlighte den Ankerpunkt, falls der Benutzer über diesen kommt
       const { hoveredAnchor, isArrowAnchorHovered } = highlightAnchor(this.ctx, this.selectedNode, this.selectedArrow, x, y);
@@ -661,7 +659,7 @@ export class PAPWidget extends LitElementWw {
       if (this.isSelectingSequence) {
          handleSequenceSelection(this.ctx, this.selectedSequence, this.graphNodes, this.arrows, x, y);
       } else {
-         if ( this.draggedNodes.length === 0) {
+         if (this.draggedNodes.length === 0) {
             // Setze das angeklickte Element, oder entferne die Auswahl, wenn kein Element angeklickt wurde
             this.selectedNode = findLastGraphNode(this.ctx, this.graphNodes, x, y);
             const selectedNodeIndex = this.graphNodes.lastIndexOf(this.selectedNode);
@@ -709,22 +707,6 @@ export class PAPWidget extends LitElementWw {
       this.isDrawingArrow = true;
       this.arrowStart = { node, anchor };
    }
-
-   // private updateAnchorListeners() {
-   //    if (this.selectedNode && this.selectedNode.node !== 'text') {
-   //       const anchors = getAnchors(this.ctx, this.selectedNode, 15);
-
-   //       anchors.forEach((position, index) => {
-   //          this.canvas?.addEventListener('mousedown', (event) => {
-   //             const { x, y } = this.getMouseCoordinates(event);
-   //             const distance = Math.sqrt((position.x - x) ** 2 + (position.y - y) ** 2);
-   //             if (distance <= 8) {
-   //                this.handleAnchorClick(this.selectedNode, index);
-   //             }
-   //          });
-   //       });
-   //    }
-   // }
 
    private anchorMouseDownEvent: ((event: MouseEvent) => void) | null = null;
 
@@ -778,7 +760,7 @@ export class PAPWidget extends LitElementWw {
       window.addEventListener('resize', this.updateCanvasSize);
       window.addEventListener('keydown', this.handleKeyDown);
 
-       // Konvertiert das Array in einen String und setzt es als Attribut
+      // Konvertiert das Array in einen String und setzt es als Attribut
       this.setAttribute('graph-nodes', JSON.stringify(this.graphNodes));
    }
 
@@ -789,21 +771,24 @@ export class PAPWidget extends LitElementWw {
    }
 
    updated(changedProperties: Map<string, any>) {
-      if (changedProperties.has('editable')) {
-         updateDisabledState(this, this.editable);
+      if (changedProperties.has('editable') && this.editable) {
+         autoDeleteEmptyItems(this, this.taskList, '.task-container', '.task-wrapper', '.task-title', '.task-content');
+         autoDeleteEmptyItems(this, this.helpList, '.help-container', '.help-wrapper', '.help-title', '.help-content');
       }
+      updateDisabledState(this, this.editable);
    }
+
 
    // Wird aufgerufen, wenn ein Attribut des Elements geändert wird
    attributeChangedCallback(name: string, oldVal: string, newVal: string) {
       super.attributeChangedCallback(name, oldVal, newVal);
       if (name === 'graph-nodes') {
-      try {
-         // Konvertiert den String zurück in ein Array
-         this.graphNodes = JSON.parse(newVal);
-      } catch (e) {
-         console.error('Invalid JSON in graph-nodes attribute:', e);
-      }
+         try {
+            // Konvertiert den String zurück in ein Array
+            this.graphNodes = JSON.parse(newVal);
+         } catch (e) {
+            console.error('Invalid JSON in graph-nodes attribute:', e);
+         }
       }
    }
 
@@ -829,26 +814,26 @@ export class PAPWidget extends LitElementWw {
    // Lösche das ausgewählte Objekt 
    private deleteSelectedObject() {
       // Falls ein Knoten ausgewählt wurde, lösche den Knoten und alle zugehören Verbindungen 
-      if(this.selectedNodes){
+      if (this.selectedNodes) {
          this.selectedNodes.forEach((node) => {
             // Entferne ausgewählten Knoten
             this.graphNodes = this.graphNodes.filter((n) => n !== node);
 
             // Entferne die Verbindungsinformationen für alle betroffenen Knoten
             this.arrows.forEach(arrow => {
-                if (arrow.from === node || arrow.to === node) {
-                    removeOldConnection(arrow.from, arrow.to);
-                }
+               if (arrow.from === node || arrow.to === node) {
+                  removeOldConnection(arrow.from, arrow.to);
+               }
             });
 
             // Entferne alle Pfeile, die mit den gelöschten Elementen verbunden sind
             this.arrows = this.arrows.filter(
-                (arrow) => arrow.from !== node && arrow.to !== node
+               (arrow) => arrow.from !== node && arrow.to !== node
             );
-        });
-        
-        this.selectedNodes = [];
-      } 
+         });
+
+         this.selectedNodes = [];
+      }
 
       if (this.selectedNode) {
          this.graphNodes = this.graphNodes.filter((node) => node !== this.selectedNode);
@@ -898,9 +883,9 @@ export class PAPWidget extends LitElementWw {
 
    private handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape' || event.key === 'Backspace') {
-          this.deleteSelectedObject();
+         this.deleteSelectedObject();
       }
-  }
+   }
 
    // ------------------------ Prompt Funktionen ------------------------
 
@@ -949,7 +934,7 @@ export class PAPWidget extends LitElementWw {
    private hidePrompt() {
       const customPrompt = this.shadowRoot.querySelector('custom-prompt');
       const confirmPrompt = this.shadowRoot.querySelector('confirm-prompt');
-      
+
       if (customPrompt) {
          customPrompt.classList.add('hidden');
       }
@@ -980,11 +965,6 @@ export class PAPWidget extends LitElementWw {
 /*
 TODO Liste
 
-Hilfsmenü:
-- UI überarbeiten
-- Wechsel durch klick zwischen Lehrer und Schüler Ansicht
-- Input Felder anpassen 
-
 SelectionMode:
 - performance verbessern
 - abgleichen mit Musterlösung
@@ -992,9 +972,5 @@ SelectionMode:
 
 
 - Cursor anpassen, je nach dem was gehovert wird
-
-Eventslistener mit Tasten esc, delete für löschen
-
-
 
 */
