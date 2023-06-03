@@ -710,21 +710,52 @@ export class PAPWidget extends LitElementWw {
       this.arrowStart = { node, anchor };
    }
 
+   // private updateAnchorListeners() {
+   //    if (this.selectedNode && this.selectedNode.node !== 'text') {
+   //       const anchors = getAnchors(this.ctx, this.selectedNode, 15);
+
+   //       anchors.forEach((position, index) => {
+   //          this.canvas?.addEventListener('mousedown', (event) => {
+   //             const { x, y } = this.getMouseCoordinates(event);
+   //             const distance = Math.sqrt((position.x - x) ** 2 + (position.y - y) ** 2);
+   //             if (distance <= 8) {
+   //                this.handleAnchorClick(this.selectedNode, index);
+   //             }
+   //          });
+   //       });
+   //    }
+   // }
+
+   private anchorMouseDownEvent: ((event: MouseEvent) => void) | null = null;
+
    private updateAnchorListeners() {
       if (this.selectedNode && this.selectedNode.node !== 'text') {
          const anchors = getAnchors(this.ctx, this.selectedNode, 15);
 
-         anchors.forEach((position, index) => {
-            this.canvas?.addEventListener('mousedown', (event) => {
-               const { x, y } = this.getMouseCoordinates(event);
+         // Entferne zuerst den bestehenden mousedown-EventListener, falls vorhanden
+         if (this.anchorMouseDownEvent && this.canvas) {
+            this.canvas.removeEventListener('mousedown', this.anchorMouseDownEvent);
+            this.anchorMouseDownEvent = null;
+         }
+
+         // Erstelle den neuen EventListener und speicher ihn in der anchorMouseDownEvent-Variable
+         this.anchorMouseDownEvent = (event) => {
+            const { x, y } = this.getMouseCoordinates(event);
+            anchors.forEach((position, index) => {
                const distance = Math.sqrt((position.x - x) ** 2 + (position.y - y) ** 2);
                if (distance <= 8) {
                   this.handleAnchorClick(this.selectedNode, index);
                }
             });
-         });
+         };
+
+         // Füge den neuen EventListener hinzu
+         if (this.canvas) {
+            this.canvas.addEventListener('mousedown', this.anchorMouseDownEvent);
+         }
       }
    }
+
 
    // ------------------------ Lifecycle ------------------------
 
