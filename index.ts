@@ -328,6 +328,11 @@ export class PAPWidget extends LitElementWw {
       if (!this.isSelectingSequence) {
          this.selectedSequence = [];
       }
+      // Deaktive alles ausgewählten Graphelemente
+      this.selectedNode = undefined;
+      this.selectedArrow = undefined;
+      this.selectionRectangle = undefined;
+
       this.redrawCanvas();
    }
 
@@ -658,6 +663,7 @@ export class PAPWidget extends LitElementWw {
 
       if (this.isSelectingSequence) {
          handleSequenceSelection(this.ctx, this.selectedSequence, this.graphNodes, this.arrows, x, y);
+         this.redrawCanvas();
       } else {
          if (this.draggedNodes.length === 0) {
             // Setze das angeklickte Element, oder entferne die Auswahl, wenn kein Element angeklickt wurde

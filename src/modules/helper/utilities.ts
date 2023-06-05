@@ -93,7 +93,7 @@ function findLast<T>(arr: T[], predicate: (element: T) => boolean): T | undefine
    return undefined;
 }
 
-function findLastIndex<T>(arr: T[], predicate: (element: T) => boolean): number {
+export function findLastIndex<T>(arr: T[], predicate: (element: T) => boolean): number {
    for (let i = arr.length - 1; i >= 0; i--) {
       const element = arr[i];
       if (predicate(element)) {

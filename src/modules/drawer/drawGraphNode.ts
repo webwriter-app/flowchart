@@ -13,19 +13,19 @@ export function drawGraphNode(ctx: CanvasRenderingContext2D, element: GraphNode,
    if (settings.font === 'Courier New') {
       ctx.font = `bold ${settings.fontSize}px ${settings.font}`;
    } else {
-      ctx.font  = `${settings.fontSize}px ${settings.font}`;
+      ctx.font = `${settings.fontSize}px ${settings.font}`;
    }
 
    const { node, text, x, y } = element;
    let { width, height } = measureTextSize(ctx, text);
-  
+
    // Zeichne die passenden Knoten je nach Typ
    switch (node) {
-      case 'start':  
+      case 'start':
       case 'end':
          // abgerundestes Rechteck
          ctx.fillStyle = theme.startEndColor;
-         const radius = 25; 
+         const radius = 25;
          ctx.beginPath();
          ctx.moveTo(x + radius, y);
          ctx.lineTo(x + width - radius, y);
@@ -39,7 +39,7 @@ export function drawGraphNode(ctx: CanvasRenderingContext2D, element: GraphNode,
          ctx.closePath();
          ctx.fill();
          break;
-      case 'op':  
+      case 'op':
          // Rechteck
          ctx.fillStyle = theme.opColor;
          ctx.beginPath();
@@ -50,18 +50,18 @@ export function drawGraphNode(ctx: CanvasRenderingContext2D, element: GraphNode,
          ctx.closePath();
          ctx.fill();
          break;
-      case 'decision':     
+      case 'decision':
          // Diamant
          ctx.fillStyle = theme.decisionColor;
          ctx.beginPath();
          ctx.moveTo(x + width / 2, y);
          ctx.lineTo(x + width, y + height / 2);
          ctx.lineTo(x + width / 2, y + height);
-         ctx.lineTo(x , y + height / 2);
+         ctx.lineTo(x, y + height / 2);
          ctx.closePath();
          ctx.fill();
          break;
-      case 'connector':    
+      case 'connector':
          // Kreis
          ctx.fillStyle = theme.connectorColor;
          const circleRadius = Math.min(width, height) / 3;
@@ -72,7 +72,7 @@ export function drawGraphNode(ctx: CanvasRenderingContext2D, element: GraphNode,
       case 'i/o':
          // Parallelogramm
          ctx.fillStyle = theme.ioColor;
-         const skew = 20;  
+         const skew = 20;
          ctx.beginPath();
          ctx.moveTo(x + skew, y);
          ctx.lineTo(x + width, y);
@@ -114,40 +114,43 @@ export function drawGraphNode(ctx: CanvasRenderingContext2D, element: GraphNode,
    ctx.fillStyle = 'black';
    ctx.textAlign = 'center'
    ctx.textBaseline = 'middle';
-   const textX = x + width / 2; 
+   const textX = x + width / 2;
    const textY = y + height / 2;
    ctx.fillText(text, textX, textY);
 
    // Hervorhebung eines ausgewählten Knoten
-   //if (selectedElement === element && selectedElement.node === 'text') {
-   if (selectedNodes.some(node => node.id === element.id)) {  
+   if (selectedNodes.some(node => node.id === element.id)) {
       ctx.strokeStyle = '#87cefa';
       ctx.setLineDash([5, 10]);
       ctx.lineWidth = 2;
       ctx.strokeRect(x, y, width, height);
    }
 
-   //Hervorhebung der ausgewählten Sequenz und Anzeige des Counters
-   const sequenceIndex = selectedSequence.findIndex((item) => item.id === element.id && item.type === 'node');
-   if (sequenceIndex !== -1) {
-      ctx.save();
-      ctx.strokeStyle = 'gold';
-      ctx.lineWidth = 4;
-      ctx.stroke();
+    //Hervorhebung der ausgewählten Sequenz und Anzeige des Counters
+   if (selectedSequence.length > 0) {
+   // Bestimmt die Indizes, an denen die Knoten-ID in der selectedSequence vorkommt.
+      const indices = selectedSequence.map((item, index) => item.id === element.id && item.type === 'node' ? index : -1).filter(index => index !== -1);
+      // Zeichnet die Zahlen basierend auf den berechneten Indizes.
+      indices.forEach((index, i) => {
+         ctx.save();
+         ctx.strokeStyle = '#990000';
+         ctx.lineWidth = 2;
+         ctx.stroke();
 
-      ctx.fillStyle = 'gold';
-      ctx.font = 'bold 16px Arial';
-      ctx.fillText(
-         selectedSequence[sequenceIndex].order.toString(),
-         x + width + 8,
-         y - 5
-      );
-      ctx.restore();
+         ctx.fillStyle = '#990000';
+         ctx.font = 'bold 16px Arial';
+         ctx.fillText(
+            (index + 1).toString(), 
+            x + width + ((i + 1) * 20),
+            y - 6 - (i * 3)
+         );
+         ctx.restore();
+      });
    }
 
 }
 
-export function drawNodeAnchors(ctx: CanvasRenderingContext2D, element: GraphNode,  hoveredAnchor: { element: GraphNode; anchor: number } | undefined) {
+export function drawNodeAnchors(ctx: CanvasRenderingContext2D, element: GraphNode, hoveredAnchor: { element: GraphNode; anchor: number } | undefined) {
    if (element.node !== 'text') {
       ctx.fillStyle = '#5CACEE';
 
@@ -157,7 +160,7 @@ export function drawNodeAnchors(ctx: CanvasRenderingContext2D, element: GraphNod
       // Zeichne die Ankerpunkte
       anchors.forEach((position, index) => {
          // Falls ein Ankerpunkt gehovert wird, wird die Transparenz auf 1 gesetzt. 
-         (hoveredAnchor && hoveredAnchor.element === element && hoveredAnchor.anchor === index) ? ctx.globalAlpha = 1 : ctx.globalAlpha = 0.4;         
+         (hoveredAnchor && hoveredAnchor.element === element && hoveredAnchor.anchor === index) ? ctx.globalAlpha = 1 : ctx.globalAlpha = 0.4;
 
          let angle: number;
          switch (index) {

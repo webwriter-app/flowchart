@@ -7,7 +7,7 @@ export function drawArrow(ctx: CanvasRenderingContext2D, arrow: Arrow, settings:
  
    const points = generateArrowPoints(ctx, arrow);
    ctx.save();
-   applyArrowStyle(ctx, isSelected, arrow, points, selectedSequence);
+   applyArrowStyle(ctx, isSelected, arrow, selectedSequence);
 
    ctx.beginPath();
    ctx.setLineDash([])
@@ -23,6 +23,27 @@ export function drawArrow(ctx: CanvasRenderingContext2D, arrow: Arrow, settings:
    if (arrow.text) {
       addArrowText(ctx, points, arrow.text, settings);
    }
+
+   if (selectedSequence.length > 0) {
+      // Zeichnet die Zahlen basierend auf den berechneten Indizes.
+      // Bestimmt die Indizes, an denen die Pfeil-ID in der selectedSequence vorkommt.
+       const indices = selectedSequence.map((item, index) => item.id === arrow.id && item.type === 'arrow' ? index : -1).filter(index => index !== -1);
+       indices.forEach((index, i) => {
+          const midPointIndex = Math.floor(points.length / 2 - 1);
+          const midPoint = {
+             x: (points[midPointIndex].x + points[midPointIndex + 1].x) / 2,
+             y: (points[midPointIndex].y + points[midPointIndex + 1].y) / 2,
+          };
+ 
+          ctx.stroke();
+          ctx.font = 'bold 16px Arial';
+          ctx.fillText(
+             (index + 1).toString(), 
+             midPoint.x + ((i + 1) * 30),
+             midPoint.y - (i * 3)
+          );
+       });
+    }
 
    ctx.restore();
 
@@ -307,32 +328,14 @@ export function generateArrowPoints(ctx: CanvasRenderingContext2D, arrow: Arrow)
    return points;
 }
 
-function applyArrowStyle(ctx: CanvasRenderingContext2D, isSelected: boolean, arrow: Arrow, points: { x: number, y: number }[], selectedSequence: any[]) {
+function applyArrowStyle(ctx: CanvasRenderingContext2D, isSelected: boolean, arrow: Arrow, selectedSequence: any[]) {
    ctx.strokeStyle = isSelected ? '#5CACEE' : 'black';
    ctx.fillStyle = isSelected ? '#5CACEE' : 'black';
    ctx.lineWidth = 2;
-
-   if (selectedSequence.length > 0) {
-      const sequenceIndex = selectedSequence.findIndex((item) =>item.id === arrow.id && item.type === 'arrow');
-      if (sequenceIndex !== -1) {
-         const midPointIndex = Math.floor(points.length / 2 - 0.5);
-         const midPoint = {
-            x: (points[midPointIndex].x + points[midPointIndex + 1].x) / 2,
-            y: (points[midPointIndex].y + points[midPointIndex + 1].y) / 2,
-         };
-
-         ctx.strokeStyle = 'gold';
-         ctx.fillStyle = 'gold';
-         ctx.lineWidth = 4;
-         ctx.stroke();
-
-         ctx.font = 'bold 16px Arial';
-         ctx.fillText(
-            selectedSequence[sequenceIndex].order.toString(),
-            midPoint.x + 10,
-            midPoint.y + 10
-         );
-      }
+   const isArrowIdInSelectedSequence = selectedSequence.some(item => item.id === arrow.id && item.type === 'arrow');
+   if (isArrowIdInSelectedSequence) {
+      ctx.strokeStyle = '#990000';
+      ctx.fillStyle = '#990000';
    }
 }
 

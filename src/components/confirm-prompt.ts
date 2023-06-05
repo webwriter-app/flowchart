@@ -71,13 +71,11 @@ export class ConfirmPrompt extends LitElement {
    private boundHandleKeyUp: (event: KeyboardEvent) => void;
 
    public enableKeyListener() {
-      console.log("Hinzu");
       this.boundHandleKeyUp = this.handleKeyUp.bind(this);
       window.addEventListener('keyup', this.boundHandleKeyUp);
   }
 
   public disableKeyListener() {
-      console.log("Lösche");
       window.removeEventListener('keyup', this.boundHandleKeyUp);
    }
 
