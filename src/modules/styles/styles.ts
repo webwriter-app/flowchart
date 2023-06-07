@@ -76,6 +76,9 @@ export const papWidgetStyles = css`
    .tool-menu button,
    .add-task-button,
    .delete-task-button,
+   .add-sequence-button,
+   .cancel-sequence-button,
+   .save-sequence-button,
    .add-help-button,
    .delete-help-button,
    .show-help-button,
@@ -95,6 +98,9 @@ export const papWidgetStyles = css`
    .tool-menu button:hover,
    .add-task-button:hover,
    .delete-task-button:hover,
+   .add-sequence-button:hover,
+   .cancel-sequence-button:hover,
+   .save-sequence-button:hover,
    .add-help-button:hover,
    .delete-help-button:hover,
    .show-help-button:hover,
@@ -108,6 +114,9 @@ export const papWidgetStyles = css`
    .tool-menu button:active,
    .add-task-button:active,
    .delete-task-button:active,
+   .add-sequence-button:active,
+   .cancel-sequence-button:active,
+   .save-sequence-button:active,
    .add-help-button:active,
    .delete-help-button:active,
    .show-help-button:active,
@@ -183,10 +192,25 @@ export const papWidgetStyles = css`
       border-radius: var(--border-r);
       resize: vertical;
    }
- 
-   .delete-task-button {
-     margin-left: 80%;
+   
+   .task-button-container {
+      display: flex;
+      justify-content: space-between;
    }
+
+   .add-sequence-button,
+   .cancel-sequence-button,
+   .save-sequence-button,
+   .delete-task-button {
+      margin-inline: 5px;
+      margin-bottom: 5px;
+      flex: 1;
+   }
+
+   .task-menu button.active {
+      background-color: #EEC900;
+   }
+
 
    .no-tasks-message {
       color: #ffffff;

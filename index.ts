@@ -75,6 +75,9 @@ export class PAPWidget extends LitElementWw {
 
    private isSelectingSequence = false;
    private selectedSequence: { id: string; order: number; type: string }[] = [];
+   private activeSequenceButton: HTMLButtonElement | null = null;
+   private getActiveSequenceButton = () => this.activeSequenceButton;
+   private setActiveSequenceButton = (btn: HTMLButtonElement | null) => { this.activeSequenceButton = btn; };
 
    private promptType: 'node' | 'arrow' | null;
    private promptIndex: number | null;
@@ -311,6 +314,7 @@ export class PAPWidget extends LitElementWw {
    private translateToPseudoCode() {
       const pseudocode = this.generatePseudoCode(this.graphNodes);
       console.log(pseudocode);
+      console.log(this.taskList);
 
    }
 
@@ -322,12 +326,13 @@ export class PAPWidget extends LitElementWw {
       // Setze css style von Icon auf aktiv
       const selectButton = this.shadowRoot.getElementById('select-button');
       !this.isSelectingSequence ? selectButton?.classList.add('active') : selectButton?.classList.remove('active');
-
+      
       this.isSelectingSequence = !this.isSelectingSequence;
 
       if (!this.isSelectingSequence) {
-         this.selectedSequence = [];
+         this.selectedSequence = []
       }
+      
       // Deaktive alles ausgewählten Graphelemente
       this.selectedNode = undefined;
       this.selectedArrow = undefined;
@@ -368,8 +373,12 @@ export class PAPWidget extends LitElementWw {
       }
    }
 
+   private setSelectedSequence = (sequence: { id: string; order: number; type: string }[]) => { 
+      this.selectedSequence = sequence; 
+    };
+
    private addTask() {
-      addTask(this, this.taskList);
+      addTask(this, this.taskList, this.selectedSequence, this.getActiveSequenceButton, this.setActiveSequenceButton, this.setSelectedSequence);
    }
 
    private addHelp() {
@@ -662,7 +671,8 @@ export class PAPWidget extends LitElementWw {
       const { x, y } = this.getMouseCoordinates(event);
 
       if (this.isSelectingSequence) {
-         handleSequenceSelection(this.ctx, this.selectedSequence, this.graphNodes, this.arrows, x, y);
+         handleSequenceSelection(this.ctx, this.selectedSequence, this.graphNodes, this.arrows, x, y, this);
+         console.log(this.taskList);
          this.redrawCanvas();
       } else {
          if (this.draggedNodes.length === 0) {
@@ -768,11 +778,15 @@ export class PAPWidget extends LitElementWw {
 
       // Konvertiert das Array in einen String und setzt es als Attribut
       this.setAttribute('graph-nodes', JSON.stringify(this.graphNodes));
+
+      this.addEventListener('startSelectSequence', this.selectSequence);
    }
 
    disconnectedCallback() {
       window.removeEventListener('resize', this.updateCanvasSize);
       window.removeEventListener('keydown', this.handleKeyDown);
+
+      this.removeEventListener('startSelectSequence', this.selectSequence.bind(this));
       super.disconnectedCallback();
    }
 

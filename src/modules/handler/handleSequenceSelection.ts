@@ -14,7 +14,8 @@ export function handleSequenceSelection(
    graphNodes: GraphNode[],
    arrows: Arrow[],
    x: number,
-   y: number
+   y: number,
+   element: HTMLElement
 ) {
    const clickedNode = findLastGraphNode(ctx, graphNodes, x, y);
    const clickedArrow = findArrow(arrows, x, y);
@@ -76,7 +77,7 @@ export function handleSequenceSelection(
          }
       }
    }
-   console.log(selectedSequence);
+
 }
 
 function findConnectedArrow(node: GraphNode, clickedArrow: Arrow, arrows: Arrow[]): Arrow | null {

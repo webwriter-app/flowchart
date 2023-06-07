@@ -1,12 +1,11 @@
 import { ItemList } from "../../definitions/ItemList";
 
-// Füge eine Aufgabe hinzu
-export function addTask(element: HTMLElement, taskList: ItemList[]) {
+export function addTask(element: HTMLElement, taskList: ItemList[], selectedSequence: { id: string; order: number; type: string }[], getActiveSequenceButton: () => HTMLButtonElement | null, setActiveSequenceButton: (btn: HTMLButtonElement | null) => void, setSelectedSequence: (sequence: { id: string; order: number; type: string }[]) => void) {
   const taskContainer = element.shadowRoot.querySelector('.task-container');
 
   const taskWrapper = document.createElement('div');
   taskWrapper.style.position = 'relative';
-  taskWrapper.dataset.index = taskList.length.toString();  
+  taskWrapper.dataset.index = taskList.length.toString();
   taskWrapper.className = 'task-wrapper';
 
   const taskTitle = document.createElement('input');
@@ -31,6 +30,94 @@ export function addTask(element: HTMLElement, taskList: ItemList[]) {
     taskList[index].content = (event.target as HTMLTextAreaElement).value;
   });
 
+  const taskButtonContainer = document.createElement('div');
+  taskButtonContainer.className = 'task-button-container';
+
+  const selectButton = element.shadowRoot.getElementById('select-button');
+  selectButton.addEventListener('click', () => {
+    if (!selectButton.classList.contains('active')) {
+      let activeSequenceButton = getActiveSequenceButton();
+      if (activeSequenceButton) {
+        activeSequenceButton.classList.remove('active');
+        setActiveSequenceButton(null);
+      }
+    }
+  });
+  const selectSequenceEvent = new CustomEvent('startSelectSequence');
+
+  const cancelSequence = document.createElement('button');
+  cancelSequence.className = 'cancel-sequence-button editMode';
+  cancelSequence.style.display = 'none';  
+  cancelSequence.textContent = 'Abbrechen';
+  cancelSequence.onclick = () => {
+    // Breche das hinzufügen von einer Sequenz ab. 
+    setActiveSequenceButton(null);
+    selectedSequence = [];
+    element.dispatchEvent(selectSequenceEvent);
+   
+    cancelSequence.style.display = 'none';
+    saveSequence.style.display = 'none';
+    addSequence.classList.remove('active');
+  };
+
+  const saveSequence = document.createElement('button');
+  saveSequence.className = 'save-sequence-button editMode';
+  saveSequence.style.display = 'none';  
+  saveSequence.textContent = 'Sequenz Speichern';
+  saveSequence.onclick = () => {
+    console.log("saveButton ", selectedSequence);
+    // Speicher die ausgewählte Sequence im TaskList und beende den Auswahlmodus
+    const taskIndex = Array.from(taskContainer.children).indexOf(taskWrapper);
+    taskList[taskIndex].sequence = selectedSequence;
+
+    setActiveSequenceButton(null);
+    selectedSequence = [];
+    element.dispatchEvent(selectSequenceEvent);
+
+    // Verstecke die Buttons "Abbrechen" und "Speichern" und deaktiviere active
+    cancelSequence.style.display = 'none';
+    saveSequence.style.display = 'none';
+    addSequence.classList.remove('active');
+    console.log(taskList);
+  };
+
+  const addSequence = document.createElement('button');
+  addSequence.className = 'add-sequence-button editMode';
+  addSequence.textContent = 'Sequenz hinzufügen';
+  addSequence.onclick = () => {
+    
+    // Überprüfen, ob ein anderer Button bereits aktiv ist.
+    let activeSequenceButton = getActiveSequenceButton();
+    if (activeSequenceButton && activeSequenceButton !== addSequence) {
+      activeSequenceButton.classList.remove('active');  // Deaktiviere den vorherigen Button
+    }
+
+    //Überprüfe ob schon eine Lösung vorhanden ist, falls ja zeige diese an:
+    const taskIndex = Array.from(taskContainer.children).indexOf(taskWrapper);
+    if(taskList[taskIndex].sequence){
+      setSelectedSequence(taskList[taskIndex].sequence);
+      selectedSequence = taskList[taskIndex].sequence;
+    }
+
+    // Beginne mit der Auswahl der Sequenz, wenn der Button angeklickt wird.
+    element.dispatchEvent(selectSequenceEvent);
+
+    // Aktiviere den aktuellen Button und setze ihn als den aktiven Button
+    if (selectButton.classList.contains('active')) {
+      addSequence.classList.add('active');
+      setActiveSequenceButton(addSequence);
+
+      // Zeige die Buttons "Abbrechen" und "Sequenz Speichern" an
+      cancelSequence.style.display = 'block';
+      saveSequence.style.display = 'block';
+    } else {
+      addSequence.classList.remove('active');
+      setActiveSequenceButton(null);  // Setze den aktiven Button zurück, wenn keiner aktiv ist
+      cancelSequence.style.display = 'none';
+      saveSequence.style.display = 'none';
+    }
+  } 
+
   const deleteTask = document.createElement('button');
   deleteTask.className = 'delete-task-button editMode';
   deleteTask.textContent = 'Löschen';
@@ -40,9 +127,14 @@ export function addTask(element: HTMLElement, taskList: ItemList[]) {
     taskContainer.removeChild(taskWrapper);
   };
 
+  taskButtonContainer.appendChild(saveSequence);
+  taskButtonContainer.appendChild(cancelSequence);  
+  taskButtonContainer.appendChild(addSequence);
+  taskButtonContainer.appendChild(deleteTask);
+  
   taskWrapper.appendChild(taskTitle);
   taskWrapper.appendChild(taskContent);
-  taskWrapper.appendChild(deleteTask);
+  taskWrapper.appendChild(taskButtonContainer);
 
   taskContainer.appendChild(taskWrapper);
   taskList.push({ titel: '', content: '' });
