@@ -41,12 +41,13 @@ export const papWidgetStyles = css`
 
     /* Menus */
    .flowchart-menu,
-   .tool-menu,
    .task-menu,
+   .tool-menu,
    .help-menu,
    .preset-menu,
    .translate-menu,
-   .setting-menu {
+   .setting-menu,
+   .solution-menu {
       display: flex;
       position: fixed;
       background-color: var(--menu-color);
@@ -66,9 +67,23 @@ export const papWidgetStyles = css`
 
    .tool-menu {
       flex-direction: row;
-      right: 1.5%;
-      top: 3%;
       gap: 10px;
+      top: 3%;
+      right: 1.5%;
+   }
+
+   .solution-menu {
+      flex-direction: column;
+      gap: 10px;
+      margin-right: 15px;
+      top: 3%;
+      right: 35%;
+   }
+
+   .solution-titel {
+      color: white;
+      font-family: var(--ui-font);
+      font-size: 16px;
    }
 
    /* Buttons */
@@ -83,7 +98,8 @@ export const papWidgetStyles = css`
    .delete-help-button,
    .show-help-button,
    .preset-button,
-   .translate-button {
+   .translate-button,
+   .solution-button {
       background-color: var(--button-color);
       color: white;
       border: none;
@@ -105,7 +121,8 @@ export const papWidgetStyles = css`
    .delete-help-button:hover,
    .show-help-button:hover,
    .preset-button:hover,
-   .translate-button:hover {
+   .translate-button:hover,
+   .solution-button:hover {
       background-color: var(--hover-color);
    }
 
@@ -121,9 +138,16 @@ export const papWidgetStyles = css`
    .delete-help-button:active,
    .show-help-button:active,
    .preset-button:active,
-   .translate-button:active {
+   .translate-button:active,
+   .solution-button:active {
       background-color: var(--button-color); 
       box-shadow: 0px 0px 5px var(--hover-color);
+   }
+
+   .solution-button{
+      height: 100%;
+      font-family: var(--ui-font);
+      font-size: 16px;
    }
    
  

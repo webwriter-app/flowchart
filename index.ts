@@ -73,11 +73,21 @@ export class PAPWidget extends LitElementWw {
    private hoveredAnchor?: { element: GraphNode; anchor: number };
    private isArrowAnchorHovered: boolean;
 
-   private isSelectingSequence = false;
+   private _isSelectingSequence = false;
    private selectedSequence: { id: string; order: number; type: string }[] = [];
    private activeSequenceButton: HTMLButtonElement | null = null;
    private getActiveSequenceButton = () => this.activeSequenceButton;
    private setActiveSequenceButton = (btn: HTMLButtonElement | null) => { this.activeSequenceButton = btn; };
+   get isSelectingSequence() {
+      return this._isSelectingSequence;
+    }
+   set isSelectingSequence(value: boolean) {
+      const oldValue = this._isSelectingSequence;
+      this._isSelectingSequence = value;
+      if (oldValue !== value) {
+        this.showSolutionMenu();
+      }
+   }
 
    private promptType: 'node' | 'arrow' | null;
    private promptIndex: number | null;
@@ -136,6 +146,13 @@ export class PAPWidget extends LitElementWw {
          <button class="show-flowchart-button hidden" @click='${() => this.toggleMenu('flow')}'>
             +
          </button>
+
+         <div class='solution-menu hidden'> 
+            <div class='solution-titel'>
+               Auswahl überprüfen
+            </div>
+            ${this.taskList.map(task => task.sequence ? html`<button class='solution-button' @click='${() => this.checkSolution(task)}'>${task.titel}</button>` : '')}
+         </div> 
 
          <div class='tool-menu'> 
             <button 
@@ -341,6 +358,22 @@ export class PAPWidget extends LitElementWw {
       this.redrawCanvas();
    }
 
+   private checkSolution(task: ItemList) {
+      // Prüfe, ob die Längen der ausgewählten Sequenz und der Aufgabensequenz übereinstimmen
+      if (task.sequence && this.selectedSequence.length === task.sequence.length) {
+         for (let i = 0; i < this.selectedSequence.length; i++) {
+            // Prüfe, ob die IDs und der Typ jeder Sequenz übereinstimmen
+            if (this.selectedSequence[i].id !== task.sequence[i].id || this.selectedSequence[i].type !== task.sequence[i].type) {
+               alert('Die ausgewählte Sequenz ist falsch!');
+               return;
+            }
+         }
+         alert('Die ausgewählte Sequenz ist korrekt!');
+      } else {
+         alert('Die ausgewählte Sequenz ist falsch!');
+      }
+   }
+
    // Zeige oder verstecke die angefragten Benutzeroberflächen 
    private toggleMenu(menu: 'task' | 'flow' | 'context' | 'preset' | 'help' | 'translate' | 'setting') {
       toggleMenu(this, menu);
@@ -383,6 +416,22 @@ export class PAPWidget extends LitElementWw {
 
    private addHelp() {
       addHelp(this, this.helpList);
+   }
+
+   private showSolutionMenu() {
+      const solutionMenuElement = this.shadowRoot?.querySelector('.solution-menu');
+
+      if (!solutionMenuElement) {
+         return;
+      }
+
+      // Prüfen, ob es eine Aufgabe mit einer Sequence gibt
+      const taskWithSequenceExists = this.taskList.some(task => task.sequence?.length);
+      if (this.isSelectingSequence && taskWithSequenceExists && this.editable) {
+         solutionMenuElement.classList.remove('hidden');
+      } else {
+         solutionMenuElement.classList.add('hidden');
+      }
    }
 
    private showPreset(presetName: string) {
@@ -671,7 +720,7 @@ export class PAPWidget extends LitElementWw {
       const { x, y } = this.getMouseCoordinates(event);
 
       if (this.isSelectingSequence) {
-         handleSequenceSelection(this.ctx, this.selectedSequence, this.graphNodes, this.arrows, x, y, this);
+         handleSequenceSelection(this.ctx, this.selectedSequence, this.graphNodes, this.arrows, x, y);
          console.log(this.taskList);
          this.redrawCanvas();
       } else {
@@ -797,7 +846,6 @@ export class PAPWidget extends LitElementWw {
       }
       updateDisabledState(this, this.editable);
    }
-
 
    // Wird aufgerufen, wenn ein Attribut des Elements geändert wird
    attributeChangedCallback(name: string, oldVal: string, newVal: string) {

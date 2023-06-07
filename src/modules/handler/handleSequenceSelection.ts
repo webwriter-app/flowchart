@@ -15,7 +15,6 @@ export function handleSequenceSelection(
    arrows: Arrow[],
    x: number,
    y: number,
-   element: HTMLElement
 ) {
    const clickedNode = findLastGraphNode(ctx, graphNodes, x, y);
    const clickedArrow = findArrow(arrows, x, y);
