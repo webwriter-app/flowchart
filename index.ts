@@ -337,13 +337,35 @@ export class PAPWidget extends LitElementWw {
 
 
    private translateToPseudoCode() {
-      const pseudocode = this.generatePseudoCode(this.graphNodes);
-      console.log(pseudocode);
-      console.log(this.taskList);
-
+      const prompt = this.generatePrompt();
+      
+      fetch('https://api.openai.com/v1/engines/davinci-codex/completions', {
+         method: 'POST',
+         headers: {
+            'Content-Type': 'application/json',
+            //'Authorization': `Bearer ${API_KEY}`,  // Hier API_KEY ersetzen
+         },
+         body: JSON.stringify({
+            prompt: prompt,
+            max_tokens: 200,
+         }),
+      })
+      .then(response => response.json())
+      .then(data => console.log(data.choices[0].text.trim()))
+      .catch(error => console.error(error));
    }
 
-   private generatePseudoCode(graphNodes: GraphNode[]) {
+   private generatePrompt(): string {
+      let prompt = '';
+      for (const node of this.graphNodes) {
+         prompt += node.text + '\n';
+         if (node.connections) {
+            for (const connection of node.connections) {
+               prompt += connection.text + '\n';
+            }
+         }
+      }
+      return prompt;
    }
 
 

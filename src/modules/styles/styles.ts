@@ -306,8 +306,7 @@ export const papWidgetStyles = css`
    }
 
    .help-menu {
-      align-items: center;
-      justify-content: center;
+      //align-items: center;
       flex-direction: column;
   
       max-width: 300px;
@@ -322,12 +321,13 @@ export const papWidgetStyles = css`
       height: 100%;
       width: 100%; 
       box-sizing: border-box; 
+      justify-content: space-between;
    }
 
    .help-container {
       flex-grow: 1;
       overflow-y: auto;
-      margin-bottom: 10px;
+      //margin-bottom: 10px;
    }
 
    .help-title {
@@ -355,6 +355,7 @@ export const papWidgetStyles = css`
  
    .delete-help-button {
      margin-left: 80%;
+     margin-bottom: 10px;
    }
 
    .show-help-button {
@@ -364,6 +365,7 @@ export const papWidgetStyles = css`
       font-size: 16px;
       padding: 10px;
       margin-bottom: 10px;
+      margin-top: 10px;
    }
 
    .preset-menu {
