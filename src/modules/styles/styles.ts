@@ -99,7 +99,8 @@ export const papWidgetStyles = css`
    .show-help-button,
    .preset-button,
    .translate-button,
-   .solution-button {
+   .solution-button,
+   .prompt button {
       background-color: var(--button-color);
       color: white;
       border: none;
@@ -122,7 +123,8 @@ export const papWidgetStyles = css`
    .show-help-button:hover,
    .preset-button:hover,
    .translate-button:hover,
-   .solution-button:hover {
+   .solution-button:hover,
+   .prompt button:hover {
       background-color: var(--hover-color);
    }
 
@@ -139,7 +141,8 @@ export const papWidgetStyles = css`
    .show-help-button:active,
    .preset-button:active,
    .translate-button:active,
-   .solution-button:active {
+   .solution-button:active,
+   .prompt button:active {
       background-color: var(--button-color); 
       box-shadow: 0px 0px 5px var(--hover-color);
    }
@@ -508,6 +511,28 @@ export const papWidgetStyles = css`
       padding: 10px;
       z-index: 10;
       font-family: var(--ui-font);
+   }
+
+   .prompt {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+      background-color: var(--menu-color);
+      border-radius: var(--border-r);
+      display: flex;
+      flex-direction: column;
+      color: white;
+      font-family: 'Arial';
+      font-size: 14px;
+   }
+
+   .prompt button {
+      margin-bottom: 5px;
+      margin-top: 5px;
    }
 
    input,

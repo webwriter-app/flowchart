@@ -92,6 +92,9 @@ export class PAPWidget extends LitElementWw {
    private promptType: 'node' | 'arrow' | null;
    private promptIndex: number | null;
 
+   @property({ type: String }) solutionMessage: string = '';
+   @property({ type: Boolean }) showSolution: boolean = false;
+
    @property({ type: Array }) selectedNodes: GraphNode[] = [];
    private selectionRectangle?: { x: number, y: number, width: number, height: number };
    private checkOffset = true;
@@ -311,6 +314,11 @@ export class PAPWidget extends LitElementWw {
             class="hidden"
          ></confirm-prompt>
 
+         <div class="prompt ${this.showSolution ? '' : 'hidden'}">
+            <p>${this.solutionMessage}</p>
+            <button @click="${this.closeSolution}">Schließen</button>
+         </div>
+
       </div>
     `;
    }
@@ -364,13 +372,13 @@ export class PAPWidget extends LitElementWw {
          for (let i = 0; i < this.selectedSequence.length; i++) {
             // Prüfe, ob die IDs und der Typ jeder Sequenz übereinstimmen
             if (this.selectedSequence[i].id !== task.sequence[i].id || this.selectedSequence[i].type !== task.sequence[i].type) {
-               alert('Die ausgewählte Sequenz ist falsch!');
+               this.showSolutionWithMessage('Die ausgewählte Sequenz ist falsch!');
                return;
             }
          }
-         alert('Die ausgewählte Sequenz ist korrekt!');
+         this.showSolutionWithMessage('Die ausgewählte Sequenz ist korrekt!');
       } else {
-         alert('Die ausgewählte Sequenz ist falsch!');
+         this.showSolutionWithMessage('Die ausgewählte Sequenz ist falsch!');
       }
    }
 
@@ -1031,6 +1039,15 @@ export class PAPWidget extends LitElementWw {
       }
       this.redrawCanvas();
       this.hidePrompt();
+   }
+
+   private showSolutionWithMessage(message: string) {
+      this.solutionMessage = message;
+      this.showSolution = true;
+   }
+
+   private closeSolution() {
+      this.showSolution = false;
    }
 
 
