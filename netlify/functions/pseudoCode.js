@@ -14,7 +14,7 @@ exports.handler = async function(event, context) {
     const openAiPrompt = graphNodes.map(node => node.text).join(' ');
 
     // Setzen Sie Ihre OpenAI-Schlüssel und Einstellungen
-    const OPENAI_API_URL = "https://api.openai.com/v1/engines/davinci-codex/completions";
+    const OPENAI_API_URL = "https://api.openai.com/v1/engines/code-davinci-002/completions";
     const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
     const headers = {
