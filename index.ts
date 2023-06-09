@@ -352,6 +352,7 @@ export class PAPWidget extends LitElementWw {
       this.graphSettings.theme = themeSelector.value;
    }
 
+   // Variante ohne Netlify 
    // private translateFlowchart(language: 'natural' | 'pseudo') {
    //    const messages = this.generateMessages(language);
    //    document.body.style.cursor = 'wait';
@@ -404,7 +405,7 @@ export class PAPWidget extends LitElementWw {
          console.log(data)
          if (language === 'natural') {
             let textAreaElement = this.shadowRoot.getElementById('naturalLanguageOutput') as HTMLTextAreaElement;
-            textAreaElement.value = data;
+            textAreaElement.value = data.translation;
             textAreaElement.classList.remove('hidden');
         } else {
             let textAreaElement = this.shadowRoot.getElementById('pseudoCodeOutput') as HTMLTextAreaElement;
