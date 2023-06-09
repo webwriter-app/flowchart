@@ -409,7 +409,7 @@ export class PAPWidget extends LitElementWw {
             textAreaElement.classList.remove('hidden');
         } else {
             let textAreaElement = this.shadowRoot.getElementById('pseudoCodeOutput') as HTMLTextAreaElement;
-            textAreaElement.value = data;
+            textAreaElement.value = data.translation;
             textAreaElement.classList.remove('hidden');
         }
      })
@@ -422,7 +422,7 @@ export class PAPWidget extends LitElementWw {
 
       let systemMessage:string;
       if (language === 'natural') {
-         systemMessage = 'Die folgenden Daten stellen ein Programm Ablaufplan dar. Beschreibe den Ablaufplan in natürlichen Worten für 12 Jährige.';
+         systemMessage = 'Die folgenden Daten stellen ein Programm Ablaufplan dar. Beschreibe den Ablaufplan in einfachen natürlichen Worten.';
       } else {
          systemMessage = 'Die folgenden Daten stellen ein Programm Ablaufplan dar. Erzeuge aus den gegebenen Daten Pseudocode.';
       }
