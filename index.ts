@@ -357,7 +357,37 @@ export class PAPWidget extends LitElementWw {
       const data = await response.json();
       console.log(data.pseudoCode);
   }
+   // private translateToPseudoCode() {
+   //    const prompt = this.generatePrompt();
+      
+   //    fetch('https://api.openai.com/v1/completions', {
+   //       method: 'POST',
+   //       headers: {
+   //          'Content-Type': 'application/json',
+   //          'Authorization': `Bearer `,  // Hier API_KEY ersetzen
+   //       },
+   //       body: JSON.stringify({
+   //          "model": "text-davinci-003",
+   //          prompt: prompt,
+   //          max_tokens: 200,
+   //       }),
+   //    })
+   //    .then(response => response.json())
+   //    .then(data => console.log(data.choices[0].text.trim()))
+   // }
   
+   // private generatePrompt(): string {
+   //    let prompt = '';
+   //    for (const node of this.graphNodes) {
+   //       prompt += node.text + '\n';
+   //       if (node.connections) {
+   //          for (const connection of node.connections) {
+   //             prompt += connection.text + '\n';
+   //          }
+   //       }
+   //    }
+   //    return prompt;
+   // }
 
 
    private selectSequence() {

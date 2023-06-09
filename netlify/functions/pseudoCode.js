@@ -9,7 +9,7 @@ exports.handler = async function(event, context) {
 
     const openAiPrompt = graphNodes.map(node => node.text).join(' ');
 
-    const OPENAI_API_URL = "https://api.openai.com/v1/engines/code-davinci-002/completions";
+    const OPENAI_API_URL = "https://api.openai.com/v1/completions";
     const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
     const headers = {
@@ -18,8 +18,9 @@ exports.handler = async function(event, context) {
     };
 
     const data = {
+        "model": "text-davinci-003",
         'prompt': openAiPrompt,
-        'max_tokens': 60 
+        'max_tokens': 2000 
     };
 
     try {
