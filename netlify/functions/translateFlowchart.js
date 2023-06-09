@@ -5,9 +5,9 @@ exports.handler = async function(event, context) {
         return { statusCode: 405, body: "Method Not Allowed" };
     }
 
-    const { graphNodes, prompt, max_tokens, temperature } = JSON.parse(event.body);
+    const { messages, max_tokens } = JSON.parse(event.body);
 
-    const OPENAI_API_URL = "https://api.openai.com/v1/completions";
+    const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
     const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
     const headers = {
@@ -17,15 +17,14 @@ exports.handler = async function(event, context) {
 
     const data = {
         "model": "gpt-3.5-turbo",
-        'prompt': prompt,
+        'messages': messages,
         'max_tokens': max_tokens,
-        'temperature': temperature
     };
 
     try {
         const response = await axios.post(OPENAI_API_URL, data, { headers: headers });
 
-        const translation = response.data.choices[0].text.trim();
+        const translation = response.data.choices[0].message['content'].trim();
         console.log(translation)
         return {
             statusCode: 200,

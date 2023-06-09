@@ -352,39 +352,25 @@ export class PAPWidget extends LitElementWw {
       this.graphSettings.theme = themeSelector.value;
    }
 
-
-//    private async translateFlowchart() {
-//       const response = await fetch('/.netlify/functions/translateFlowchart', {
-//           method: 'POST',
-//           headers: {
-//               'Content-Type': 'application/json'
-//           },
-//           body: JSON.stringify({ graphNodes: this.graphNodes })
-//       });
-  
-//       const data = await response.json();
-//       console.log(data.translateFlowchart);
-//   }
-
    // private translateFlowchart(language: 'natural' | 'pseudo') {
-   //    const prompt = this.generatePrompt(language);
+   //    const messages = this.generateMessages(language);
    //    document.body.style.cursor = 'wait';
-   //    fetch('https://api.openai.com/v1/completions', {
+   //    fetch('https://api.openai.com/v1/chat/completions', {
    //       method: 'POST',
    //       headers: {
    //          'Content-Type': 'application/json',
-   //          'Authorization': `Bearer `, 
+   //          'Authorization': `Bearer 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`, 
    //       },
    //       body: JSON.stringify({
-   //          "model": "text-davinci-003",
-   //          prompt: prompt,
-   //          max_tokens: 200,
-   //          temperature: 0.7
+   //          "model": "gpt-3.5-turbo",
+   //          "messages": messages,
+   //          "max_tokens": 2000,
    //       }),
    //    })
    //    .then(response => response.json())
    //    .then(data => {
-   //       const text = data.choices[0].text.trim();
+   //       console.log(data)
+   //       const text = data.choices[0].message['content'].trim();
    //       if (language === 'natural') {
    //          let textAreaElement = this.shadowRoot.getElementById('naturalLanguageOutput') as HTMLTextAreaElement;
    //          textAreaElement.value = text;
@@ -397,74 +383,82 @@ export class PAPWidget extends LitElementWw {
    //   })
    //   .finally(() => {
    //    document.body.style.cursor = 'auto';
-   // });;
-   // }
+   //   });;
+   //  }
 
-   private translateFlowchart(language: 'natural' | 'pseudo') {
-      const prompt = this.generatePrompt(language);
+    private translateFlowchart(language: 'natural' | 'pseudo') {
+      const messages = this.generateMessages(language);
       document.body.style.cursor = 'wait';
       fetch('/.netlify/functions/translateFlowchart', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-              graphNodes: this.graphNodes,
-              prompt: prompt,
-              max_tokens: 200,
-              temperature: 0.7
-          }),
+         method: 'POST',
+         headers: {
+            'Content-Type': 'application/json',
+         },
+         body: JSON.stringify({
+            "messages": messages,
+            "max_tokens": 2000,
+         }),
       })
       .then(response => response.json())
       .then(data => {
          console.log(data)
-          const text = data.translation;
-          if (language === 'natural') {
-              let textAreaElement = this.shadowRoot.getElementById('naturalLanguageOutput') as HTMLTextAreaElement;
-              textAreaElement.value = text;
-              textAreaElement.classList.remove('hidden');
-          } else {
-              let textAreaElement = this.shadowRoot.getElementById('pseudoCodeOutput') as HTMLTextAreaElement;
-              textAreaElement.value = text;
-              textAreaElement.classList.remove('hidden');
-          }
-      })
-      .finally(() => {
-          document.body.style.cursor = 'auto';
-      });
-  }
-  
-   private generatePrompt(language: 'natural' | 'pseudo'): string {
+         const text = data.choices[0].message['content'].trim();
+         if (language === 'natural') {
+            let textAreaElement = this.shadowRoot.getElementById('naturalLanguageOutput') as HTMLTextAreaElement;
+            textAreaElement.value = text;
+            textAreaElement.classList.remove('hidden');
+        } else {
+            let textAreaElement = this.shadowRoot.getElementById('pseudoCodeOutput') as HTMLTextAreaElement;
+            textAreaElement.value = text;
+            textAreaElement.classList.remove('hidden');
+        }
+     })
+     .finally(() => {
+      document.body.style.cursor = 'auto';
+     });;
+    }
 
-      let prompt:string;
+    private generateMessages(language: 'natural' | 'pseudo'): Array<{role: string, content: string}> {
+
+      let systemMessage:string;
       if (language === 'natural') {
-         prompt = 'Die folgenden Daten stellen ein Programm Ablaufplan dar. Beschreibe den Ablaufplan in natürlichen Worten für 12 Jährige.';
+         systemMessage = 'Die folgenden Daten stellen ein Programm Ablaufplan dar. Beschreibe den Ablaufplan in natürlichen Worten für 12 Jährige.';
       } else {
-         prompt = 'Die folgenden Daten stellen ein Programm Ablaufplan dar. Erzeuge aus den gegebenen Daten Pseudocode.';
+         systemMessage = 'Die folgenden Daten stellen ein Programm Ablaufplan dar. Erzeuge aus den gegebenen Daten Pseudocode.';
       }
     
+      let userMessage:string = '';
       // Füge dem Prompt this.graphNodes hinzu
       this.graphNodes.forEach(node => {
-            prompt += '\nID: ' + node.id;
-            prompt += '\nNode: ' + node.node;
-            prompt += '\nText: ' + node.text;
-
+            userMessage += '\nID: ' + node.id;
+            userMessage += '\nNode: ' + node.node;
+            userMessage += '\nText: ' + node.text;
+    
          if (node.connections) {
-         prompt += '\nConnections: ';
+         userMessage += '\nConnections: ';
          node.connections.forEach(connection => {
-            prompt += '\nAnchor: ' + connection.anchor;
-            prompt += '\nDirection: ' + connection.direction;
-            prompt += '\nConnected To ID: ' + connection.connectedToId;
+            userMessage += '\nAnchor: ' + connection.anchor;
+            userMessage += '\nDirection: ' + connection.direction;
+            userMessage += '\nConnected To ID: ' + connection.connectedToId;
             if (connection.text) {
-               prompt += '\nText: ' + connection.text;
+               userMessage += '\nText: ' + connection.text;
             }
          });
          }
-         prompt += '\n';
+         userMessage += '\n';
       });
-
-      return prompt;
-   }
+    
+      return [
+        {
+          "role": "system",
+          "content": systemMessage
+        },
+        {
+          "role": "user",
+          "content": userMessage
+        }
+      ];
+    }
 
 
    private selectSequence() {
