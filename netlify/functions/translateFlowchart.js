@@ -1,11 +1,11 @@
 const axios = require('axios');
 
-exports.handler = async function(event) {
+exports.handler = async function(event, context) {
     if (event.httpMethod !== "POST") {
         return { statusCode: 405, body: "Method Not Allowed" };
     }
 
-    const { prompt, max_tokens, temperature } = JSON.parse(event.body);
+    const { graphNodes, prompt, max_tokens, temperature } = JSON.parse(event.body);
 
     const OPENAI_API_URL = "https://api.openai.com/v1/completions";
     const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
