@@ -417,7 +417,8 @@ export class PAPWidget extends LitElementWw {
       })
       .then(response => response.json())
       .then(data => {
-          const text = data.pseudoCode;
+         console.log(data)
+          const text = data.translation;
           if (language === 'natural') {
               let textAreaElement = this.shadowRoot.getElementById('naturalLanguageOutput') as HTMLTextAreaElement;
               textAreaElement.value = text;
