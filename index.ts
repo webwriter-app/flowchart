@@ -253,10 +253,18 @@ export class PAPWidget extends LitElementWw {
             <button class='close-button' @click='${() => this.toggleMenu('translate')}'>
                ×
             </button>
-            <div class="translate-container"></div>
-               <button class="translate-button" @click='${this.translateToPseudoCode}'>
+            <div class="translate-container">
+               <button class="translate-button" @click='${() => this.translateFlowchart('natural')}'>
+                  ${drawButton('naturalLanguage', 'translate')}
+               </button>
+               <textarea id="naturalLanguageOutput" class="output-textarea hidden" disabled></textarea>
+            </div>
+            <div class="translate-container">
+               <button class="translate-button" @click='${() => this.translateFlowchart('pseudo')}'>
                   ${drawButton('pseudoCode', 'translate')}
                </button>
+               <textarea id="pseudoCodeOutput" class="output-textarea hidden" disabled></textarea>
+            </div>
          </div>
 
          <div class='setting-menu hidden'>
@@ -345,49 +353,117 @@ export class PAPWidget extends LitElementWw {
    }
 
 
-   private async translateToPseudoCode() {
-      const response = await fetch('/.netlify/functions/pseudoCode', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ graphNodes: this.graphNodes })
-      });
+//    private async translateFlowchart() {
+//       const response = await fetch('/.netlify/functions/translateFlowchart', {
+//           method: 'POST',
+//           headers: {
+//               'Content-Type': 'application/json'
+//           },
+//           body: JSON.stringify({ graphNodes: this.graphNodes })
+//       });
   
-      const data = await response.json();
-      console.log(data.pseudoCode);
-  }
-   // private translateToPseudoCode() {
-   //    const prompt = this.generatePrompt();
-      
+//       const data = await response.json();
+//       console.log(data.translateFlowchart);
+//   }
+
+   // private translateFlowchart(language: 'natural' | 'pseudo') {
+   //    const prompt = this.generatePrompt(language);
+   //    document.body.style.cursor = 'wait';
    //    fetch('https://api.openai.com/v1/completions', {
    //       method: 'POST',
    //       headers: {
    //          'Content-Type': 'application/json',
-   //          'Authorization': `Bearer `,  // Hier API_KEY ersetzen
+   //          'Authorization': `Bearer `, 
    //       },
    //       body: JSON.stringify({
    //          "model": "text-davinci-003",
    //          prompt: prompt,
    //          max_tokens: 200,
+   //          temperature: 0.7
    //       }),
    //    })
    //    .then(response => response.json())
-   //    .then(data => console.log(data.choices[0].text.trim()))
+   //    .then(data => {
+   //       const text = data.choices[0].text.trim();
+   //       if (language === 'natural') {
+   //          let textAreaElement = this.shadowRoot.getElementById('naturalLanguageOutput') as HTMLTextAreaElement;
+   //          textAreaElement.value = text;
+   //          textAreaElement.classList.remove('hidden');
+   //      } else {
+   //          let textAreaElement = this.shadowRoot.getElementById('pseudoCodeOutput') as HTMLTextAreaElement;
+   //          textAreaElement.value = text;
+   //          textAreaElement.classList.remove('hidden');
+   //      }
+   //   })
+   //   .finally(() => {
+   //    document.body.style.cursor = 'auto';
+   // });;
    // }
+
+   private translateFlowchart(language: 'natural' | 'pseudo') {
+      const prompt = this.generatePrompt(language);
+      document.body.style.cursor = 'wait';
+      fetch('/.netlify/functions/translateFlowchart', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+              graphNodes: this.graphNodes,
+              prompt: prompt,
+              max_tokens: 200,
+              temperature: 0.7
+          }),
+      })
+      .then(response => response.json())
+      .then(data => {
+          const text = data.pseudoCode;
+          if (language === 'natural') {
+              let textAreaElement = this.shadowRoot.getElementById('naturalLanguageOutput') as HTMLTextAreaElement;
+              textAreaElement.value = text;
+              textAreaElement.classList.remove('hidden');
+          } else {
+              let textAreaElement = this.shadowRoot.getElementById('pseudoCodeOutput') as HTMLTextAreaElement;
+              textAreaElement.value = text;
+              textAreaElement.classList.remove('hidden');
+          }
+      })
+      .finally(() => {
+          document.body.style.cursor = 'auto';
+      });
+  }
   
-   // private generatePrompt(): string {
-   //    let prompt = '';
-   //    for (const node of this.graphNodes) {
-   //       prompt += node.text + '\n';
-   //       if (node.connections) {
-   //          for (const connection of node.connections) {
-   //             prompt += connection.text + '\n';
-   //          }
-   //       }
-   //    }
-   //    return prompt;
-   // }
+   private generatePrompt(language: 'natural' | 'pseudo'): string {
+
+      let prompt:string;
+      if (language === 'natural') {
+         prompt = 'Die folgenden Daten stellen ein Programm Ablaufplan dar. Beschreibe den Ablaufplan in natürlichen Worten für 12 Jährige.';
+      } else {
+         prompt = 'Die folgenden Daten stellen ein Programm Ablaufplan dar. Erzeuge aus den gegebenen Daten Pseudocode.';
+      }
+    
+      // Füge dem Prompt this.graphNodes hinzu
+      this.graphNodes.forEach(node => {
+            prompt += '\nID: ' + node.id;
+            prompt += '\nNode: ' + node.node;
+            prompt += '\nText: ' + node.text;
+
+         if (node.connections) {
+         prompt += '\nConnections: ';
+         node.connections.forEach(connection => {
+            prompt += '\nAnchor: ' + connection.anchor;
+            prompt += '\nDirection: ' + connection.direction;
+            prompt += '\nConnected To ID: ' + connection.connectedToId;
+            if (connection.text) {
+               prompt += '\nText: ' + connection.text;
+            }
+         });
+         }
+         prompt += '\n';
+      });
+
+      return prompt;
+   }
 
 
    private selectSequence() {
@@ -502,7 +578,6 @@ export class PAPWidget extends LitElementWw {
    // Aktiviere Bewegungsmodus für das Canvas
    private grabCanvas() {
       this.isGrabbing = grabCanvas(this, this.isGrabbing);
-      console.log(this.graphNodes);
    }
 
    // ------------------------ Drawer Funktionen ------------------------

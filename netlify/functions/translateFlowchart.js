@@ -1,13 +1,11 @@
 const axios = require('axios');
 
-exports.handler = async function(event, context) {
+exports.handler = async function(event) {
     if (event.httpMethod !== "POST") {
         return { statusCode: 405, body: "Method Not Allowed" };
     }
 
-    const { graphNodes } = JSON.parse(event.body);
-
-    const openAiPrompt = graphNodes.map(node => node.text).join(' ');
+    const { prompt, max_tokens, temperature } = JSON.parse(event.body);
 
     const OPENAI_API_URL = "https://api.openai.com/v1/completions";
     const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
@@ -19,19 +17,19 @@ exports.handler = async function(event, context) {
 
     const data = {
         "model": "text-davinci-003",
-        'prompt': openAiPrompt,
-        'max_tokens': 2000 
+        'prompt': prompt,
+        'max_tokens': max_tokens,
+        'temperature': temperature
     };
 
     try {
         const response = await axios.post(OPENAI_API_URL, data, { headers: headers });
 
-        // Die generierten Pseudocodes aus der Antwort extrahieren
-        const pseudoCode = response.data.choices[0].text.trim();
+        const translation = response.data.choices[0].text.trim();
 
         return {
             statusCode: 200,
-            body: JSON.stringify({ pseudoCode }),
+            body: JSON.stringify({ translation }),
         };
 
     } catch (error) {
@@ -39,7 +37,7 @@ exports.handler = async function(event, context) {
 
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: 'Failed to translate to Pseudo Code' }),
+            body: JSON.stringify({ error: 'Failed to translate Flowchart' }),
         };
     }
 };

@@ -174,7 +174,8 @@ export const papWidgetStyles = css`
 
    /* Task Menu */
    .task-menu {
-      width: 300px;
+      //width: 300px;
+      width: 25%;
       min-height: 60px;
       max-height: 75%;
       //resize: both;
@@ -312,8 +313,7 @@ export const papWidgetStyles = css`
    .help-menu {
       //align-items: center;
       flex-direction: column;
-  
-      max-width: 300px;
+      max-width: 25%;
       //min-height: 100px;
       max-height: 75%;
       overflow: hidden;
@@ -346,7 +346,7 @@ export const papWidgetStyles = css`
 
    .help-content {
       width: 100%;
-      min-height: 100px; 
+      min-height: 120px; 
       box-sizing: border-box;
       font-family: var(--ui-font);
       font-size: 16px;
@@ -409,7 +409,7 @@ export const papWidgetStyles = css`
       justify-content: center;
       flex-direction: column;
 
-      max-width: 250px;
+      max-width: 25%;
       max-height: 75%;
       overflow: hidden;
    }
@@ -433,6 +433,15 @@ export const papWidgetStyles = css`
       padding: 10px;
       margin-bottom: 10px;
       margin-top: 5px;
+   }
+
+   .output-textarea {
+      font-family: var(--ui-font);
+      font-size: 16px;
+      width: 100%;
+      height: 150px;
+      box-sizing: border-box; 
+      resize: vertical;
    }
 
    .setting-menu {

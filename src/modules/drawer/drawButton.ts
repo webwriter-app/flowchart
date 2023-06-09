@@ -410,6 +410,18 @@ export function drawButton(element: string, menu: 'flow' | 'tool' | 'task' | 'he
          break;
 
       // Translate Menü
+      case 'naturalLanguage':
+         setAttributeList(text, {
+            x: '70',
+            y: '22',
+            fill: 'white',
+            'text-anchor': 'middle',
+            'font-size': '16',
+            'font-family': 'Arial'
+         });
+         text.textContent = 'Natürliche Sprache';
+         svg.appendChild(text);
+         break;
       case 'pseudoCode':
          setAttributeList(text, {
             x: '70',
