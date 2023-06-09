@@ -360,7 +360,7 @@ export class PAPWidget extends LitElementWw {
    //       method: 'POST',
    //       headers: {
    //          'Content-Type': 'application/json',
-   //          'Authorization': `Bearer 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`, 
+   //          'Authorization': `Bearer`, 
    //       },
    //       body: JSON.stringify({
    //          "model": "gpt-3.5-turbo",
