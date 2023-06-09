@@ -26,7 +26,7 @@ exports.handler = async function(event, context) {
         const response = await axios.post(OPENAI_API_URL, data, { headers: headers });
 
         const translation = response.data.choices[0].text.trim();
-
+        console.log(translation)
         return {
             statusCode: 200,
             body: JSON.stringify({ translation }),
