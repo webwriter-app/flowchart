@@ -402,14 +402,13 @@ export class PAPWidget extends LitElementWw {
       .then(response => response.json())
       .then(data => {
          console.log(data)
-         const text = data.choices[0].message['content'].trim();
          if (language === 'natural') {
             let textAreaElement = this.shadowRoot.getElementById('naturalLanguageOutput') as HTMLTextAreaElement;
-            textAreaElement.value = text;
+            textAreaElement.value = data;
             textAreaElement.classList.remove('hidden');
         } else {
             let textAreaElement = this.shadowRoot.getElementById('pseudoCodeOutput') as HTMLTextAreaElement;
-            textAreaElement.value = text;
+            textAreaElement.value = data;
             textAreaElement.classList.remove('hidden');
         }
      })
