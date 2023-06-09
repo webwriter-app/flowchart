@@ -52,7 +52,8 @@ export class PAPWidget extends LitElementWw {
    @property({ type: Array }) presetList: { name: string, graphNodes: GraphNode[] }[] = flowchartPresets;
 
    @property({ type: Object }) graphSettings = { font: 'Courier New', fontSize: 16, theme: 'standard' };
-
+   @property({ type: Number }) zoomLevel: number = 100; // in Prozent
+   private gridSize: number = 50;
 
    private canvas: HTMLCanvasElement;
    private ctx: CanvasRenderingContext2D;
@@ -291,6 +292,14 @@ export class PAPWidget extends LitElementWw {
                      <option value="mono">Mono</option>
                   </select>
                </div>
+               <div class="setting-item">
+                  <label>Zoomen:</label>
+                  <div class="zoom-selector">
+                     <button id="zoom-out-button" class="zoom-button">-</button>
+                     <span id="zoom-percentage" class="zoom-text">100%</span>
+                     <button id="zoom-in-button" class="zoom-button">+</button>
+                  </div>
+               </div>
             </div>
          </div>
 
@@ -469,8 +478,13 @@ export class PAPWidget extends LitElementWw {
    // ------------------------ Drawer Funktionen ------------------------
 
    private redrawCanvas() {
-      // Bereinige das Canvas
+
+      // Bereinige das Canvas und berücksichtigt den Zoom Faktor
+      const scaleFactor = this.zoomLevel / 100;
+      this.ctx.resetTransform();
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.ctx.scale(scaleFactor, scaleFactor);
+
       this.getUserSettings();
 
       // Zeichne alle Verbindungen
@@ -825,7 +839,22 @@ export class PAPWidget extends LitElementWw {
       this.ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D;
       this.updateCanvasOffset(); // Offset aktualisieren
 
-      // Fügen Sie standardmäßige Hilfeinformationen hinzu
+      const zoomInButton = this.shadowRoot?.querySelector('#zoom-in-button') as HTMLButtonElement;
+      const zoomOutButton = this.shadowRoot?.querySelector('#zoom-out-button') as HTMLButtonElement;
+      const zoomText = this.shadowRoot?.querySelector('#zoom-percentage') as HTMLSpanElement;
+
+      zoomInButton.addEventListener('click', () => {
+         this.zoomLevel = Math.min(this.zoomLevel + 10, 200); // Begrenze den Zoom auf 200%
+         this.applyZoom();
+         zoomText.innerText = `${this.zoomLevel}%`; // Aktualisiert die Zoomanzeige
+      });
+
+      zoomOutButton.addEventListener('click', () => {
+         this.zoomLevel = Math.max(this.zoomLevel - 10, 50); // Begrenze den Zoom auf 50%
+         this.applyZoom();
+         zoomText.innerText = `${this.zoomLevel}%`; // Aktualisiert die Zoomanzeige
+      });
+
       helpPresets.forEach((item) => {
          this.helpList.push(item);
          addHelp(this, this.helpList);
@@ -880,6 +909,15 @@ export class PAPWidget extends LitElementWw {
       this.canvas.height = window.innerHeight;
       this.redrawCanvas();
    };
+  
+   private applyZoom() {
+      const scaleFactor = this.zoomLevel / 100;
+      this.ctx.resetTransform();
+      this.ctx.scale(scaleFactor, scaleFactor);
+      this.style.setProperty('--scaled-grid-size', `${scaleFactor * this.gridSize}px`);
+      this.redrawCanvas();
+  
+  }
 
    // Lösche alle Elemente vom Canvas 
    private clearAll() {
@@ -943,10 +981,11 @@ export class PAPWidget extends LitElementWw {
    private getMouseCoordinates(event: MouseEvent) {
       const offsetX = this.canvas.getBoundingClientRect().left;
       const offsetY = this.canvas.getBoundingClientRect().top;
-      const x = event.clientX - offsetX;
-      const y = event.clientY - offsetY;
+      const scaleFactor = this.zoomLevel / 100;  // Der Skalierungsfaktor aufgrund von Zoom
+      const x = (event.clientX - offsetX) / scaleFactor;  
+      const y = (event.clientY - offsetY) / scaleFactor;  
       return { x, y };
-   }
+  }
 
    private handleScroll(event: Event) {
       this.updateCanvasOffset();
@@ -1059,12 +1098,6 @@ export class PAPWidget extends LitElementWw {
 
 /*
 TODO Liste
-
-SelectionMode:
-- performance verbessern
-- abgleichen mit Musterlösung
-- Wiederholende Zahlen sollen nebeneinander angezeigt werden
-
 
 - Cursor anpassen, je nach dem was gehovert wird
 

@@ -7,13 +7,8 @@ exports.handler = async function(event, context) {
 
     const { graphNodes } = JSON.parse(event.body);
 
-    // Hier können Sie den Inhalt von graphNodes in das gewünschte Format konvertieren, 
-    // das an OpenAI gesendet werden soll.
-
-    // Beispiel: 
     const openAiPrompt = graphNodes.map(node => node.text).join(' ');
 
-    // Setzen Sie Ihre OpenAI-Schlüssel und Einstellungen
     const OPENAI_API_URL = "https://api.openai.com/v1/engines/code-davinci-002/completions";
     const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
@@ -24,7 +19,7 @@ exports.handler = async function(event, context) {
 
     const data = {
         'prompt': openAiPrompt,
-        'max_tokens': 60 // Sie können die Anzahl der Tokens anpassen
+        'max_tokens': 60 
     };
 
     try {

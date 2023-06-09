@@ -23,6 +23,7 @@ export const papWidgetStyles = css`
       --grid-background-color: white;
       --grid-color: #104E8B;
       --grid-size: 50px;
+      --scaled-grid-size: 50px;
       --grid-dot-size: 1px;
    }
 
@@ -100,7 +101,8 @@ export const papWidgetStyles = css`
    .preset-button,
    .translate-button,
    .solution-button,
-   .prompt button {
+   .prompt button,
+   .zoom-button {
       background-color: var(--button-color);
       color: white;
       border: none;
@@ -124,7 +126,8 @@ export const papWidgetStyles = css`
    .preset-button:hover,
    .translate-button:hover,
    .solution-button:hover,
-   .prompt button:hover {
+   .prompt button:hover,
+   .zoom-button:hover {
       background-color: var(--hover-color);
    }
 
@@ -142,7 +145,8 @@ export const papWidgetStyles = css`
    .preset-button:active,
    .translate-button:active,
    .solution-button:active,
-   .prompt button:active {
+   .prompt button:active,
+   .zoom-button:active {
       background-color: var(--button-color); 
       box-shadow: 0px 0px 5px var(--hover-color);
    }
@@ -478,6 +482,30 @@ export const papWidgetStyles = css`
       background-color: var(--hover-color);
    }
 
+   .zoom-selector {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 45%;
+   }
+   .zoom-text {
+      color: white;
+      font-family: var(--ui-font);
+      font-size: 14px;
+      flex: 1;
+      text-align: center;
+      margin-left: 5px;
+      margin-right: 5px;
+   }
+
+   .zoom-button {
+      display: flex;
+      width: 20px;
+      height: 20px;
+      align-items: center;
+      justify-content: center;
+   }
+
     /* Context Menu */
     .context-menu {
       position: absolute;
@@ -570,7 +598,7 @@ export const papWidgetStyles = css`
       height: 100vh;
       z-index: 0;
 
-      background-size: var(--grid-size) var(--grid-size);
+      background-size: var(--scaled-grid-size) var(--scaled-grid-size);
       background-image: radial-gradient(
          circle,
          var(--grid-color) var(--grid-dot-size),
