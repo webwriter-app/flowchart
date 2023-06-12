@@ -4,5 +4,5 @@ export interface GraphNode {
    text: string;
    x: number;
    y: number;
-   connections?: { anchor: number; direction: string, connectedToId: string, text?: string }[];
+   connections?: { anchor: number; direction: string, connectedToId: string, arrowID: string, text?: string }[];
 }

@@ -12,7 +12,7 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
             x: 771.20703125,
             y: 86.5,
             connections: [
-               { anchor: 2, direction: "to", connectedToId: "4fcfbda4-65e6-489b-825e-0641d358c087" }
+               { anchor: 2, direction: "to", connectedToId: "4fcfbda4-65e6-489b-825e-0641d358c087", arrowID: "3c5085aa-97c0-421c-a675-77137e94cc4f" }
             ],
          },
          {
@@ -22,8 +22,8 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
             x: 631.984375,
             y: 154.5,
             connections: [
-               { anchor: 0, direction: "from", connectedToId: "0ac439b0-7b5e-4648-989d-61712e63ee57" },
-               { anchor: 2, direction: "to", connectedToId: "04893012-47f7-4e75-93b9-cbe58910e18a" }
+               { anchor: 0, direction: "from", connectedToId: "0ac439b0-7b5e-4648-989d-61712e63ee57", arrowID: "3c5085aa-97c0-421c-a675-77137e94cc4f" },
+               { anchor: 2, direction: "to", connectedToId: "04893012-47f7-4e75-93b9-cbe58910e18a", arrowID: "38e7d384-2d33-4687-a04b-6d24342bc800" }
             ],
          },
          {
@@ -33,8 +33,8 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
             x: 665.58984375,
             y: 240.5,
             connections: [
-               { anchor: 0, direction: "from", connectedToId: "4fcfbda4-65e6-489b-825e-0641d358c087" },
-               { anchor: 2, direction: "to", connectedToId: "7f76385a-caf3-4c65-a72e-665b50ef9787" },
+               { anchor: 0, direction: "from", connectedToId: "4fcfbda4-65e6-489b-825e-0641d358c087", arrowID: "38e7d384-2d33-4687-a04b-6d24342bc800" },
+               { anchor: 2, direction: "to", connectedToId: "7f76385a-caf3-4c65-a72e-665b50ef9787", arrowID: "93fb262a-07e8-4222-85a2-a136c470fbbf" },
             ],
          },
          {
@@ -44,9 +44,9 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
             x: 703.99609375,
             y: 316.5,
             connections: [
-               { anchor: 0, direction: "from", connectedToId: "04893012-47f7-4e75-93b9-cbe58910e18a" },
-               { anchor: 2, direction: "to", connectedToId: "9e067393-c167-4157-8104-10cfa4b2a8de", text: 'Ja' },
-               { anchor: 2, direction: "to", connectedToId: "43375730-48f0-4e07-8ba9-686672b8cb26", text: 'Nein' },
+               { anchor: 0, direction: "from", connectedToId: "04893012-47f7-4e75-93b9-cbe58910e18a", arrowID: "93fb262a-07e8-4222-85a2-a136c470fbbf" },
+               { anchor: 2, direction: "to", connectedToId: "9e067393-c167-4157-8104-10cfa4b2a8de", arrowID: "f442c8e9-f150-4832-a4d4-adc2b2b642a5", text: 'Ja' },
+               { anchor: 2, direction: "to", connectedToId: "43375730-48f0-4e07-8ba9-686672b8cb26", arrowID: "bbd1481f-ff76-457f-b284-07f18da3157f", text: 'Nein' },
             ],
          },
          {
@@ -56,8 +56,8 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
             x: 550,
             y: 422.5,
             connections: [
-               { anchor: 0, direction: "from", connectedToId: "7f76385a-caf3-4c65-a72e-665b50ef9787" },
-               { anchor: 2, direction: "to", connectedToId: "812ce303-a1a3-46e1-84b4-ff2cdc5c819a" }
+               { anchor: 0, direction: "from", connectedToId: "7f76385a-caf3-4c65-a72e-665b50ef9787", arrowID: "f442c8e9-f150-4832-a4d4-adc2b2b642a5" },
+               { anchor: 2, direction: "to", connectedToId: "812ce303-a1a3-46e1-84b4-ff2cdc5c819a", arrowID: "30da2c8d-cbec-4275-aff3-213ae6708d76" }
             ],
          },
          {
@@ -67,8 +67,8 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
             x: 920,
             y: 422.5,
             connections: [
-               { anchor: 0, direction: "from", connectedToId: "7f76385a-caf3-4c65-a72e-665b50ef9787" },
-               { anchor: 2, direction: "to", connectedToId: "812ce303-a1a3-46e1-84b4-ff2cdc5c819a" }
+               { anchor: 0, direction: "from", connectedToId: "7f76385a-caf3-4c65-a72e-665b50ef9787", arrowID: "bbd1481f-ff76-457f-b284-07f18da3157f" },
+               { anchor: 2, direction: "to", connectedToId: "812ce303-a1a3-46e1-84b4-ff2cdc5c819a", arrowID: "9f305332-8597-4f27-a4a7-3230dc964fd6" }
             ],
          },
          {
@@ -78,8 +78,8 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
             x: 773,
             y: 772.5,
             connections: [
-               { anchor: 0, direction: "from", connectedToId: "68e5723f-1985-4d87-ac52-0230430c7d49" },
-               { anchor: 0, direction: "from", connectedToId: "9533930b-1a71-4e14-a207-24e6b356a595" }
+               { anchor: 0, direction: "from", connectedToId: "68e5723f-1985-4d87-ac52-0230430c7d49", arrowID: "1c4755ef-779c-43cf-aef6-b55d7261ca75" },
+               { anchor: 0, direction: "from", connectedToId: "9533930b-1a71-4e14-a207-24e6b356a595", arrowID: "eb28d590-70f6-469f-8671-651df874973" }
             ],
          },
          {
@@ -89,8 +89,8 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
             x: 912,
             y: 669.5,
             connections: [
-               { anchor: 0, direction: "from", connectedToId: "9775752f-d69b-4fd2-9232-6bc4c377bd92" },
-               { anchor: 2, direction: "to", connectedToId: "85824bad-03cf-47b5-a2b7-7f691419fa7f" }
+               { anchor: 0, direction: "from", connectedToId: "9775752f-d69b-4fd2-9232-6bc4c377bd92", arrowID: "03b3bd42-3af5-4abf-9a35-2a834d4040a2" },
+               { anchor: 2, direction: "to", connectedToId: "85824bad-03cf-47b5-a2b7-7f691419fa7f", arrowID: "eb28d590-70f6-469f-8671-651df874973" }
             ],
          },
          {
@@ -100,8 +100,8 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
             x: 510,
             y: 669.5,
             connections: [
-               { anchor: 0, direction: "from", connectedToId: "9775752f-d69b-4fd2-9232-6bc4c377bd92" },
-               { anchor: 2, direction: "to", connectedToId: "85824bad-03cf-47b5-a2b7-7f691419fa7f" }
+               { anchor: 0, direction: "from", connectedToId: "9775752f-d69b-4fd2-9232-6bc4c377bd92", arrowID: "f6e38902-0924-4ddd-98f4-0456ae941380" },
+               { anchor: 2, direction: "to", connectedToId: "85824bad-03cf-47b5-a2b7-7f691419fa7f", arrowID: "1c4755ef-779c-43cf-aef6-b55d7261ca75" }
             ],
          },
          {
@@ -111,9 +111,9 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
             x: 718.3984375,
             y: 603.5,
             connections: [
-               { anchor: 0, direction: "from", connectedToId: "812ce303-a1a3-46e1-84b4-ff2cdc5c819a" },
-               { anchor: 3, direction: "to", connectedToId: "68e5723f-1985-4d87-ac52-0230430c7d49", text: 'Ja' },
-               { anchor: 1, direction: "to", connectedToId: "9533930b-1a71-4e14-a207-24e6b356a595", text: 'Nein' }
+               { anchor: 0, direction: "from", connectedToId: "812ce303-a1a3-46e1-84b4-ff2cdc5c819a", arrowID: "9d82445b-ae5a-419c-b582-4cb9e3a5dcee" },
+               { anchor: 3, direction: "to", connectedToId: "68e5723f-1985-4d87-ac52-0230430c7d49", arrowID: "f6e38902-0924-4ddd-98f4-0456ae941380", text: 'Ja' },
+               { anchor: 1, direction: "to", connectedToId: "9533930b-1a71-4e14-a207-24e6b356a595", arrowID: "03b3bd42-3af5-4abf-9a35-2a834d4040a2", text: 'Nein' }
             ],
          },
          {
@@ -123,9 +123,9 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
             x: 728,
             y: 526.5,
             connections: [
-               { anchor: 0, direction: "from", connectedToId: "9e067393-c167-4157-8104-10cfa4b2a8de" },
-               { anchor: 0, direction: "from", connectedToId: "43375730-48f0-4e07-8ba9-686672b8cb26" },
-               { anchor: 2, direction: "to", connectedToId: "9775752f-d69b-4fd2-9232-6bc4c377bd92" }
+               { anchor: 0, direction: "from", connectedToId: "9e067393-c167-4157-8104-10cfa4b2a8de", arrowID: "30da2c8d-cbec-4275-aff3-213ae6708d76" },
+               { anchor: 0, direction: "from", connectedToId: "43375730-48f0-4e07-8ba9-686672b8cb26", arrowID: "9f305332-8597-4f27-a4a7-3230dc964fd6" },
+               { anchor: 2, direction: "to", connectedToId: "9775752f-d69b-4fd2-9232-6bc4c377bd92", arrowID: "9d82445b-ae5a-419c-b582-4cb9e3a5dcee" }
             ],
          },
       ]
@@ -134,34 +134,58 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
       name: 'If/Else',
       graphNodes: [
          {
-            id: '667f8666-a3d0-4fdb-a9ee-61b51ec9ff74',
-            node: 'op',
-            text: 'Sonst ____',
-            x: 980,
-            y: 284.5,
+            id: "75919796-642c-40b1-a713-d8574e31e6cd",
+            node: "start",
+            text: "Start",
+            x: 743.60546875,
+            y: 200.55,
             connections: [
-               { anchor: 3, direction: 'from', connectedToId: 'bcc936b5-66b3-4fe7-85c1-7131cad9f181' }
+               { anchor: 2, direction: 'to', connectedToId: 'f44d8c5d-6ce0-431f-af5c-f1f940c2dfde', arrowID: '848af778-8c42-4cea-9a76-29c13b5f2f71' }
+            ],
+         },
+         {
+            id: 'f44d8c5d-6ce0-431f-af5c-f1f940c2dfde',
+            node: 'decision',
+            text: ' Gilt ___ ? ',
+            x: 710,
+            y: 303.5,
+            connections: [
+               { anchor: 0, direction: 'from', connectedToId: '75919796-642c-40b1-a713-d8574e31e6cd', arrowID: '848af778-8c42-4cea-9a76-29c13b5f2f71'},
+               { anchor: 2, direction: 'to', connectedToId: 'a6175565-44eb-4198-a151-5ca5b8d4ae8c', arrowID: 'ccc82f2d-1279-42ce-9842-221e353db7a9', text: 'Ja' },
+               { anchor: 1, direction: 'to', connectedToId: '667f8666-a3d0-4fdb-a9ee-61b51ec9ff74', arrowID: '6a45121c-dad6-4c08-9c8c-eac3ba02cb42', text: 'Nein' }
             ],
          },
          {
             id: 'a6175565-44eb-4198-a151-5ca5b8d4ae8c',
             node: 'op',
             text: 'Dann ___',
-            x: 714,
-            y: 430.5,
+            x: 728.203125,
+            y: 434.5,
             connections: [
-               { anchor: 0, direction: 'from', connectedToId: 'bcc936b5-66b3-4fe7-85c1-7131cad9f181' }
+               { anchor: 0, direction: 'from', connectedToId: 'f44d8c5d-6ce0-431f-af5c-f1f940c2dfde', arrowID: 'ccc82f2d-1279-42ce-9842-221e353db7a9' },
+               { anchor: 2, direction: 'to', connectedToId: 'd481a9f7-6c2b-44b4-a203-884b3ae39fe9', arrowID: '30db7a47-b534-4374-ba1f-09b83b988efe' },
             ],
          },
          {
-            id: 'bcc936b5-66b3-4fe7-85c1-7131cad9f181',
-            node: 'decision',
-            text: ' Gilt ___ ? ',
-            x: 695,
-            y: 284.5,
+            id: '667f8666-a3d0-4fdb-a9ee-61b51ec9ff74',
+            node: 'op',
+            text: 'Sonst ____',
+            x: 921,
+            y: 434.5,
             connections: [
-               { anchor: 2, direction: 'to', connectedToId: 'a6175565-44eb-4198-a151-5ca5b8d4ae8c', text: 'Ja' },
-               { anchor: 1, direction: 'to', connectedToId: '667f8666-a3d0-4fdb-a9ee-61b51ec9ff74', text: 'Nein' }
+               { anchor: 0, direction: 'from', connectedToId: 'f44d8c5d-6ce0-431f-af5c-f1f940c2dfde', arrowID: '6a45121c-dad6-4c08-9c8c-eac3ba02cb42' },
+               { anchor: 2, direction: 'to', connectedToId: 'd481a9f7-6c2b-44b4-a203-884b3ae39fe9', arrowID: 'ff5cf9a9-b47a-48c3-b623-6d750064cb86' },
+            ],
+         },
+         {
+            id: 'd481a9f7-6c2b-44b4-a203-884b3ae39fe9',
+            node: 'end',
+            text: 'Ende',
+            x: 747.40625,
+            y: 590.55,
+            connections: [
+               { anchor: 0, direction: 'from', connectedToId: 'a6175565-44eb-4198-a151-5ca5b8d4ae8c', arrowID: '30db7a47-b534-4374-ba1f-09b83b988efe' },
+               { anchor: 0, direction: 'from', connectedToId: '667f8666-a3d0-4fdb-a9ee-61b51ec9ff74', arrowID: 'ff5cf9a9-b47a-48c3-b623-6d750064cb86' },
             ],
          },
       ],
@@ -174,9 +198,9 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
             node: "start",
             text: "Start",
             x: 759,
-            y: 140.5,
+            y: 160.5,
             connections: [
-               { anchor: 2, direction: "to", connectedToId: "421574d8-e295-4bd8-bbe1-de4b0a6da8a2" }
+               { anchor: 2, direction: "to", connectedToId: "421574d8-e295-4bd8-bbe1-de4b0a6da8a2", arrowID: "62d41051-18a1-46df-ab4e-b15768a8d5e2" }
             ],
          },
          {
@@ -186,8 +210,8 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
             x: 711,
             y: 240.5,
             connections: [
-               { anchor: 0, direction: "from", connectedToId: "3b165c79-4247-4031-8399-edbff74ecc9a" },
-               { anchor: 2, direction: "to", connectedToId: "e7569340-e932-4ec9-a92f-5a3e0ebe51f1" }
+               { anchor: 0, direction: "from", connectedToId: "3b165c79-4247-4031-8399-edbff74ecc9a", arrowID: "62d41051-18a1-46df-ab4e-b15768a8d5e2" },
+               { anchor: 2, direction: "to", connectedToId: "e7569340-e932-4ec9-a92f-5a3e0ebe51f1", arrowID: "48bc5ec3-0d8b-4099-a3c9-d9fdce4bd14d" }
             ],
          },
          {
@@ -197,8 +221,8 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
             x: 692,
             y: 439.5,
             connections: [
-               { anchor: 0, direction: "from", connectedToId: "e7569340-e932-4ec9-a92f-5a3e0ebe51f1" },
-               { anchor: 2, direction: "to", connectedToId: "88d004c1-5e41-4314-b035-fbb100e8698e" }
+               { anchor: 0, direction: "from", connectedToId: "e7569340-e932-4ec9-a92f-5a3e0ebe51f1", arrowID: "257ee9b0-5af3-461e-ada2-4a2b4b99b6e7" },
+               { anchor: 2, direction: "to", connectedToId: "88d004c1-5e41-4314-b035-fbb100e8698e", arrowID: "667a45e7-1dbe-4d1a-b0e6-bb4686d13c21" }
             ],
          },
          {
@@ -208,8 +232,8 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
             x: 583,
             y: 445.5,
             connections: [ 
-               { anchor: 2, direction: "from", connectedToId: "88d004c1-5e41-4314-b035-fbb100e8698e" },
-               { anchor: 0, direction: "to", connectedToId: "e7569340-e932-4ec9-a92f-5a3e0ebe51f1" }
+               { anchor: 2, direction: "from", connectedToId: "88d004c1-5e41-4314-b035-fbb100e8698e", arrowID: "e8ea5574-e40a-44ca-8bb4-b4b3086a7893" },
+               { anchor: 0, direction: "to", connectedToId: "e7569340-e932-4ec9-a92f-5a3e0ebe51f1", arrowID: "4701408e-fa7c-4bf5-9f3c-f99765452584" }
             ],
          },
          {
@@ -219,21 +243,21 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
             x: 716,
             y: 339.5,
             connections: [
-               { anchor: 0, direction: "from", connectedToId: "421574d8-e295-4bd8-bbe1-de4b0a6da8a2" },
-               { anchor: 1, direction: "to", connectedToId: "b837b0ca-3e70-44c1-b434-01e34800ccfc", text: 'falsch' },
-               { anchor: 2, direction: "to", connectedToId: "6fe31b50-fbab-46b8-b0aa-8018a7418e3d", text: 'wahr' },
-               { anchor: 3, direction: "from", connectedToId: "8816955c-00e6-4662-85cb-deaf2b8a8e22" },
+               { anchor: 0, direction: "from", connectedToId: "421574d8-e295-4bd8-bbe1-de4b0a6da8a2", arrowID: "48bc5ec3-0d8b-4099-a3c9-d9fdce4bd14d" },
+               { anchor: 1, direction: "to", connectedToId: "b837b0ca-3e70-44c1-b434-01e34800ccfc", arrowID: "2d352d30-cba1-4590-9e27-f96f7c340bea", text: 'falsch' },
+               { anchor: 2, direction: "to", connectedToId: "6fe31b50-fbab-46b8-b0aa-8018a7418e3d", arrowID: "257ee9b0-5af3-461e-ada2-4a2b4b99b6e7", text: 'wahr' },
+               { anchor: 3, direction: "from", connectedToId: "8816955c-00e6-4662-85cb-deaf2b8a8e22", arrowID: "4701408e-fa7c-4bf5-9f3c-f99765452584" },
             ],
          },
          {
             id: "b837b0ca-3e70-44c1-b434-01e34800ccfc",
             node: "i/o",
             text: "Ausgabe: 'Schleife beendet'",
-            x: 972,
-            y: 604.5,
+            x: 971,
+            y: 530.5,
             connections: [
-               { anchor: 0, direction: "from", connectedToId: "e7569340-e932-4ec9-a92f-5a3e0ebe51f1" },
-               { anchor: 2, direction: "to", connectedToId: "1a4bc46-e04a-48e5-a4c5-686105d034b9" }
+               { anchor: 0, direction: "from", connectedToId: "e7569340-e932-4ec9-a92f-5a3e0ebe51f1", arrowID: "2d352d30-cba1-4590-9e27-f96f7c340bea" },
+               { anchor: 2, direction: "to", connectedToId: "1a4bc46-e04a-48e5-a4c5-686105d034b9", arrowID: "fff0dd9a-2f80-43f5-af98-42c2a6c0441e" }
             ],
          },
          {
@@ -243,115 +267,20 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
             x: 716,
             y: 530.5,
             connections: [
-               { anchor: 0, direction: "from", connectedToId: "6fe31b50-fbab-46b8-b0aa-8018a7418e3d" },
-               { anchor: 2, direction: "to", connectedToId: "8816955c-00e6-4662-85cb-deaf2b8a8e22" }
+               { anchor: 0, direction: "from", connectedToId: "6fe31b50-fbab-46b8-b0aa-8018a7418e3d", arrowID: "667a45e7-1dbe-4d1a-b0e6-bb4686d13c21" },
+               { anchor: 2, direction: "to", connectedToId: "8816955c-00e6-4662-85cb-deaf2b8a8e22", arrowID: "e8ea5574-e40a-44ca-8bb4-b4b3086a7893" }
             ],
          },
          {
             id: "1a4bc46-e04a-48e5-a4c5-686105d034b9",
             node: "end",
             text: "Ende",
-            x: 749,
-            y: 704.5,
+            x: 764.0078125,
+            y: 679.5,
             connections: [
-               { anchor: 0, direction: "from", connectedToId: "b837b0ca-3e70-44c1-b434-01e34800ccfc" }
+               { anchor: 0, direction: "from", connectedToId: "b837b0ca-3e70-44c1-b434-01e34800ccfc", arrowID: "fff0dd9a-2f80-43f5-af98-42c2a6c0441e" }
             ],
          },
-      ]
-   },
-   {
-      name: "Verschachtelte If-Else-Struktur",
-      graphNodes: [
-         {
-            id: "ec60c044-966d-4913-ba51-3a51f3c11b2d",
-            node: "start",
-            text: "Start",
-            x: 782,
-            y: 177.5,
-            connections: [
-               { anchor: 2, direction: "to", connectedToId: "6bdb42d6-e539-451b-80ac-0aa37fee1957" }
-            ],
-         },
-         {
-            id: "6bdb42d6-e539-451b-80ac-0aa37fee1957",
-            node: "i/o",
-            text: "Eingabe: x = true, y = true",
-            x: 676,
-            y: 255.5,
-            connections: [
-               { anchor: 0, direction: "from", connectedToId: "ec60c044-966d-4913-ba51-3a51f3c11b2d" },
-               { anchor: 2, direction: "to", connectedToId: "90357b4b-cb8b-4cdc-bd0e-9f63d3d7e8c8" }
-            ],
-         },
-         {
-            id: "90357b4b-cb8b-4cdc-bd0e-9f63d3d7e8c8",
-            node: "decision",
-            text: " x = true?",
-            x: 758,
-            y: 368.5,
-            connections: [
-               { anchor: 0, direction: "from", connectedToId: "6bdb42d6-e539-451b-80ac-0aa37fee1957" },
-               { anchor: 1, direction: "to", connectedToId: "b2a81fea-9f6f-47c2-a424-e921afb548e7" },
-               { anchor: 2, direction: "to", connectedToId: "8b4634a3-3d13-46ff-8052-a641e1dbd4b8" }
-            ],
-         },
-         {
-            id: "b2a81fea-9f6f-47c2-a424-e921afb548e7",
-            node: "decision",
-            text: " y = true?",
-            x: 912,
-            y: 409.5,
-            connections: [
-               { anchor: 0, direction: "from", connectedToId: "90357b4b-cb8b-4cdc-bd0e-9f63d3d7e8c8" },
-               { anchor: 1, direction: "to", connectedToId: "508afb60-e714-4617-a0fc-e46ba3e90216" },
-               { anchor: 2, direction: "to", connectedToId: "8b259ac0-53f4-4317-a181-16b7ace8b295" }
-            ],
-         },
-         {
-            id: "508afb60-e714-4617-a0fc-e46ba3e90216",
-            node: "sub",
-            text: "Unterprogramm",
-            x: 1092,
-            y: 469.5,
-            connections: [
-               { anchor: 0, direction: "from", connectedToId: "b2a81fea-9f6f-47c2-a424-e921afb548e7" },
-               { anchor: 2, direction: "to", connectedToId: "a45879cc-69ad-4f09-a611-91960c43a745" }
-            ],
-         },
-         {
-            id: "8b259ac0-53f4-4317-a181-16b7ace8b295",
-            node: "i/o",
-            text: "Ausgabe: y = true",
-            x: 878,
-            y: 484.5,
-            connections: [
-               { anchor: 0, direction: "from", connectedToId: "b2a81fea-9f6f-47c2-a424-e921afb548e7" },
-               { anchor: 2, direction: "to", connectedToId: "8b4634a3-3d13-46ff-8052-a641e1dbd4b8" }
-            ],
-         },
-         {
-            id: "8b4634a3-3d13-46ff-8052-a641e1dbd4b8",
-            node: "i/o",
-            text: "Ausgabe: x = true",
-            x: 725,
-            y: 553.5,
-            connections: [
-               { anchor: 0, direction: "from", connectedToId: "90357b4b-cb8b-4cdc-bd0e-9f63d3d7e8c8" },
-               { anchor: 1, direction: "from", connectedToId: "8b259ac0-53f4-4317-a181-16b7ace8b295" },
-               { anchor: 2, direction: "to", connectedToId: "a45879cc-69ad-4f09-a611-91960c43a745" }
-            ],
-         },
-         {
-            id: "a45879cc-69ad-4f09-a611-91960c43a745",
-            node: "end",
-            text: "Ende",
-            x: 981,
-            y: 693.5,
-            connections: [
-               { anchor: 0, direction: "from", connectedToId: "8b4634a3-3d13-46ff-8052-a641e1dbd4b8" },
-               { anchor: 0, direction: "from", connectedToId: "508afb60-e714-4617-a0fc-e46ba3e90216" }
-            ],
-         }
       ]
    },
    {
@@ -361,43 +290,32 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
             id: "cedd5e2c-6d3c-4047-baa9-a319c9506e0a",
             node: "start",
             text: "Start",
-            x: 807,
-            y: 165.5,
-            connections: [{ anchor: 2, direction: 'to', connectedToId: '388566d6-b420-4565-852f-65a368f9af7e' }]
+            x: 810.19921875,
+            y: 168.5,
+            connections: [{ anchor: 2, direction: 'to', connectedToId: '388566d6-b420-4565-852f-65a368f9af7e', arrowID: '5bbe51b5-8b45-4454-a995-561067cb0d8a' }]
           },
           {
             id: "388566d6-b420-4565-852f-65a368f9af7e",
             node: "i/o",
-            text: "Eingabe: x = 1",
-            x: 764,
-            y: 258.5,
+            text: "Eingabe: x",
+            x: 786.1953125,
+            y: 256.5,
             connections: [
-              { anchor: 0, direction: 'from', connectedToId: 'cedd5e2c-6d3c-4047-baa9-a319c9506e0a' },
-              { anchor: 2, direction: 'to', connectedToId: '7d0107b2-18d8-4156-bdbc-fb4275c1458c' }
+              { anchor: 0, direction: 'from', connectedToId: 'cedd5e2c-6d3c-4047-baa9-a319c9506e0a', arrowID: '5bbe51b5-8b45-4454-a995-561067cb0d8a' },
+              { anchor: 2, direction: 'to', connectedToId: '7d0107b2-18d8-4156-bdbc-fb4275c1458c', arrowID: '05277994-ff3f-4690-a204-c803146e54c1' }
             ]
           },
           {
             id: "7d0107b2-18d8-4156-bdbc-fb4275c1458c",
             node: "decision",
             text: "switch: x",
-            x: 788,
-            y: 343.5,
+            x: 790.99609375,
+            y: 331.5,
             connections: [
-              { anchor: 0, direction: 'from', connectedToId: '388566d6-b420-4565-852f-65a368f9af7e' },
-              { anchor: 2, direction: 'to', connectedToId: '527d963a-f89c-4c74-8acd-99899d9f1c8d' },
-              { anchor: 2, direction: 'to', connectedToId: '985068da-17e3-4cbf-9552-25a42cbe8d92' },
-              { anchor: 2, direction: 'to', connectedToId: '8464cd27-869f-4ac5-bea5-14dd58360d3b' }
-            ]
-          },
-          {
-            id: "8464cd27-869f-4ac5-bea5-14dd58360d3b",
-            node: "op",
-            text: "y = \"Zwei\"",
-            x: 1027,
-            y: 421.5,
-            connections: [
-              { anchor: 0, direction: 'from', connectedToId: '7d0107b2-18d8-4156-bdbc-fb4275c1458c' },
-              { anchor: 2, direction: 'to', connectedToId: 'b9424689-e105-4870-ad62-8365a2175caf' }
+              { anchor: 0, direction: 'from', connectedToId: '388566d6-b420-4565-852f-65a368f9af7e', arrowID: '05277994-ff3f-4690-a204-c803146e54c1' },
+              { anchor: 2, direction: 'to', connectedToId: '527d963a-f89c-4c74-8acd-99899d9f1c8d', arrowID: 'e02784b8-86de-4d1d-96f6-390d7a3ce9e0', text: 'x == 0?' },
+              { anchor: 2, direction: 'to', connectedToId: '985068da-17e3-4cbf-9552-25a42cbe8d92', arrowID: 'c6ff955e-71b5-434b-b77d-1da16d9abb67', text: 'x == 1?' },
+              { anchor: 2, direction: 'to', connectedToId: '8464cd27-869f-4ac5-bea5-14dd58360d3b', arrowID: 'a7788c1e-2512-4add-bb66-84905e323e40', text: 'default' },
             ]
           },
           {
@@ -407,31 +325,8 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
             x: 585,
             y: 421.5,
             connections: [
-              { anchor: 0, direction: 'from', connectedToId: '7d0107b2-18d8-4156-bdbc-fb4275c1458c' },
-              { anchor: 2, direction: 'to', connectedToId: 'b9424689-e105-4870-ad62-8365a2175caf' }
-            ]
-          },
-          {
-            id: "b9424689-e105-4870-ad62-8365a2175caf",
-            node: "i/o",
-            text: "Ausgabe: y",
-            x: 786,
-            y: 580.5,
-            connections: [
-              { anchor: 0, direction: 'from', connectedToId: '527d963a-f89c-4c74-8acd-99899d9f1c8d' },
-              { anchor: 0, direction: 'from', connectedToId: '985068da-17e3-4cbf-9552-25a42cbe8d92' },
-              { anchor: 0, direction: 'from', connectedToId: '8464cd27-869f-4ac5-bea5-14dd58360d3b' },
-              { anchor: 2, direction: 'to', connectedToId: 'd56fbfac-55c6-4735-bd01-08ddf33c738d' }
-            ]
-          },
-          {
-            id: "d56fbfac-55c6-4735-bd01-08ddf33c738d",
-            node: "end",
-            text: "Ende",
-            x: 815,
-            y: 664.5,
-            connections: [
-              { anchor: 0, direction: 'from', connectedToId: 'b9424689-e105-4870-ad62-8365a2175caf' }
+              { anchor: 0, direction: 'from', connectedToId: '7d0107b2-18d8-4156-bdbc-fb4275c1458c', arrowID: 'e02784b8-86de-4d1d-96f6-390d7a3ce9e0', text: 'x == 0?' },
+              { anchor: 2, direction: 'to', connectedToId: 'b9424689-e105-4870-ad62-8365a2175caf', arrowID: 'f10a521e-1049-4cbe-80f9-31baafebba1f' }
             ]
           },
           {
@@ -441,8 +336,42 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
             x: 786,
             y: 461.5,
             connections: [
-              { anchor: 0, direction: 'from', connectedToId: '7d0107b2-18d8-4156-bdbc-fb4275c1458c' },
-              { anchor: 2, direction: 'to', connectedToId: 'b9424689-e105-4870-ad62-8365a2175caf' }
+              { anchor: 0, direction: 'from', connectedToId: '7d0107b2-18d8-4156-bdbc-fb4275c1458c', arrowID: 'c6ff955e-71b5-434b-b77d-1da16d9abb67', text: 'x == 1?' },
+              { anchor: 2, direction: 'to', connectedToId: 'b9424689-e105-4870-ad62-8365a2175caf', arrowID: '6bf9c923-f04a-4450-ad78-37eec2d9c2a1' }
+            ]
+          },
+          {
+            id: "8464cd27-869f-4ac5-bea5-14dd58360d3b",
+            node: "op",
+            text: "x ist nicht 0 oder 1",
+            x: 1027,
+            y: 421.5,
+            connections: [
+              { anchor: 0, direction: 'from', connectedToId: '7d0107b2-18d8-4156-bdbc-fb4275c1458c', arrowID: 'a7788c1e-2512-4add-bb66-84905e323e40', text: 'default' },
+              { anchor: 2, direction: 'to', connectedToId: 'b9424689-e105-4870-ad62-8365a2175caf', arrowID: '948813e3-73e3-4c92-8d6c-327ec44c0b69' }
+            ]
+          },
+          {
+            id: "b9424689-e105-4870-ad62-8365a2175caf",
+            node: "i/o",
+            text: "Ausgabe: y",
+            x: 786,
+            y: 580.5,
+            connections: [
+              { anchor: 0, direction: 'from', connectedToId: '527d963a-f89c-4c74-8acd-99899d9f1c8d', arrowID: 'f10a521e-1049-4cbe-80f9-31baafebba1f' },
+              { anchor: 0, direction: 'from', connectedToId: '985068da-17e3-4cbf-9552-25a42cbe8d92', arrowID: '6bf9c923-f04a-4450-ad78-37eec2d9c2a1' },
+              { anchor: 0, direction: 'from', connectedToId: '8464cd27-869f-4ac5-bea5-14dd58360d3b', arrowID: '948813e3-73e3-4c92-8d6c-327ec44c0b69' },
+              { anchor: 2, direction: 'to', connectedToId: 'd56fbfac-55c6-4735-bd01-08ddf33c738d', arrowID: 'f50e0063-1db7-46e0-9f9e-a4ffe126b6a6' }
+            ]
+          },
+          {
+            id: "d56fbfac-55c6-4735-bd01-08ddf33c738d",
+            node: "end",
+            text: "Ende",
+            x: 815,
+            y: 664.5,
+            connections: [
+              { anchor: 0, direction: 'from', connectedToId: 'b9424689-e105-4870-ad62-8365a2175caf', arrowID: 'f50e0063-1db7-46e0-9f9e-a4ffe126b6a6' }
             ]
           }
       ]

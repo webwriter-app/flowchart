@@ -237,6 +237,9 @@ export class PAPWidget extends LitElementWw {
                <button class="preset-button" @click='${() => this.showPreset('For-Schleife')}'>
                   For-Schleife
                </button>
+               <button class="preset-button" @click='${() => this.showPreset('Switch')}'>
+                  Swtich
+               </button>
          </div>
 
          <div class='help-menu hidden'>
@@ -573,6 +576,8 @@ export class PAPWidget extends LitElementWw {
    // Aktiviere Bewegungsmodus für das Canvas
    private grabCanvas() {
       this.isGrabbing = grabCanvas(this, this.isGrabbing);
+      console.log(this.arrows);
+      console.log(this.graphNodes);
    }
 
    // ------------------------ Drawer Funktionen ------------------------
@@ -623,6 +628,8 @@ export class PAPWidget extends LitElementWw {
 
       // Speichere die aktuellen Knoten und Verbindungen als Attribute
       this.setAttribute('graph-nodes', JSON.stringify(this.graphNodes));
+      this.setAttribute('task-list', JSON.stringify(this.taskList));
+      this.setAttribute('help-list', JSON.stringify(this.helpList));
    }
 
    // Speichere die Position für den nächsten Knoten
