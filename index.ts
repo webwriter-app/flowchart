@@ -82,12 +82,12 @@ export class PAPWidget extends LitElementWw {
    private setActiveSequenceButton = (btn: HTMLButtonElement | null) => { this.activeSequenceButton = btn; };
    get isSelectingSequence() {
       return this._isSelectingSequence;
-    }
+   }
    set isSelectingSequence(value: boolean) {
       const oldValue = this._isSelectingSequence;
       this._isSelectingSequence = value;
       if (oldValue !== value) {
-        this.showSolutionMenu();
+         this.showSolutionMenu();
       }
    }
 
@@ -229,6 +229,9 @@ export class PAPWidget extends LitElementWw {
                ×
             </button>
             <div class="preset-container"></div>
+               <button class="preset-button" @click='${() => this.showPreset('Erklärung')}'>
+                  Erkärung
+               </button>
                <button class="preset-button" @click='${() => this.showPreset('Beispiel')}'>
                   Beispiel
                </button>
@@ -391,7 +394,7 @@ export class PAPWidget extends LitElementWw {
    //   });;
    //  }
 
-    private translateFlowchart(language: 'natural' | 'pseudo') {
+   private translateFlowchart(language: 'natural' | 'pseudo') {
       const messages = this.generateMessages(language);
       document.body.style.cursor = 'wait';
       fetch('/.netlify/functions/translateFlowchart', {
@@ -404,78 +407,78 @@ export class PAPWidget extends LitElementWw {
             "max_tokens": 2000,
          }),
       })
-      .then(response => response.json())
-      .then(data => {
-         console.log(data)
-         if (language === 'natural') {
-            let textAreaElement = this.shadowRoot.getElementById('naturalLanguageOutput') as HTMLTextAreaElement;
-            textAreaElement.value = data.translation;
-            textAreaElement.classList.remove('hidden');
-        } else {
-            let textAreaElement = this.shadowRoot.getElementById('pseudoCodeOutput') as HTMLTextAreaElement;
-            textAreaElement.value = data.translation;
-            textAreaElement.classList.remove('hidden');
-        }
-     })
-     .finally(() => {
-      document.body.style.cursor = 'auto';
-     });;
-    }
+         .then(response => response.json())
+         .then(data => {
+            console.log(data)
+            if (language === 'natural') {
+               let textAreaElement = this.shadowRoot.getElementById('naturalLanguageOutput') as HTMLTextAreaElement;
+               textAreaElement.value = data.translation;
+               textAreaElement.classList.remove('hidden');
+            } else {
+               let textAreaElement = this.shadowRoot.getElementById('pseudoCodeOutput') as HTMLTextAreaElement;
+               textAreaElement.value = data.translation;
+               textAreaElement.classList.remove('hidden');
+            }
+         })
+         .finally(() => {
+            document.body.style.cursor = 'auto';
+         });;
+   }
 
-    private generateMessages(language: 'natural' | 'pseudo'): Array<{role: string, content: string}> {
+   private generateMessages(language: 'natural' | 'pseudo'): Array<{ role: string, content: string }> {
 
-      let systemMessage:string;
+      let systemMessage: string;
       if (language === 'natural') {
          systemMessage = 'Die folgenden Daten stellen ein Programm Ablaufplan dar. Beschreibe den Ablaufplan in einfachen natürlichen Worten.';
       } else {
          systemMessage = 'Die folgenden Daten stellen ein Programm Ablaufplan dar. Erzeuge aus den gegebenen Daten Pseudocode.';
       }
-    
-      let userMessage:string = '';
+
+      let userMessage: string = '';
       // Füge dem Prompt this.graphNodes hinzu
       this.graphNodes.forEach(node => {
-            userMessage += '\nID: ' + node.id;
-            userMessage += '\nNode: ' + node.node;
-            userMessage += '\nText: ' + node.text;
-    
+         userMessage += '\nID: ' + node.id;
+         userMessage += '\nNode: ' + node.node;
+         userMessage += '\nText: ' + node.text;
+
          if (node.connections) {
-         userMessage += '\nConnections: ';
-         node.connections.forEach(connection => {
-            userMessage += '\nAnchor: ' + connection.anchor;
-            userMessage += '\nDirection: ' + connection.direction;
-            userMessage += '\nConnected To ID: ' + connection.connectedToId;
-            if (connection.text) {
-               userMessage += '\nText: ' + connection.text;
-            }
-         });
+            userMessage += '\nConnections: ';
+            node.connections.forEach(connection => {
+               userMessage += '\nAnchor: ' + connection.anchor;
+               userMessage += '\nDirection: ' + connection.direction;
+               userMessage += '\nConnected To ID: ' + connection.connectedToId;
+               if (connection.text) {
+                  userMessage += '\nText: ' + connection.text;
+               }
+            });
          }
          userMessage += '\n';
       });
-    
+
       return [
-        {
-          "role": "system",
-          "content": systemMessage
-        },
-        {
-          "role": "user",
-          "content": userMessage
-        }
+         {
+            "role": "system",
+            "content": systemMessage
+         },
+         {
+            "role": "user",
+            "content": userMessage
+         }
       ];
-    }
+   }
 
 
    private selectSequence() {
       // Setze css style von Icon auf aktiv
       const selectButton = this.shadowRoot.getElementById('select-button');
       !this.isSelectingSequence ? selectButton?.classList.add('active') : selectButton?.classList.remove('active');
-      
+
       this.isSelectingSequence = !this.isSelectingSequence;
 
       if (!this.isSelectingSequence) {
          this.selectedSequence = []
       }
-      
+
       // Deaktive alles ausgewählten Graphelemente
       this.selectedNode = undefined;
       this.selectedArrow = undefined;
@@ -532,9 +535,9 @@ export class PAPWidget extends LitElementWw {
       }
    }
 
-   private setSelectedSequence = (sequence: { id: string; order: number; type: string }[]) => { 
-      this.selectedSequence = sequence; 
-    };
+   private setSelectedSequence = (sequence: { id: string; order: number; type: string }[]) => {
+      this.selectedSequence = sequence;
+   };
 
    private addTask() {
       addTask(this, this.taskList, this.selectedSequence, this.getActiveSequenceButton, this.setActiveSequenceButton, this.setSelectedSequence);
@@ -1007,7 +1010,7 @@ export class PAPWidget extends LitElementWw {
       this.canvas.height = window.innerHeight;
       this.redrawCanvas();
    };
-  
+
    private applyZoom() {
       const scaleFactor = this.zoomLevel / 100;
       this.ctx.resetTransform();
@@ -1015,8 +1018,8 @@ export class PAPWidget extends LitElementWw {
       this.style.setProperty('--scaled-grid-size', `${scaleFactor * this.gridSize}px`);
       this.style.setProperty('--scaled-grid-dot-size', `${scaleFactor * this.dotSize}px`);
       this.redrawCanvas();
-  
-  }
+
+   }
 
    // Lösche alle Elemente vom Canvas 
    private clearAll() {
@@ -1071,7 +1074,7 @@ export class PAPWidget extends LitElementWw {
          this.arrows = this.arrows.filter((arrow) => arrow !== this.selectedArrow);
          this.selectedArrow = undefined;
       }
-    
+
       this.toggleMenu('context');
       this.redrawCanvas();
    }
@@ -1081,10 +1084,10 @@ export class PAPWidget extends LitElementWw {
       const offsetX = this.canvas.getBoundingClientRect().left;
       const offsetY = this.canvas.getBoundingClientRect().top;
       const scaleFactor = this.zoomLevel / 100;  // Der Skalierungsfaktor aufgrund von Zoom
-      const x = (event.clientX - offsetX) / scaleFactor;  
-      const y = (event.clientY - offsetY) / scaleFactor;  
+      const x = (event.clientX - offsetX) / scaleFactor;
+      const y = (event.clientY - offsetY) / scaleFactor;
       return { x, y };
-  }
+   }
 
    private handleScroll(event: Event) {
       this.updateCanvasOffset();
@@ -1101,10 +1104,10 @@ export class PAPWidget extends LitElementWw {
       const customPrompt = this.shadowRoot?.querySelector('custom-prompt');
       const confirmPrompt = this.shadowRoot?.querySelector('confirm-prompt');
 
-      if ( (event.key === 'Escape' || event.key === 'Backspace') && customPrompt?.classList.contains('hidden') && confirmPrompt?.classList.contains('hidden') ) {
-        this.deleteSelectedObject();
+      if ((event.key === 'Escape' || event.key === 'Backspace') && customPrompt?.classList.contains('hidden') && confirmPrompt?.classList.contains('hidden')) {
+         this.deleteSelectedObject();
       }
-    }
+   }
 
    // ------------------------ Prompt Funktionen ------------------------
 
@@ -1138,7 +1141,7 @@ export class PAPWidget extends LitElementWw {
       const confirmPrompt = this.shadowRoot.querySelector('confirm-prompt') as ConfirmPrompt;
       confirmPrompt.classList.remove('hidden');
       confirmPrompt.enableKeyListener();
-   
+
       const onSubmit = () => {
          confirmPrompt.disableKeyListener();
          this.clearAll();

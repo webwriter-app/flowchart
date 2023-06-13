@@ -1,7 +1,138 @@
 import { GraphNode } from "../../definitions/GraphNode";
 
 // Presets von verschiedenen PAP-Sequenzen die erzeugt werden können
-export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
+export const flowchartPresets: { name: string, graphNodes: GraphNode[] }[] = [
+   {
+      name: 'Erklärung',
+      graphNodes: [
+         {
+            id: "934afd42-3af8-40af-8610-5d14477b80da",
+            node: "start",
+            text: "Verbindungen zeichnen",
+            x: 405.1875,
+            y: 175.05,
+            connections: [
+               { anchor: 2, direction: "to", connectedToId: "792a96bf-dcf1-41c1-baa3-93c47ac782c8", arrowID: "ccb9bba4-05d9-45af-9558-edac1247b076" }
+            ],
+         },
+         {
+            id: "792a96bf-dcf1-41c1-baa3-93c47ac782c8",
+            node: "op",
+            text: "Klicke auf mich",
+            x: 433.9921875,
+            y: 271.05,
+            connections: [
+               { anchor: 2, direction: "to", connectedToId: "e57a0477-7e45-428e-9307-0094061d1b3f", arrowID: "bee49b48-2f53-4ab0-a779-81df7e2b2c7b", text: "Ziehe gedrückt an einen der blauen Dreiecke" },
+               { anchor: 0, direction: "from", connectedToId: "934afd42-3af8-40af-8610-5d14477b80da", arrowID: "ccb9bba4-05d9-45af-9558-edac1247b076" }
+            ],
+         },
+         {
+            id: "15200e39-e02e-4ff0-b0ac-4f8fd7b5dd95",
+            node: "op",
+            text: "Doppelklick auf mich",
+            x: 862.9921875,
+            y: 368.05,
+            connections: [
+               { anchor: 0, direction: "from", connectedToId: "7e243f06-eb23-49e2-ae23-ebfb40a176dd", arrowID: "8cfe2c54-e8b8-475a-8a38-ff41c56222f1" },
+               { anchor: 2, direction: "to", connectedToId: "4aadfbfb-bebb-4df0-b900-3003d1900239", arrowID: "828321f6-0d5f-47cc-ac6a-c0c9c53d7f7e", text: "oder auf mich" }
+            ],
+         },
+         {
+            id: "4aadfbfb-bebb-4df0-b900-3003d1900239",
+            node: "end",
+            text: "Ende",
+            x: 939.8046875,
+            y: 504.05,
+            connections: [
+               { anchor: 0, direction: "from", connectedToId: "15200e39-e02e-4ff0-b0ac-4f8fd7b5dd95", arrowID: "828321f6-0d5f-47cc-ac6a-c0c9c53d7f7e", text: "oder auf mich" }
+            ],
+         },
+         {
+            id: "e57a0477-7e45-428e-9307-0094061d1b3f",
+            node: "op",
+            text: "Lass über einen Knoten los",
+            x: 381.18359375,
+            y: 407.04999999999995,
+            connections: [
+               { anchor: 0, direction: "from", connectedToId: "792a96bf-dcf1-41c1-baa3-93c47ac782c8", arrowID: "bee49b48-2f53-4ab0-a779-81df7e2b2c7b", text: "Ziehe gedrückt an einen der blauen Dreiecke" },
+               { anchor: 2, direction: "to", connectedToId: "36873d1b-c5d4-4211-af14-5029282aaf0c", arrowID: "ff886b25-fae0-4b84-84e5-5f0beeae063b", text: "Die Andockstelle ist der nähste Mittelpunkt einer Kante" }
+            ],
+         },
+         {
+            id: "36873d1b-c5d4-4211-af14-5029282aaf0c",
+            node: "op",
+            text: "Pfeil können wieder versetzt werden",
+            x: 337.9765625,
+            y: 536.05,
+            connections: [
+               { anchor: 0, direction: "from", connectedToId: "e57a0477-7e45-428e-9307-0094061d1b3f", arrowID: "ff886b25-fae0-4b84-84e5-5f0beeae063b", text: "Die Andockstelle ist der nähste Mittelpunkt einer Kante" },
+               { anchor: 2, direction: "to", connectedToId: "dcf3f326-10db-438a-ad1e-90396c3f0934", arrowID: "af47c696-41a4-4925-b607-4d57183649b1", text: "Klick auf mich und zieh an dem Kreis an der Spitze" }
+            ],
+         },
+         {
+            id: "dcf3f326-10db-438a-ad1e-90396c3f0934",
+            node: "end",
+            text: "Ende",
+            x: 486.80078125,
+            y: 660.05,
+            connections: [
+               { anchor: 0, direction: "from", connectedToId: "36873d1b-c5d4-4211-af14-5029282aaf0c", arrowID: "af47c696-41a4-4925-b607-4d57183649b1", text: "Klick auf mich und zieh an dem Kreis an der Spitze" }
+            ],
+         },
+         {
+            id: "bb863aa7-dbd7-451c-90fd-7f19acccc4c1",
+            node: "end",
+            text: "Ende",
+            x: 1359.40234375,
+            y: 554.05,
+            connections: [
+               { anchor: 0, direction: "from", connectedToId: "eb26f75e-984c-4732-9d8b-862781a5d200", arrowID: "5d1f2b6d-2fdb-44e8-991f-2da692a9315d" }
+            ],
+         },
+         {
+            id: "7e243f06-eb23-49e2-ae23-ebfb40a176dd",
+            node: "start",
+            text: "Textändern",
+            x: 911,
+            y: 271.05,
+            connections: [
+               { anchor: 2, direction: "to", connectedToId: "15200e39-e02e-4ff0-b0ac-4f8fd7b5dd95", arrowID: "8cfe2c54-e8b8-475a-8a38-ff41c56222f1" }
+            ],
+         },
+         {
+            id: "ec6b0499-8f21-414b-9cac-38a54282ae23",
+            node: "start",
+            text: "Löschen",
+            x: 1345,
+            y: 212.05,
+            connections: [
+               { anchor: 2, direction: "to", connectedToId: "2c01e895-ea28-4b6b-a419-24e8ac96c3aa", arrowID: "733f7b82-bfcc-4d08-8815-e17642a098b0" }
+            ],
+         },
+         {
+            id: "eb26f75e-984c-4732-9d8b-862781a5d200",
+            node: "op",
+            text: "'Alles löschen' mithilfe dem Mülleimer-Button",
+            x: 1162.5703125,
+            y: 457.05,
+            connections: [
+               { anchor: 0, direction: "from", connectedToId: "2c01e895-ea28-4b6b-a419-24e8ac96c3aa", arrowID: "1cad71b2-99e9-4882-9815-d9bf169e86ea", text: "oder über die Tasten: 'esc' und 'backspace'" },
+               { anchor: 2, direction: "to", connectedToId: "bb863aa7-dbd7-451c-90fd-7f19acccc4c1", arrowID: "5d1f2b6d-2fdb-44e8-991f-2da692a9315d" }
+            ],
+         },
+         {
+            id: "2c01e895-ea28-4b6b-a419-24e8ac96c3aa",
+            node: "op",
+            text: "Rechtsklick auf ein Element",
+            x: 1248.984375,
+            y: 312.05,
+            connections: [
+               { anchor: 0, direction: "from", connectedToId: "ec6b0499-8f21-414b-9cac-38a54282ae23", arrowID: "733f7b82-bfcc-4d08-8815-e17642a098b0" },
+               { anchor: 2, direction: "to", connectedToId: "eb26f75e-984c-4732-9d8b-862781a5d200", arrowID: "1cad71b2-99e9-4882-9815-d9bf169e86ea", text: "oder über die Tasten: 'esc' und 'backspace'" }
+            ],
+         },
+      ]
+   },
    {
       name: 'Beispiel',
       graphNodes: [
@@ -150,7 +281,7 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
             x: 710,
             y: 303.5,
             connections: [
-               { anchor: 0, direction: 'from', connectedToId: '75919796-642c-40b1-a713-d8574e31e6cd', arrowID: '848af778-8c42-4cea-9a76-29c13b5f2f71'},
+               { anchor: 0, direction: 'from', connectedToId: '75919796-642c-40b1-a713-d8574e31e6cd', arrowID: '848af778-8c42-4cea-9a76-29c13b5f2f71' },
                { anchor: 2, direction: 'to', connectedToId: 'a6175565-44eb-4198-a151-5ca5b8d4ae8c', arrowID: 'ccc82f2d-1279-42ce-9842-221e353db7a9', text: 'Ja' },
                { anchor: 1, direction: 'to', connectedToId: '667f8666-a3d0-4fdb-a9ee-61b51ec9ff74', arrowID: '6a45121c-dad6-4c08-9c8c-eac3ba02cb42', text: 'Nein' }
             ],
@@ -231,7 +362,7 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
             text: "",
             x: 583,
             y: 445.5,
-            connections: [ 
+            connections: [
                { anchor: 2, direction: "from", connectedToId: "88d004c1-5e41-4314-b035-fbb100e8698e", arrowID: "e8ea5574-e40a-44ca-8bb4-b4b3086a7893" },
                { anchor: 0, direction: "to", connectedToId: "e7569340-e932-4ec9-a92f-5a3e0ebe51f1", arrowID: "4701408e-fa7c-4bf5-9f3c-f99765452584" }
             ],
@@ -293,87 +424,87 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
             x: 810.19921875,
             y: 168.5,
             connections: [{ anchor: 2, direction: 'to', connectedToId: '388566d6-b420-4565-852f-65a368f9af7e', arrowID: '5bbe51b5-8b45-4454-a995-561067cb0d8a' }]
-          },
-          {
+         },
+         {
             id: "388566d6-b420-4565-852f-65a368f9af7e",
             node: "i/o",
             text: "Eingabe: x",
             x: 786.1953125,
             y: 256.5,
             connections: [
-              { anchor: 0, direction: 'from', connectedToId: 'cedd5e2c-6d3c-4047-baa9-a319c9506e0a', arrowID: '5bbe51b5-8b45-4454-a995-561067cb0d8a' },
-              { anchor: 2, direction: 'to', connectedToId: '7d0107b2-18d8-4156-bdbc-fb4275c1458c', arrowID: '05277994-ff3f-4690-a204-c803146e54c1' }
+               { anchor: 0, direction: 'from', connectedToId: 'cedd5e2c-6d3c-4047-baa9-a319c9506e0a', arrowID: '5bbe51b5-8b45-4454-a995-561067cb0d8a' },
+               { anchor: 2, direction: 'to', connectedToId: '7d0107b2-18d8-4156-bdbc-fb4275c1458c', arrowID: '05277994-ff3f-4690-a204-c803146e54c1' }
             ]
-          },
-          {
+         },
+         {
             id: "7d0107b2-18d8-4156-bdbc-fb4275c1458c",
             node: "decision",
             text: "switch: x",
             x: 790.99609375,
             y: 331.5,
             connections: [
-              { anchor: 0, direction: 'from', connectedToId: '388566d6-b420-4565-852f-65a368f9af7e', arrowID: '05277994-ff3f-4690-a204-c803146e54c1' },
-              { anchor: 2, direction: 'to', connectedToId: '527d963a-f89c-4c74-8acd-99899d9f1c8d', arrowID: 'e02784b8-86de-4d1d-96f6-390d7a3ce9e0', text: 'x == 0?' },
-              { anchor: 2, direction: 'to', connectedToId: '985068da-17e3-4cbf-9552-25a42cbe8d92', arrowID: 'c6ff955e-71b5-434b-b77d-1da16d9abb67', text: 'x == 1?' },
-              { anchor: 2, direction: 'to', connectedToId: '8464cd27-869f-4ac5-bea5-14dd58360d3b', arrowID: 'a7788c1e-2512-4add-bb66-84905e323e40', text: 'default' },
+               { anchor: 0, direction: 'from', connectedToId: '388566d6-b420-4565-852f-65a368f9af7e', arrowID: '05277994-ff3f-4690-a204-c803146e54c1' },
+               { anchor: 2, direction: 'to', connectedToId: '527d963a-f89c-4c74-8acd-99899d9f1c8d', arrowID: 'e02784b8-86de-4d1d-96f6-390d7a3ce9e0', text: 'x == 0?' },
+               { anchor: 2, direction: 'to', connectedToId: '985068da-17e3-4cbf-9552-25a42cbe8d92', arrowID: 'c6ff955e-71b5-434b-b77d-1da16d9abb67', text: 'x == 1?' },
+               { anchor: 2, direction: 'to', connectedToId: '8464cd27-869f-4ac5-bea5-14dd58360d3b', arrowID: 'a7788c1e-2512-4add-bb66-84905e323e40', text: 'default' },
             ]
-          },
-          {
+         },
+         {
             id: "527d963a-f89c-4c74-8acd-99899d9f1c8d",
             node: "op",
             text: "y = \"Null\"",
             x: 585,
             y: 421.5,
             connections: [
-              { anchor: 0, direction: 'from', connectedToId: '7d0107b2-18d8-4156-bdbc-fb4275c1458c', arrowID: 'e02784b8-86de-4d1d-96f6-390d7a3ce9e0', text: 'x == 0?' },
-              { anchor: 2, direction: 'to', connectedToId: 'b9424689-e105-4870-ad62-8365a2175caf', arrowID: 'f10a521e-1049-4cbe-80f9-31baafebba1f' }
+               { anchor: 0, direction: 'from', connectedToId: '7d0107b2-18d8-4156-bdbc-fb4275c1458c', arrowID: 'e02784b8-86de-4d1d-96f6-390d7a3ce9e0', text: 'x == 0?' },
+               { anchor: 2, direction: 'to', connectedToId: 'b9424689-e105-4870-ad62-8365a2175caf', arrowID: 'f10a521e-1049-4cbe-80f9-31baafebba1f' }
             ]
-          },
-          {
+         },
+         {
             id: "985068da-17e3-4cbf-9552-25a42cbe8d92",
             node: "op",
             text: "y = \"Eins\"",
             x: 786,
             y: 461.5,
             connections: [
-              { anchor: 0, direction: 'from', connectedToId: '7d0107b2-18d8-4156-bdbc-fb4275c1458c', arrowID: 'c6ff955e-71b5-434b-b77d-1da16d9abb67', text: 'x == 1?' },
-              { anchor: 2, direction: 'to', connectedToId: 'b9424689-e105-4870-ad62-8365a2175caf', arrowID: '6bf9c923-f04a-4450-ad78-37eec2d9c2a1' }
+               { anchor: 0, direction: 'from', connectedToId: '7d0107b2-18d8-4156-bdbc-fb4275c1458c', arrowID: 'c6ff955e-71b5-434b-b77d-1da16d9abb67', text: 'x == 1?' },
+               { anchor: 2, direction: 'to', connectedToId: 'b9424689-e105-4870-ad62-8365a2175caf', arrowID: '6bf9c923-f04a-4450-ad78-37eec2d9c2a1' }
             ]
-          },
-          {
+         },
+         {
             id: "8464cd27-869f-4ac5-bea5-14dd58360d3b",
             node: "op",
             text: "x ist nicht 0 oder 1",
             x: 985,
             y: 421.5,
             connections: [
-              { anchor: 0, direction: 'from', connectedToId: '7d0107b2-18d8-4156-bdbc-fb4275c1458c', arrowID: 'a7788c1e-2512-4add-bb66-84905e323e40', text: 'default' },
-              { anchor: 2, direction: 'to', connectedToId: 'b9424689-e105-4870-ad62-8365a2175caf', arrowID: '948813e3-73e3-4c92-8d6c-327ec44c0b69' }
+               { anchor: 0, direction: 'from', connectedToId: '7d0107b2-18d8-4156-bdbc-fb4275c1458c', arrowID: 'a7788c1e-2512-4add-bb66-84905e323e40', text: 'default' },
+               { anchor: 2, direction: 'to', connectedToId: 'b9424689-e105-4870-ad62-8365a2175caf', arrowID: '948813e3-73e3-4c92-8d6c-327ec44c0b69' }
             ]
-          },
-          {
+         },
+         {
             id: "b9424689-e105-4870-ad62-8365a2175caf",
             node: "i/o",
             text: "Ausgabe: y",
             x: 786,
             y: 580.5,
             connections: [
-              { anchor: 0, direction: 'from', connectedToId: '527d963a-f89c-4c74-8acd-99899d9f1c8d', arrowID: 'f10a521e-1049-4cbe-80f9-31baafebba1f' },
-              { anchor: 0, direction: 'from', connectedToId: '985068da-17e3-4cbf-9552-25a42cbe8d92', arrowID: '6bf9c923-f04a-4450-ad78-37eec2d9c2a1' },
-              { anchor: 0, direction: 'from', connectedToId: '8464cd27-869f-4ac5-bea5-14dd58360d3b', arrowID: '948813e3-73e3-4c92-8d6c-327ec44c0b69' },
-              { anchor: 2, direction: 'to', connectedToId: 'd56fbfac-55c6-4735-bd01-08ddf33c738d', arrowID: 'f50e0063-1db7-46e0-9f9e-a4ffe126b6a6' }
+               { anchor: 0, direction: 'from', connectedToId: '527d963a-f89c-4c74-8acd-99899d9f1c8d', arrowID: 'f10a521e-1049-4cbe-80f9-31baafebba1f' },
+               { anchor: 0, direction: 'from', connectedToId: '985068da-17e3-4cbf-9552-25a42cbe8d92', arrowID: '6bf9c923-f04a-4450-ad78-37eec2d9c2a1' },
+               { anchor: 0, direction: 'from', connectedToId: '8464cd27-869f-4ac5-bea5-14dd58360d3b', arrowID: '948813e3-73e3-4c92-8d6c-327ec44c0b69' },
+               { anchor: 2, direction: 'to', connectedToId: 'd56fbfac-55c6-4735-bd01-08ddf33c738d', arrowID: 'f50e0063-1db7-46e0-9f9e-a4ffe126b6a6' }
             ]
-          },
-          {
+         },
+         {
             id: "d56fbfac-55c6-4735-bd01-08ddf33c738d",
             node: "end",
             text: "Ende",
             x: 815,
             y: 664.5,
             connections: [
-              { anchor: 0, direction: 'from', connectedToId: 'b9424689-e105-4870-ad62-8365a2175caf', arrowID: 'f50e0063-1db7-46e0-9f9e-a4ffe126b6a6' }
+               { anchor: 0, direction: 'from', connectedToId: 'b9424689-e105-4870-ad62-8365a2175caf', arrowID: 'f50e0063-1db7-46e0-9f9e-a4ffe126b6a6' }
             ]
-          }
+         }
       ]
    },
    // Füge hier weitere Presets hinzu
