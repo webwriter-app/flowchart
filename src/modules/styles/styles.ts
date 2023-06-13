@@ -23,8 +23,9 @@ export const papWidgetStyles = css`
       --grid-background-color: white;
       --grid-color: #104E8B;
       --grid-size: 50px;
-      --scaled-grid-size: 50px;
-      --grid-dot-size: 1px;
+      --scaled-grid-size: var(--grid-size);
+      --grid-dot-size: 1.5px;
+      --scaled-grid-dot-size: var(--grid-dot-size);
    }
 
    :host([editable]) .editMode {
@@ -78,7 +79,7 @@ export const papWidgetStyles = css`
       gap: 10px;
       margin-right: 15px;
       top: 3%;
-      right: 35%;
+      right: 38%;
    }
 
    .solution-titel {
@@ -174,7 +175,6 @@ export const papWidgetStyles = css`
 
    /* Task Menu */
    .task-menu {
-      //width: 300px;
       width: 25%;
       min-height: 60px;
       max-height: 75%;
@@ -203,7 +203,6 @@ export const papWidgetStyles = css`
       box-sizing: border-box;
       font-family: var(--ui-font);
       font-size: 18px;
-      //font-weight: bold;
       padding: 5px;
       margin: 10px 0;
       border: 1px solid #34495e;
@@ -242,7 +241,6 @@ export const papWidgetStyles = css`
    .task-menu button.active {
       background-color: #EEC900;
    }
-
 
    .no-tasks-message {
       color: #ffffff;
@@ -311,10 +309,8 @@ export const papWidgetStyles = css`
    }
 
    .help-menu {
-      //align-items: center;
       flex-direction: column;
       max-width: 25%;
-      //min-height: 100px;
       max-height: 75%;
       overflow: hidden;
    }
@@ -331,7 +327,6 @@ export const papWidgetStyles = css`
    .help-container {
       flex-grow: 1;
       overflow-y: auto;
-      //margin-bottom: 10px;
    }
 
    .help-title {
@@ -414,7 +409,7 @@ export const papWidgetStyles = css`
       overflow: hidden;
    }
 
-   .translate-menu-container {
+   .translate-container {
       display: flex;
       flex-direction: column;
       height: 100%;
@@ -423,7 +418,6 @@ export const papWidgetStyles = css`
       align-items: stretch;
       flex-grow: 1;
       overflow-y: auto;
-      margin-bottom: 10px;
    }
 
    .translate-button {
@@ -610,8 +604,8 @@ export const papWidgetStyles = css`
       background-size: var(--scaled-grid-size) var(--scaled-grid-size);
       background-image: radial-gradient(
          circle,
-         var(--grid-color) var(--grid-dot-size),
-         var(--grid-background-color) var(--grid-dot-size)
+         var(--grid-color) var(--scaled-grid-dot-size),
+         var(--grid-background-color) var(--scaled-grid-dot-size)
       );
       background-position: var(--offset-x) var(--offset-y);
    }

@@ -54,6 +54,7 @@ export class PAPWidget extends LitElementWw {
    @property({ type: Object }) graphSettings = { font: 'Courier New', fontSize: 16, theme: 'standard' };
    @property({ type: Number }) zoomLevel: number = 100; // in Prozent
    private gridSize: number = 50;
+   private dotSize: number = 1.5;
 
    private canvas: HTMLCanvasElement;
    private ctx: CanvasRenderingContext2D;
@@ -151,13 +152,6 @@ export class PAPWidget extends LitElementWw {
             +
          </button>
 
-         <div class='solution-menu hidden'> 
-            <div class='solution-titel'>
-               Auswahl überprüfen
-            </div>
-            ${this.taskList.map(task => task.sequence ? html`<button class='solution-button' @click='${() => this.checkSolution(task)}'>${task.titel}</button>` : '')}
-         </div> 
-
          <div class='tool-menu'> 
             <button 
                @mouseenter='${(e) => createTooltip(e, 'Lösche alles')}'
@@ -208,6 +202,13 @@ export class PAPWidget extends LitElementWw {
                ${drawButton('setting', 'tool')}
             </button>
          </div>
+
+         <div class='solution-menu hidden'> 
+            <div class='solution-titel'>
+               Auswahl überprüfen
+            </div>
+            ${this.taskList.map(task => task.sequence ? html`<button class='solution-button' @click='${() => this.checkSolution(task)}'>${task.titel}</button>` : '')}
+         </div> 
 
          <div class='task-menu hidden'>
             <button class='close-button' @click='${() => this.toggleMenu('task')}'>
@@ -1012,6 +1013,7 @@ export class PAPWidget extends LitElementWw {
       this.ctx.resetTransform();
       this.ctx.scale(scaleFactor, scaleFactor);
       this.style.setProperty('--scaled-grid-size', `${scaleFactor * this.gridSize}px`);
+      this.style.setProperty('--scaled-grid-dot-size', `${scaleFactor * this.dotSize}px`);
       this.redrawCanvas();
   
   }
