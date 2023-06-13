@@ -344,7 +344,7 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] } [] = [
             id: "8464cd27-869f-4ac5-bea5-14dd58360d3b",
             node: "op",
             text: "x ist nicht 0 oder 1",
-            x: 1027,
+            x: 985,
             y: 421.5,
             connections: [
               { anchor: 0, direction: 'from', connectedToId: '7d0107b2-18d8-4156-bdbc-fb4275c1458c', arrowID: 'a7788c1e-2512-4add-bb66-84905e323e40', text: 'default' },

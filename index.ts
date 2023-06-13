@@ -22,7 +22,7 @@ import { addHelp } from './src/modules/ui/helpMenu';
 import { addTask } from './src/modules/ui/taskMenu';
 import { createTooltip, removeTooltip, updateDisabledState, grabCanvas, autoDeleteEmptyItems } from './src/modules/ui/generalUI'
 
-import { snapNodePosition, removeOldConnection, findLastGraphNode, findGraphNodeLastIndex } from './src/modules/helper/utilities'
+import { snapNodePosition, removeOldConnection, isNodeInRectangle, findLastGraphNode, findGraphNodeLastIndex } from './src/modules/helper/utilities'
 import { isArrowClicked } from './src/modules/helper/arrowHelper';
 import { getAnchors, highlightAnchor } from './src/modules/helper/anchorHelper';
 import { createArrowsFromGraphNodes, updatePresetIds } from './src/modules/helper/presetHelper';
@@ -674,16 +674,6 @@ export class PAPWidget extends LitElementWw {
 
    // ------------------------ Mouse-Events ------------------------
 
-   private isNodeInRectangle(node: GraphNode, rect: { x: number, y: number, width: number, height: number }): boolean {
-      const rectStartX = rect.width >= 0 ? rect.x : rect.x + rect.width;
-      const rectStartY = rect.height >= 0 ? rect.y : rect.y + rect.height;
-
-      const rectEndX = rect.width >= 0 ? rect.x + rect.width : rect.x;
-      const rectEndY = rect.height >= 0 ? rect.y + rect.height : rect.y;
-
-      return node.x >= rectStartX && node.y >= rectStartY && node.x <= rectEndX && node.y <= rectEndY;
-   }
-
    private handleMouseDown(event: MouseEvent) {
       const { x, y } = this.getMouseCoordinates(event);
       const nodeUnderCursor = findLastGraphNode(this.ctx, this.graphNodes, x, y);
@@ -769,7 +759,7 @@ export class PAPWidget extends LitElementWw {
       if (this.selectionRectangle) {
          this.selectionRectangle.width = x - this.selectionRectangle.x;
          this.selectionRectangle.height = y - this.selectionRectangle.y;
-         this.selectedNodes = this.graphNodes.filter(node => this.isNodeInRectangle(node, this.selectionRectangle));
+         this.selectedNodes = this.graphNodes.filter(node => isNodeInRectangle(this.ctx, node, this.selectionRectangle));
          this.redrawCanvas();
       } else
          if (this.isGrabbing && this.grabStartPosition && this.grabStartOffset) {
@@ -1202,10 +1192,3 @@ export class PAPWidget extends LitElementWw {
 
 
 }
-
-/*
-TODO Liste
-
-- Cursor anpassen, je nach dem was gehovert wird
-
-*/
