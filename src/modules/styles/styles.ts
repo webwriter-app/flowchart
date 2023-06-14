@@ -402,14 +402,12 @@ export const papWidgetStyles = css`
    .translate-menu {
       align-items: center;
       justify-content: center;
-      flex-direction: column;
-
       max-width: 25%;
       max-height: 75%;
       overflow: hidden;
    }
 
-   .translate-container {
+   .translate-menu-container {
       display: flex;
       flex-direction: column;
       height: 100%;
@@ -432,10 +430,11 @@ export const papWidgetStyles = css`
    .output-textarea {
       font-family: var(--ui-font);
       font-size: 16px;
-      width: 100%;
+      width: 450px;
       height: 150px;
       box-sizing: border-box; 
       resize: vertical;
+      overflow: auto;
    }
 
    .setting-menu {

@@ -99,6 +99,13 @@ export class CustomPrompt extends LitElement {
       }
       this.onCancel();
    }
+
+   setInputValue(value: string) {
+      const inputElement = this.shadowRoot.querySelector('input'); 
+      if (inputElement) {
+        inputElement.value = value;
+      }
+    }
 }
 
 

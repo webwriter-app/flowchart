@@ -260,13 +260,13 @@ export class PAPWidget extends LitElementWw {
             <button class='close-button' @click='${() => this.toggleMenu('translate')}'>
                ×
             </button>
-            <div class="translate-container">
+            <div class="translate-menu-container">
                <button class="translate-button" @click='${() => this.translateFlowchart('natural')}'>
                   ${drawButton('naturalLanguage', 'translate')}
                </button>
                <textarea id="naturalLanguageOutput" class="output-textarea hidden" disabled></textarea>
             </div>
-            <div class="translate-container">
+            <div class="translate-menu-container">
                <button class="translate-button" @click='${() => this.translateFlowchart('pseudo')}'>
                   ${drawButton('pseudoCode', 'translate')}
                </button>
@@ -367,7 +367,7 @@ export class PAPWidget extends LitElementWw {
    //       method: 'POST',
    //       headers: {
    //          'Content-Type': 'application/json',
-   //          'Authorization': `Bearer`, 
+   //          'Authorization': `Bearer `, 
    //       },
    //       body: JSON.stringify({
    //          "model": "gpt-3.5-turbo",
@@ -1112,6 +1112,18 @@ export class PAPWidget extends LitElementWw {
    // ------------------------ Prompt Funktionen ------------------------
 
    private showCustomPrompt(type: 'node' | 'arrow', index: number) {
+      const promptElement = this.shadowRoot.querySelector('custom-prompt') as CustomPrompt;
+
+      let currentText = '';
+      if (type === 'node') {
+         currentText = this.graphNodes[index].text;
+      } else {
+         currentText = this.arrows[index].text;
+      }
+
+      promptElement.setInputValue(currentText);
+      promptElement.classList.remove('hidden');
+
       this.shadowRoot.querySelector('custom-prompt').classList.remove('hidden');
 
       const onSubmit = (value: string) => {
@@ -1133,8 +1145,8 @@ export class PAPWidget extends LitElementWw {
          this.shadowRoot.querySelector('custom-prompt').classList.add('hidden');
       };
 
-      (this.shadowRoot.querySelector('custom-prompt') as CustomPrompt).onSubmit = onSubmit;
-      (this.shadowRoot.querySelector('custom-prompt') as CustomPrompt).onCancel = onCancel;
+      promptElement.onSubmit = onSubmit;
+      promptElement.onCancel = onCancel;
    }
 
    private showConfirmPrompt() {
