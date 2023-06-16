@@ -65,7 +65,6 @@ export function addTask(element: HTMLElement, taskList: ItemList[], selectedSequ
   saveSequence.style.display = 'none';  
   saveSequence.textContent = 'Sequenz Speichern';
   saveSequence.onclick = () => {
-    console.log("saveButton ", selectedSequence);
     // Speicher die ausgewählte Sequence im TaskList und beende den Auswahlmodus
     const taskIndex = Array.from(taskContainer.children).indexOf(taskWrapper);
     taskList[taskIndex].sequence = selectedSequence;
@@ -78,7 +77,6 @@ export function addTask(element: HTMLElement, taskList: ItemList[], selectedSequ
     cancelSequence.style.display = 'none';
     saveSequence.style.display = 'none';
     addSequence.classList.remove('active');
-    console.log(taskList);
   };
 
   const addSequence = document.createElement('button');

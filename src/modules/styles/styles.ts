@@ -195,7 +195,7 @@ export const papWidgetStyles = css`
    .task-container {
       flex-grow: 1;
       overflow-y: auto;
-      margin-bottom: 10px;
+      margin-bottom: 5px;
    }
 
    .task-title {
@@ -242,7 +242,8 @@ export const papWidgetStyles = css`
       background-color: #EEC900;
    }
 
-   .no-tasks-message {
+   .no-tasks-message,
+   .no-help-message {
       color: #ffffff;
       font-family: var(--ui-font);
       font-size: 18px;
@@ -351,10 +352,11 @@ export const papWidgetStyles = css`
       border-radius: var(--border-r);
       resize: vertical;
    }
- 
+
    .delete-help-button {
-     margin-left: 80%;
-     margin-bottom: 10px;
+      //margin: 5px;
+      width: 100%;
+      margin-bottom: 10px;
    }
 
    .show-help-button {
@@ -386,6 +388,11 @@ export const papWidgetStyles = css`
       flex-grow: 1;
       overflow-y: auto;
       margin-bottom: 10px;
+   }
+
+   .add-help-button {
+      margin-top: 5px;
+      margin-bottom: 5px;
    }
 
    .preset-button {
@@ -423,7 +430,7 @@ export const papWidgetStyles = css`
       font-family: var(--ui-font);
       font-size: 16px;
       padding: 10px;
-      margin-bottom: 10px;
+      margin-bottom: 5px;
       margin-top: 5px;
    }
 

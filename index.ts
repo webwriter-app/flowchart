@@ -250,7 +250,9 @@ export class PAPWidget extends LitElementWw {
             <button class='close-button' @click='${() => this.toggleMenu('help')}'>
                ×
             </button>
-            <div class="help-container"></div>
+            ${this.helpList.length ===  0 && this.editable
+            ? html`<p class="no-help-message">Keine Hinweise!</p>`
+            : html`<div class="help-container"></div>`}
                <button class="add-help-button editMode" @click='${this.addHelp}'>
                   ${drawButton('addHelp', 'help')}
                </button>
@@ -956,10 +958,11 @@ export class PAPWidget extends LitElementWw {
          zoomText.innerText = `${this.zoomLevel}%`; // Aktualisiert die Zoomanzeige
       });
 
-      helpPresets.forEach((item) => {
-         this.helpList.push(item);
-         addHelp(this, this.helpList);
-      });
+      // Help Prelist
+      // helpPresets.forEach((item) => {
+      //    this.helpList.push(item);
+      //    addHelp(this, this.helpList);
+      // });
    }
 
    connectedCallback() {

@@ -49,9 +49,9 @@ export function addHelp(element: HTMLElement, helpList: ItemList[]) {
   };
 
   // Speichere ggf. die Default Werte
-  helpTitle.value = helpList[helpList.length - 1].titel;
-  showHelp.textContent = helpList[helpList.length - 1].titel;
-  helpContent.value = helpList[helpList.length - 1].content;
+  // helpTitle.value = helpList[helpList.length - 1].titel;
+  // showHelp.textContent = helpList[helpList.length - 1].titel;
+  // helpContent.value = helpList[helpList.length - 1].content;
 
   helpWrapper.appendChild(showHelp);
   helpWrapper.appendChild(helpTitle);
