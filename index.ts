@@ -242,7 +242,7 @@ export class PAPWidget extends LitElementWw {
                   For-Schleife
                </button>
                <button class="preset-button" @click='${() => this.showPreset('Switch')}'>
-                  Swtich
+                  Switch
                </button>
          </div>
 
@@ -582,8 +582,6 @@ export class PAPWidget extends LitElementWw {
    // Aktiviere Bewegungsmodus für das Canvas
    private grabCanvas() {
       this.isGrabbing = grabCanvas(this, this.isGrabbing);
-      console.log(this.arrows);
-      console.log(this.graphNodes);
    }
 
    // ------------------------ Drawer Funktionen ------------------------
@@ -690,18 +688,20 @@ export class PAPWidget extends LitElementWw {
       }
 
       // Handhabung wenn Knoten gezogen wird
-      if (this.selectedNodes.length > 1) {
+      if (!this.isGrabbing){
+         if (this.selectedNodes.length > 1) {
 
-         const { draggedNodes, isDragging, dragOffset } = handleMultipleNodesDragStart(this.ctx, x, y, this.selectedNodes, this.selectedArrow);
-         this.draggedNodes = draggedNodes;
-         this.isDragging = isDragging;
-         this.dragOffset = dragOffset;
+            const { draggedNodes, isDragging, dragOffset } = handleMultipleNodesDragStart(this.ctx, x, y, this.selectedNodes, this.selectedArrow);
+            this.draggedNodes = draggedNodes;
+            this.isDragging = isDragging;
+            this.dragOffset = dragOffset;
 
-      } else {
-         const { draggedNode, isDragging, dragOffset } = handleNodeDragStart(this.ctx, x, y, this.graphNodes, this.selectedArrow);
-         this.draggedNode = draggedNode;
-         this.isDragging = isDragging;
-         this.dragOffset = dragOffset;
+         } else {
+            const { draggedNode, isDragging, dragOffset } = handleNodeDragStart(this.ctx, x, y, this.graphNodes, this.selectedArrow);
+            this.draggedNode = draggedNode;
+            this.isDragging = isDragging;
+            this.dragOffset = dragOffset;
+         }
       }
 
       if (this.isGrabbing) {
@@ -850,38 +850,38 @@ export class PAPWidget extends LitElementWw {
 
       if (this.isSelectingSequence) {
          handleSequenceSelection(this.ctx, this.selectedSequence, this.graphNodes, this.arrows, x, y);
-         console.log(this.taskList);
          this.redrawCanvas();
       } else {
-         if (this.draggedNodes.length === 0) {
-            // Setze das angeklickte Element, oder entferne die Auswahl, wenn kein Element angeklickt wurde
-            this.selectedNode = findLastGraphNode(this.ctx, this.graphNodes, x, y);
-            const selectedNodeIndex = this.graphNodes.lastIndexOf(this.selectedNode);
-            // Packe das ausgewählte Element ans Ende des Arrays, damit es über den anderen Elementen erscheint
-            if (this.selectedNode && !this.isDragging) {
-               this.graphNodes.splice(selectedNodeIndex, 1);
-               this.graphNodes.push(this.selectedNode);
+         if (!this.isGrabbing) {
+            if (this.draggedNodes.length === 0) {
+               // Setze das angeklickte Element, oder entferne die Auswahl, wenn kein Element angeklickt wurde
+               this.selectedNode = findLastGraphNode(this.ctx, this.graphNodes, x, y);
+               const selectedNodeIndex = this.graphNodes.lastIndexOf(this.selectedNode);
+               // Packe das ausgewählte Element ans Ende des Arrays, damit es über den anderen Elementen erscheint
+               if (this.selectedNode && !this.isDragging) {
+                  this.graphNodes.splice(selectedNodeIndex, 1);
+                  this.graphNodes.push(this.selectedNode);
+               }
+
+               this.updateAnchorListeners();
+            }
+            // Finde den angeklickte Pfeilindex, oder entferne die Auswahl, wenn kein Pfeil angeklickt wurde
+            const selectedArrowIndex = this.arrows.findIndex((arrow) => isArrowClicked(x, y, arrow.points));
+            // Wenn ein Pfeil angeklickt wurde, setze die property selectedArrow auf den angeklickten Pfeil 
+            // und verändere die Reihenfolge im Array, damit der angeklickte Pfeil immer vollständig gefärbt angezeigt wird
+            if (selectedArrowIndex !== -1) {
+               this.selectedArrow = this.arrows[selectedArrowIndex];
+               this.arrows.splice(selectedArrowIndex, 1);
+               this.arrows.push(this.selectedArrow);
+               this.redrawCanvas();
+            } else if (this.selectedArrow) {
+               this.selectedArrow = undefined;
+               this.redrawCanvas();
             }
 
-            this.updateAnchorListeners();
-         }
-         // Finde den angeklickte Pfeilindex, oder entferne die Auswahl, wenn kein Pfeil angeklickt wurde
-         const selectedArrowIndex = this.arrows.findIndex((arrow) => isArrowClicked(x, y, arrow.points));
-         // Wenn ein Pfeil angeklickt wurde, setze die property selectedArrow auf den angeklickten Pfeil 
-         // und verändere die Reihenfolge im Array, damit der angeklickte Pfeil immer vollständig gefärbt angezeigt wird
-         if (selectedArrowIndex !== -1) {
-            this.selectedArrow = this.arrows[selectedArrowIndex];
-            this.arrows.splice(selectedArrowIndex, 1);
-            this.arrows.push(this.selectedArrow);
-            this.redrawCanvas();
-         } else if (this.selectedArrow) {
-            this.selectedArrow = undefined;
+            // Zeichne den Canvas neu, um die aktualisierte Auswahl anzuzeigen
             this.redrawCanvas();
          }
-
-         // Zeichne den Canvas neu, um die aktualisierte Auswahl anzuzeigen
-         this.redrawCanvas();
-
       }
    }
 

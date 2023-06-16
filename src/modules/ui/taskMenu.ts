@@ -31,7 +31,7 @@ export function addTask(element: HTMLElement, taskList: ItemList[], selectedSequ
   });
 
   const taskButtonContainer = document.createElement('div');
-  taskButtonContainer.className = 'task-button-container';
+  taskButtonContainer.className = 'task-button-container editMode';
 
   const selectButton = element.shadowRoot.getElementById('select-button');
   selectButton.addEventListener('click', () => {
