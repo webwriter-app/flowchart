@@ -362,70 +362,70 @@ export class PAPWidget extends LitElementWw {
    }
 
    // Variante ohne Netlify 
-   private translateFlowchart(language: 'natural' | 'pseudo') {
-      const messages = this.generateMessages(language);
-      document.body.style.cursor = 'wait';
-      fetch('https://api.openai.com/v1/chat/completions', {
-         method: 'POST',
-         headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer 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`, 
-         },
-         body: JSON.stringify({
-            "model": "gpt-3.5-turbo",
-            "messages": messages,
-            "max_tokens": 2000,
-         }),
-      })
-      .then(response => response.json())
-      .then(data => {
-         console.log(data)
-         const text = data.choices[0].message['content'].trim();
-         if (language === 'natural') {
-            let textAreaElement = this.shadowRoot.getElementById('naturalLanguageOutput') as HTMLTextAreaElement;
-            textAreaElement.value = text;
-            textAreaElement.classList.remove('hidden');
-        } else {
-            let textAreaElement = this.shadowRoot.getElementById('pseudoCodeOutput') as HTMLTextAreaElement;
-            textAreaElement.value = text;
-            textAreaElement.classList.remove('hidden');
-        }
-     })
-     .finally(() => {
-      document.body.style.cursor = 'auto';
-     });;
-    }
-
    // private translateFlowchart(language: 'natural' | 'pseudo') {
    //    const messages = this.generateMessages(language);
    //    document.body.style.cursor = 'wait';
-   //    fetch('/.netlify/functions/translateFlowchart', {
+   //    fetch('https://api.openai.com/v1/chat/completions', {
    //       method: 'POST',
    //       headers: {
    //          'Content-Type': 'application/json',
+   //          'Authorization': `Bearer `, 
    //       },
    //       body: JSON.stringify({
+   //          "model": "gpt-3.5-turbo",
    //          "messages": messages,
    //          "max_tokens": 2000,
    //       }),
    //    })
-   //       .then(response => response.json())
-   //       .then(data => {
-   //          console.log(data)
-   //          if (language === 'natural') {
-   //             let textAreaElement = this.shadowRoot.getElementById('naturalLanguageOutput') as HTMLTextAreaElement;
-   //             textAreaElement.value = data.translation;
-   //             textAreaElement.classList.remove('hidden');
-   //          } else {
-   //             let textAreaElement = this.shadowRoot.getElementById('pseudoCodeOutput') as HTMLTextAreaElement;
-   //             textAreaElement.value = data.translation;
-   //             textAreaElement.classList.remove('hidden');
-   //          }
-   //       })
-   //       .finally(() => {
-   //          document.body.style.cursor = 'auto';
-   //       });;
-   // }
+   //    .then(response => response.json())
+   //    .then(data => {
+   //       console.log(data)
+   //       const text = data.choices[0].message['content'].trim();
+   //       if (language === 'natural') {
+   //          let textAreaElement = this.shadowRoot.getElementById('naturalLanguageOutput') as HTMLTextAreaElement;
+   //          textAreaElement.value = text;
+   //          textAreaElement.classList.remove('hidden');
+   //      } else {
+   //          let textAreaElement = this.shadowRoot.getElementById('pseudoCodeOutput') as HTMLTextAreaElement;
+   //          textAreaElement.value = text;
+   //          textAreaElement.classList.remove('hidden');
+   //      }
+   //   })
+   //   .finally(() => {
+   //    document.body.style.cursor = 'auto';
+   //   });;
+   //  }
+
+   private translateFlowchart(language: 'natural' | 'pseudo') {
+      const messages = this.generateMessages(language);
+      document.body.style.cursor = 'wait';
+      fetch('/.netlify/functions/translateFlowchart', {
+         method: 'POST',
+         headers: {
+            'Content-Type': 'application/json',
+         },
+         body: JSON.stringify({
+            "messages": messages,
+            "max_tokens": 2000,
+         }),
+      })
+         .then(response => response.json())
+         .then(data => {
+            console.log(data)
+            if (language === 'natural') {
+               let textAreaElement = this.shadowRoot.getElementById('naturalLanguageOutput') as HTMLTextAreaElement;
+               textAreaElement.value = data.translation;
+               textAreaElement.classList.remove('hidden');
+            } else {
+               let textAreaElement = this.shadowRoot.getElementById('pseudoCodeOutput') as HTMLTextAreaElement;
+               textAreaElement.value = data.translation;
+               textAreaElement.classList.remove('hidden');
+            }
+         })
+         .finally(() => {
+            document.body.style.cursor = 'auto';
+         });;
+   }
 
    private generateMessages(language: 'natural' | 'pseudo'): Array<{ role: string, content: string }> {
 
