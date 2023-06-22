@@ -109,7 +109,11 @@ export function generateArrowPoints(ctx: CanvasRenderingContext2D, arrow: Arrow)
                }
             }
          } else if (to.anchor === 2) {   // SA oben -> ZA unten
-            if (isAbove) {
+            if (from.x === to.x && isAbove) {
+               points.push({ x: from.x + padding, y: from.y - padding });
+               points.push({ x: from.x + padding, y: to.y + padding });
+               points.push({ x: to.x + padding, y: to.y + padding });
+            } else if (isAbove) {
                points.pop();
                points.push({ x: from.x, y: (from.y + to.y) / 2 });
                points.push({ x: to.x, y: (from.y + to.y) / 2 });
@@ -187,29 +191,37 @@ export function generateArrowPoints(ctx: CanvasRenderingContext2D, arrow: Arrow)
                }
             }
          } else if (to.anchor === 3) {   // SA rechts -> ZA links 
-            if (isLeft) {
-               points.push({ x: from.x + padding, y: (from.y + to.y) / 2 });
-               points.push({ x: to.x - padding, y: (from.y + to.y) / 2 });
-               points.push({ x: to.x - padding, y: to.y });
-            } else {
-               points.pop();
-               points.push({ x: (from.x + to.x) / 2, y: from.y });
-               points.push({ x: (from.x + to.x) / 2, y: to.y });
+            if (from.y === to.y && isLeft){
+                  points.push({ x: from.x + padding, y: from.y + padding });
+                  points.push({ x: to.x - padding, y: from.y + padding });
+                  points.push({ x: to.x - padding, y: to.y });
+            } else if (isLeft) {
+                  points.push({ x: from.x + padding, y: (from.y + to.y) / 2 });
+                  points.push({ x: to.x - padding, y: (from.y + to.y) / 2 });
+                  points.push({ x: to.x - padding, y: to.y });
+               } else {
+                  points.pop();
+                  points.push({ x: (from.x + to.x) / 2, y: from.y });
+                  points.push({ x: (from.x + to.x) / 2, y: to.y });
+               }
             }
-         }
       } else if (from.anchor === 2) {     // SA unten (2)
          points.push({ x: from.x, y: from.y + padding });
 
          if (to.anchor === 0) {          // SA unten -> ZA oben
-            if (isAbove) {
-               points.push({ x: (from.x + to.x) / 2, y: from.y + padding });
-               points.push({ x: (from.x + to.x) / 2, y: to.y - padding });
-               points.push({ x: to.x, y: to.y - padding });
-            } else {
-               points.pop();
-               points.push({ x: from.x, y: (from.y + to.y - 7) / 2 });
-               points.push({ x: to.x, y: (from.y + to.y - 7) / 2 });
-            }
+            if (from.x === to.x && isAbove){
+                  points.push({ x: from.x + padding , y: from.y + padding });
+                  points.push({ x: to.x + padding , y: to.y - padding });
+                  points.push({ x: to.x, y: to.y - padding });
+            } else if (isAbove) {
+                  points.push({ x: (from.x + to.x) / 2, y: from.y + padding });
+                  points.push({ x: (from.x + to.x) / 2, y: to.y - padding });
+                  points.push({ x: to.x, y: to.y - padding });
+               } else {
+                  points.pop();
+                  points.push({ x: from.x, y: (from.y + to.y - 7) / 2 });
+                  points.push({ x: to.x, y: (from.y + to.y - 7) / 2 });
+               }
          } else if (to.anchor === 1) {   // SA unten -> ZA rechts
             if (!isLeft) {
                if (isAbove) {
@@ -231,12 +243,24 @@ export function generateArrowPoints(ctx: CanvasRenderingContext2D, arrow: Arrow)
                }
             }
          } else if (to.anchor === 2) {   // SA unten -> ZA unten
-            if (isAbove) {
-               points.push({ x: to.x, y: from.y + padding });
-            } else {
+            if (to.x === from.x && !isAbove) {
+               points.push({ x: from.x, y: to.y - 55 });
+               points.push({ x: from.x + padding, y: to.y - 55 });
+               points.push({ x: from.x + padding, y: to.y + padding });
                points.push({ x: from.x, y: to.y + padding });
                points.push({ x: to.x, y: to.y + padding });
-            }
+            } else if (to.x === from.x && isAbove){
+               points.push({ x: from.x + padding, y: from.y + padding });
+               points.push({ x: from.x + padding, y: from.y - 55 });
+               points.push({ x: from.x, y: from.y - 55 });
+            } else 
+            
+            if (isAbove) {
+                  points.push({ x: to.x, y: from.y + padding });
+               } else {
+                  points.push({ x: from.x, y: to.y + padding });
+                  points.push({ x: to.x, y: to.y + padding });
+               }
          } else if (to.anchor === 3) {   // SA unten -> ZA links
             if (isLeft) {
                if (isAbove) {
@@ -281,15 +305,19 @@ export function generateArrowPoints(ctx: CanvasRenderingContext2D, arrow: Arrow)
                }
             }
          } else if (to.anchor === 1) {   // SA links -> ZA rechts
-            if (isLeft) {
-               points.pop();
-               points.push({ x: (from.x + to.x) / 2, y: from.y });
-               points.push({ x: (from.x + to.x) / 2, y: to.y });
-            } else {
-               points.push({ x: from.x - padding, y: (from.y + to.y) / 2 });
-               points.push({ x: to.x + padding, y: (from.y + to.y) / 2 });
-               points.push({ x: to.x + padding, y: to.y });
-            }
+            if (from.y === to.y && !isLeft) {
+               points.push({ x: from.x - padding, y: from.y + padding });
+               points.push({ x: to.x + padding, y: from.y + padding });
+               points.push({ x: to.x + padding, y: from.y });
+            } else if (isLeft) {
+                  points.pop();
+                  points.push({ x: (from.x + to.x) / 2, y: from.y });
+                  points.push({ x: (from.x + to.x) / 2, y: to.y });
+               } else {
+                  points.push({ x: from.x - padding, y: (from.y + to.y) / 2 });
+                  points.push({ x: to.x + padding, y: (from.y + to.y) / 2 });
+                  points.push({ x: to.x + padding, y: to.y });
+               }
          } else if (to.anchor === 2) {   // SA links -> ZA unten
             if (isAbove) {
                if (isLeft) {
