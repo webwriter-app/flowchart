@@ -1,6 +1,18 @@
 import { ItemList } from "../../definitions/ItemList";
+import { GraphNode } from "../../definitions/GraphNode";
+import { Arrow } from "../../definitions/Arrow";
 
-export function addTask(element: HTMLElement, taskList: ItemList[], selectedSequence: { id: string; order: number; type: string }[], getActiveSequenceButton: () => HTMLButtonElement | null, setActiveSequenceButton: (btn: HTMLButtonElement | null) => void, setSelectedSequence: (sequence: { id: string; order: number; type: string }[]) => void) {
+export function addTask(
+  element: HTMLElement,
+  taskList: ItemList[],
+  selectedSequence: { id: string; order: number; type: string }[],
+  getActiveSequenceButton: () => HTMLButtonElement | null,
+  setActiveSequenceButton: (btn: HTMLButtonElement | null) => void,
+  setSelectedSequence: (sequence: { id: string; order: number; type: string }[]) => void,
+  getSelectedSequence: () => { id: string; order: number; type: string }[],
+  getGraphNodes: () => GraphNode[], 
+  getArrows: () => Arrow[]
+) {
   const taskContainer = element.shadowRoot.querySelector('.task-container');
 
   const taskWrapper = document.createElement('div');
@@ -52,7 +64,7 @@ export function addTask(element: HTMLElement, taskList: ItemList[], selectedSequ
   cancelSequence.onclick = () => {
     // Breche das hinzufügen von einer Sequenz ab. 
     setActiveSequenceButton(null);
-    selectedSequence = [];
+    setSelectedSequence([]);
     element.dispatchEvent(selectSequenceEvent);
    
     cancelSequence.style.display = 'none';
@@ -67,10 +79,11 @@ export function addTask(element: HTMLElement, taskList: ItemList[], selectedSequ
   saveSequence.onclick = () => {
     // Speicher die ausgewählte Sequence im TaskList und beende den Auswahlmodus
     const taskIndex = Array.from(taskContainer.children).indexOf(taskWrapper);
-    taskList[taskIndex].sequence = selectedSequence;
+    console.log("Index", taskIndex)
+    taskList[taskIndex].sequence = getSelectedSequence();
 
     setActiveSequenceButton(null);
-    selectedSequence = [];
+    setSelectedSequence([]);
     element.dispatchEvent(selectSequenceEvent);
 
     // Verstecke die Buttons "Abbrechen" und "Speichern" und deaktiviere active
@@ -93,8 +106,24 @@ export function addTask(element: HTMLElement, taskList: ItemList[], selectedSequ
     //Überprüfe ob schon eine Lösung vorhanden ist, falls ja zeige diese an:
     const taskIndex = Array.from(taskContainer.children).indexOf(taskWrapper);
     if(taskList[taskIndex].sequence){
-      setSelectedSequence(taskList[taskIndex].sequence);
-      selectedSequence = taskList[taskIndex].sequence;
+      // Überprüfe ob alle Elemente der Sequenz noch in graphNodes oder arrows sind
+      const allElementsExist = taskList[taskIndex].sequence.every(sequenceElement => {
+        if (sequenceElement.type === 'node') {
+          return getGraphNodes().some(node => node.id === sequenceElement.id);
+        } else if (sequenceElement.type === 'arrow') {
+          return getArrows().some(arrow => arrow.id === sequenceElement.id);
+        } else {
+          return false;
+        }
+      });
+  
+      // Wenn nicht alle Elemente existieren, lösche die Sequenz
+      if (!allElementsExist) {
+        taskList[taskIndex].sequence = [];
+      } else {
+        setSelectedSequence(taskList[taskIndex].sequence);
+        selectedSequence = taskList[taskIndex].sequence;
+      }
     }
 
     // Beginne mit der Auswahl der Sequenz, wenn der Button angeklickt wird.

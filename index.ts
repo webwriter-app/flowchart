@@ -45,6 +45,8 @@ export class PAPWidget extends LitElementWw {
    @property({ type: Object }) selectedNode?: GraphNode;
    @property({ type: Array }) arrows: Arrow[] = [];
    @property({ type: Object }) selectedArrow?: Arrow;
+   private getGraphNodes= () => this.graphNodes;
+   private getArrows= () => this.arrows;
 
    @property({ type: Array }) taskList: ItemList[] = [];
    @property({ type: Array }) helpList: ItemList[] = [];
@@ -77,6 +79,7 @@ export class PAPWidget extends LitElementWw {
 
    private _isSelectingSequence = false;
    private selectedSequence: { id: string; order: number; type: string }[] = [];
+   private getSelectedSequence= () => this.selectedSequence;
    private activeSequenceButton: HTMLButtonElement | null = null;
    private getActiveSequenceButton = () => this.activeSequenceButton;
    private setActiveSequenceButton = (btn: HTMLButtonElement | null) => { this.activeSequenceButton = btn; };
@@ -250,7 +253,7 @@ export class PAPWidget extends LitElementWw {
             <button class='close-button' @click='${() => this.toggleMenu('help')}'>
                ×
             </button>
-            ${this.helpList.length ===  0 && this.editable
+            ${this.helpList.length === 0 && this.editable
             ? html`<p class="no-help-message">Keine Hinweise!</p>`
             : html`<div class="help-container"></div>`}
                <button class="add-help-button editMode" @click='${this.addHelp}'>
@@ -542,7 +545,7 @@ export class PAPWidget extends LitElementWw {
    };
 
    private addTask() {
-      addTask(this, this.taskList, this.selectedSequence, this.getActiveSequenceButton, this.setActiveSequenceButton, this.setSelectedSequence);
+      addTask(this, this.taskList, this.selectedSequence, this.getActiveSequenceButton, this.setActiveSequenceButton, this.setSelectedSequence,this.getSelectedSequence , this.getGraphNodes, this.getArrows);
    }
 
    private addHelp() {
@@ -688,7 +691,7 @@ export class PAPWidget extends LitElementWw {
       }
 
       // Handhabung wenn Knoten gezogen wird
-      if (!this.isGrabbing){
+      if (!this.isGrabbing) {
          if (this.selectedNodes.length > 1) {
 
             const { draggedNodes, isDragging, dragOffset } = handleMultipleNodesDragStart(this.ctx, x, y, this.selectedNodes, this.selectedArrow);
@@ -1040,7 +1043,7 @@ export class PAPWidget extends LitElementWw {
          this.selectedNodes.forEach((node) => {
             // Entferne ausgewählten Knoten
             this.graphNodes = this.graphNodes.filter((n) => n !== node);
-
+            console.log("nach dem löschen", this.graphNodes);
             // Entferne die Verbindungsinformationen für alle betroffenen Knoten
             this.arrows.forEach(arrow => {
                if (arrow.from === node || arrow.to === node) {
@@ -1121,7 +1124,7 @@ export class PAPWidget extends LitElementWw {
       if (type === 'node') {
          currentText = this.graphNodes[index].text;
       } else {
-         if (this.arrows[index].text){
+         if (this.arrows[index].text) {
             currentText = this.arrows[index].text;
          }
       }
@@ -1211,6 +1214,5 @@ export class PAPWidget extends LitElementWw {
    private closeSolution() {
       this.showSolution = false;
    }
-
 
 }
