@@ -41,15 +41,15 @@ import './src/components/confirm-prompt'
 
 @customElement('ww-flowchart')
 export class PAPWidget extends LitElementWw {
-   @property({ type: Array }) graphNodes: GraphNode[] = [];
+   @property({ type: Array, reflect: true, attribute:true }) graphNodes: GraphNode[] = [];
    @property({ type: Object }) selectedNode?: GraphNode;
    @property({ type: Array }) arrows: Arrow[] = [];
    @property({ type: Object }) selectedArrow?: Arrow;
    private getGraphNodes= () => this.graphNodes;
    private getArrows= () => this.arrows;
 
-   @property({ type: Array }) taskList: ItemList[] = [];
-   @property({ type: Array }) helpList: ItemList[] = [];
+   @property({ type: Array, reflect: true, attribute:true }) taskList: ItemList[] = [];
+   @property({ type: Array, reflect: true, attribute:true }) helpList: ItemList[] = [];
 
    @property({ type: Array }) presetList: { name: string, graphNodes: GraphNode[] }[] = flowchartPresets;
 
@@ -634,9 +634,9 @@ export class PAPWidget extends LitElementWw {
       }
 
       // Speichere die aktuellen Knoten und Verbindungen als Attribute
-      this.setAttribute('graph-nodes', JSON.stringify(this.graphNodes));
-      this.setAttribute('task-list', JSON.stringify(this.taskList));
-      this.setAttribute('help-list', JSON.stringify(this.helpList));
+      // this.setAttribute('graph-nodes', JSON.stringify(this.graphNodes));
+      // this.setAttribute('task-list', JSON.stringify(this.taskList));
+      // this.setAttribute('help-list', JSON.stringify(this.helpList));
    }
 
    // Speichere die Position für den nächsten Knoten
@@ -974,7 +974,7 @@ export class PAPWidget extends LitElementWw {
       window.addEventListener('keydown', this.handleKeyDown);
 
       // Konvertiert das Array in einen String und setzt es als Attribut
-      this.setAttribute('graph-nodes', JSON.stringify(this.graphNodes));
+      //this.setAttribute('graph-nodes', JSON.stringify(this.graphNodes));
 
       this.addEventListener('startSelectSequence', this.selectSequence);
    }
