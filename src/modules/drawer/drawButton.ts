@@ -391,7 +391,7 @@ export function drawButton(element: string, menu: 'flow' | 'tool' | 'task' | 'he
             'font-size': '16',
             'font-family': 'Arial'
          });
-         text.textContent = 'Aufgabe Hinzufügen';
+         text.textContent = 'Aufgabe hinzufügen';
          svg.appendChild(text);
          break;
 
@@ -405,7 +405,7 @@ export function drawButton(element: string, menu: 'flow' | 'tool' | 'task' | 'he
             'font-size': '16',
             'font-family': 'Arial'
          });
-         text.textContent = 'Hilfe Hinzufügen';
+         text.textContent = 'Hinweis hinzufügen';
          svg.appendChild(text);
          break;
 
@@ -431,7 +431,7 @@ export function drawButton(element: string, menu: 'flow' | 'tool' | 'task' | 'he
             'font-size': '16',
             'font-family': 'Arial'
          });
-         text.textContent = 'Pseudo Code';
+         text.textContent = 'Pseudocode';
          svg.appendChild(text);
          break;
 

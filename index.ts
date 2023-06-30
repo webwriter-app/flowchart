@@ -40,7 +40,7 @@ import './src/components/confirm-prompt'
 
 
 @customElement('ww-flowchart')
-export class PAPWidget extends LitElementWw {
+export class FlowchartWidget extends LitElementWw {
    @property({ type: Array, reflect: true, attribute:true }) graphNodes: GraphNode[] = [];
    @property({ type: Object }) selectedNode?: GraphNode;
    @property({ type: Array }) arrows: Arrow[] = [];
@@ -193,7 +193,7 @@ export class PAPWidget extends LitElementWw {
                ${drawButton('preset', 'tool')}
             </button>
             <button 
-               @mouseenter='${(e) => createTooltip(e, 'Hilfe')}'
+               @mouseenter='${(e) => createTooltip(e, 'Hinweise')}'
                @mouseleave='${removeTooltip}'
                @click='${() => this.toggleMenu('help')}'>
                ${drawButton('help', 'tool')}

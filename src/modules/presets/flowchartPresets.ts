@@ -61,7 +61,7 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] }[] = [
          {
             id: "36873d1b-c5d4-4211-af14-5029282aaf0c",
             node: "op",
-            text: "Pfeil können wieder versetzt werden",
+            text: "Der Pfeil kann wieder versetzt werden",
             x: 337.9765625,
             y: 536.05,
             connections: [
@@ -160,8 +160,8 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] }[] = [
          {
             id: "04893012-47f7-4e75-93b9-cbe58910e18a",
             node: "op",
-            text: "Zufallszahl: randInt (0, 1)",
-            x: 665.58984375,
+            text: "Zufallszahl = (zufällig 0 oder 1)",
+            x: 636.78515625,
             y: 240.5,
             connections: [
                { anchor: 0, direction: "from", connectedToId: "4fcfbda4-65e6-489b-825e-0641d358c087", arrowID: "38e7d384-2d33-4687-a04b-6d24342bc800" },
@@ -474,7 +474,7 @@ export const flowchartPresets: { name: string, graphNodes: GraphNode[] }[] = [
          {
             id: "8464cd27-869f-4ac5-bea5-14dd58360d3b",
             node: "op",
-            text: "x ist nicht 0 oder 1",
+            text: 'y = "x ist nicht 0 oder 1"',
             x: 985,
             y: 421.5,
             connections: [
