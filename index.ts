@@ -134,14 +134,14 @@ export class FlowchartWidget extends LitElementWw {
             <button @click='${() => this.addGraphNode('decision', '  Verzweigung  ')}'>
                ${drawButton('decision', 'flow')}
             </button>
-            <button @click='${() => this.addGraphNode('connector', '')}'>
-               ${drawButton('connector', 'flow')}
-            </button>
             <button @click='${() => this.addGraphNode('i/o', 'Ein-/Ausgabe')}'>
                ${drawButton('i/o', 'flow')}
             </button>
             <button @click='${() => this.addGraphNode('sub', 'Unterprogramm')}'>
                ${drawButton('sub', 'flow')}
+            </button>
+            <button @click='${() => this.addGraphNode('connector', '')}'>
+               ${drawButton('connector', 'flow')}
             </button>
             <button @click='${() => this.addGraphNode('end', 'Ende')}'>
                ${drawButton('end', 'flow')} 
@@ -1110,7 +1110,7 @@ export class FlowchartWidget extends LitElementWw {
       const customPrompt = this.shadowRoot?.querySelector('custom-prompt');
       const confirmPrompt = this.shadowRoot?.querySelector('confirm-prompt');
 
-      if ((event.key === 'Escape' || event.key === 'Backspace') && customPrompt?.classList.contains('hidden') && confirmPrompt?.classList.contains('hidden')) {
+      if ((event.key === 'Escape' || event.key === 'Backspace' || event.key === 'Delete') && customPrompt?.classList.contains('hidden') && confirmPrompt?.classList.contains('hidden')) {
          this.deleteSelectedObject();
       }
    }

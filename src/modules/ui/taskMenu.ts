@@ -75,7 +75,7 @@ export function addTask(
   const saveSequence = document.createElement('button');
   saveSequence.className = 'save-sequence-button editMode';
   saveSequence.style.display = 'none';  
-  saveSequence.textContent = 'Sequenz Speichern';
+  saveSequence.textContent = 'Pfad Speichern';
   saveSequence.onclick = () => {
     // Speicher die ausgewählte Sequence im TaskList und beende den Auswahlmodus
     const taskIndex = Array.from(taskContainer.children).indexOf(taskWrapper);
@@ -94,7 +94,7 @@ export function addTask(
 
   const addSequence = document.createElement('button');
   addSequence.className = 'add-sequence-button editMode';
-  addSequence.textContent = 'Sequenz hinzufügen';
+  addSequence.textContent = 'Pfad hinzufügen';
   addSequence.onclick = () => {
     
     // Überprüfen, ob ein anderer Button bereits aktiv ist.

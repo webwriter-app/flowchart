@@ -109,7 +109,7 @@ export function drawButton(element: string, menu: 'flow' | 'tool' | 'task' | 'he
             'stroke-width': '2'
          });
          svg.appendChild(connector);
-         text.textContent = 'Verbindungsstelle';
+         text.textContent = 'Übergangsstelle';
          text.setAttribute('y', '50');
          break;
 
