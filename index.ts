@@ -310,6 +310,7 @@ export class FlowchartWidget extends LitElementWw {
                      <option value="standard" selected>Standard</option>
                      <option value="pastel">Pastel</option>
                      <option value="mono">Mono</option>
+                     <option value="s/w">Schwarz/Weiß</option>
                   </select>
                </div>
                <div class="setting-item">

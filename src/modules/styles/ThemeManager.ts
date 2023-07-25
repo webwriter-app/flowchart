@@ -31,6 +31,15 @@ export class ThemeManager {
          ioColor: '#87C3E7',
          subColor: '#87C3E7',
       });
+      this.addTheme({
+         name: 's/w',
+         startEndColor: '#FFFFFF',
+         opColor: '#FFFFFF',
+         decisionColor: '#FFFFFF',
+         connectorColor: '#FFFFFF',
+         ioColor: '#FFFFFF',
+         subColor: '#FFFFFF',
+      });
    }
 
    getTheme(name: string) {
