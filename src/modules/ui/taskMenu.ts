@@ -75,7 +75,7 @@ export function addTask(
   const saveSequence = document.createElement('button');
   saveSequence.className = 'save-sequence-button editMode';
   saveSequence.style.display = 'none';  
-  saveSequence.textContent = 'Pfad Speichern';
+  saveSequence.textContent = 'Pfad speichern';
   saveSequence.onclick = () => {
     // Speicher die ausgewählte Sequence im TaskList und beende den Auswahlmodus
     const taskIndex = Array.from(taskContainer.children).indexOf(taskWrapper);

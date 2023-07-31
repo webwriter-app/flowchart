@@ -391,7 +391,7 @@ export function drawButton(element: string, menu: 'flow' | 'tool' | 'task' | 'he
             'font-size': '16',
             'font-family': 'Arial'
          });
-         text.textContent = 'Aufgabe hinzufügen';
+         text.textContent = 'Arbeitsauftrag hinzufügen';
          svg.appendChild(text);
          break;
 

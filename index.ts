@@ -169,7 +169,7 @@ export class FlowchartWidget extends LitElementWw {
                ${drawButton('grab', 'tool')}
             </button>
             <button id='select-button' 
-               @mouseenter='${(e) => createTooltip(e, 'Auswahlmodus')}'
+               @mouseenter='${(e) => createTooltip(e, 'Pfadauswahlmodus')}'
                @mouseleave='${removeTooltip}'
                @click='${this.selectSequence}'>
                ${drawButton('select', 'tool')}
@@ -208,7 +208,7 @@ export class FlowchartWidget extends LitElementWw {
 
          <div class='solution-menu hidden'> 
             <div class='solution-titel'>
-               Auswahl überprüfen
+               Pfad überprüfen
             </div>
             ${this.taskList.map(task => task.sequence ? html`<button class='solution-button' @click='${() => this.checkSolution(task)}'>${task.titel}</button>` : '')}
          </div> 
@@ -435,9 +435,9 @@ export class FlowchartWidget extends LitElementWw {
 
       let systemMessage: string;
       if (language === 'natural') {
-         systemMessage = 'Die folgenden Daten stellen ein Programm Ablaufplan dar. Beschreibe den Ablaufplan in einfachen natürlichen Worten.';
+         systemMessage = 'Die folgenden Daten stellen ein Programmablaufplan dar. Beschreibe den Ablaufplan in einfachen natürlichen Worten.';
       } else {
-         systemMessage = 'Die folgenden Daten stellen ein Programm Ablaufplan dar. Erzeuge aus den gegebenen Daten Pseudocode.';
+         systemMessage = 'Die folgenden Daten stellen ein Programmablaufplan dar. Erzeuge aus den gegebenen Daten Pseudocode.';
       }
 
       let userMessage: string = '';
@@ -499,13 +499,13 @@ export class FlowchartWidget extends LitElementWw {
          for (let i = 0; i < this.selectedSequence.length; i++) {
             // Prüfe, ob die IDs und der Typ jeder Sequenz übereinstimmen
             if (this.selectedSequence[i].id !== task.sequence[i].id || this.selectedSequence[i].type !== task.sequence[i].type) {
-               this.showSolutionWithMessage('Die ausgewählte Sequenz ist falsch!');
+               this.showSolutionWithMessage('Der ausgewählte Pfad ist leider falsch!');
                return;
             }
          }
-         this.showSolutionWithMessage('Die ausgewählte Sequenz ist korrekt!');
+         this.showSolutionWithMessage('Der ausgewählte Pfad ist korrekt!');
       } else {
-         this.showSolutionWithMessage('Die ausgewählte Sequenz ist falsch!');
+         this.showSolutionWithMessage('Der ausgewählte Pfad ist leider falsch!');
       }
    }
 
@@ -1111,7 +1111,7 @@ export class FlowchartWidget extends LitElementWw {
       const customPrompt = this.shadowRoot?.querySelector('custom-prompt');
       const confirmPrompt = this.shadowRoot?.querySelector('confirm-prompt');
 
-      if ((event.key === 'Escape' || event.key === 'Backspace' || event.key === 'Delete') && customPrompt?.classList.contains('hidden') && confirmPrompt?.classList.contains('hidden')) {
+      if (( event.key === 'Backspace' || event.key === 'Delete') && customPrompt?.classList.contains('hidden') && confirmPrompt?.classList.contains('hidden')) {
          this.deleteSelectedObject();
       }
    }

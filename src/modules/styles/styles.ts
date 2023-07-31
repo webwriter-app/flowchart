@@ -80,12 +80,14 @@ export const papWidgetStyles = css`
       margin-right: 15px;
       top: 3%;
       right: 38%;
+      align-items: center;
    }
 
    .solution-titel {
       color: white;
       font-family: var(--ui-font);
       font-size: 16px;
+      align-items: center;
    }
 
    /* Buttons */
