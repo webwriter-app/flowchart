@@ -21,7 +21,7 @@ export function addHelp(element: HTMLElement, helpList: ItemList[]) {
 
   const helpContent = document.createElement('textarea');
   helpContent.className = 'help-content';
-  helpContent.placeholder = 'Inhalt';
+  helpContent.placeholder = 'Inhalt... \nÄnderungen werden automatisch gespeichert.';
   helpContent.addEventListener('input', (event) => {
     const target = event.target as HTMLTextAreaElement;
     target.style.height = 'auto';
