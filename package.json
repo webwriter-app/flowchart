@@ -15,8 +15,8 @@
     "vite": "^3.1.6"
   },
   "name": "ww-flowchart",
-  "version": "0.5.1",
-  "description": "Create programme flowcharts!",
+  "version": "0.6.0",
+  "description": "Create programme flowcharts, interactive tasks or translate flowcharts into natural language or pseudo code!",
   "keywords": [
     "webwriter-widget"
   ],

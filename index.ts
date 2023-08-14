@@ -402,6 +402,8 @@ export class FlowchartWidget extends LitElementWw {
 
    private translateFlowchart(language: 'natural' | 'pseudo') {
       const messages = this.generateMessages(language);
+      const translateButtons = this.shadowRoot.querySelectorAll('.translate-button');
+      translateButtons.forEach((button: HTMLElement) => button.style.cursor = 'wait');
       document.body.style.cursor = 'wait';
       fetch('/.netlify/functions/translateFlowchart', {
          method: 'POST',
@@ -427,6 +429,7 @@ export class FlowchartWidget extends LitElementWw {
             }
          })
          .finally(() => {
+            translateButtons.forEach((button: HTMLElement) => button.style.cursor = 'pointer');
             document.body.style.cursor = 'auto';
          });;
    }

@@ -31,7 +31,7 @@ export function addTask(
 
   const taskContent = document.createElement('textarea');
   taskContent.className = 'task-content';
-  taskContent.placeholder = 'Inhalt';
+  taskContent.placeholder = 'Inhalt... \nÄnderungen werden automatisch gespeichert.';
   taskContent.addEventListener('input', (event) => {
     const target = event.target as HTMLTextAreaElement;
     target.style.height = 'auto';
