@@ -1,0 +1,50 @@
+Arguments: 
+  C:\Program Files\WebWriter\yarn.exe C:\snapshot\node_modules\yarn\lib\cli.js install --json --prod --ignore-optional --ignore-scripts --ignore-engines --non-interactive --no-bin-links --mutex file
+
+PATH: 
+  C:\Program Files (x86)\Common Files\Intel\Shared Libraries\redist\intel64\compiler;C:\Python310\Scripts\;C:\Python310\;C:\windows\system32;C:\windows;C:\windows\System32\Wbem;C:\windows\System32\WindowsPowerShell\v1.0\;C:\Program Files\Docker\Docker\resources\bin;C:\ProgramData\DockerDesktop\version-bin;C:\Program Files\Git\cmd;C:\ProgramData\chocolatey\bin;C:\Program Files\PuTTY\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\windows\system32\openSSH\;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\nodejs\;C:\Users\jorik\AppData\Local\Microsoft\WindowsApps;C:\Users\jorik\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\jorik\AppData\Local\Programs\MiKTeX\miktex\bin\x64\;C:\Users\jorik\AppData\Roaming\npm
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  16.16.0
+
+Platform: 
+  win32 x64
+
+Trace: 
+  Error: EPERM: operation not permitted, unlink 'C:\Users\jorik\AppData\Roaming\webwriter.webwriter\node_modules\ww-flowchart\node_modules\esbuild-windows-64\esbuild.exe'
+
+npm manifest: 
+  {
+      "name": "ww-flowchart",
+      "version": "0.6.0",
+      "description": "Create programme flowcharts, interactive tasks or translate flowcharts into natural language or pseudo code!",
+      "keywords": [
+          "webwriter-widget"
+      ],
+      "license": "MIT",
+      "author": "Kevin Lu",
+      "scripts": {
+          "dev": "vite --open",
+          "build": "vite build"
+      },
+      "dependencies": {
+          "@webwriter/lit": "*",
+          "axios": ">=1.4.0 <2.0.0-0",
+          "dotenv": ">=16.1.4 <17.0.0-0",
+          "lit": ">=2.4.0 <3.0.0-0",
+          "uuid": ">=9.0.0 <10.0.0-0"
+      },
+      "devDependencies": {
+          "typescript": ">=4.8.4 <5.0.0-0",
+          "vite": ">=3.1.6 <4.0.0-0"
+      }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

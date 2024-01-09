@@ -1,12 +1,28 @@
 # ww-flowchart Widget
-***
-Willkommen bei ww-flowchart! Diese Anwendung wurde speziell für Lehrkräfte entwickelt 
-und bietet die Möglichkeit, interaktive Aufgaben rund um das Thema Programmablaufpläne 
-(PAPs) zu erstellen. Schüler:innen können diese Arbeitsaufträge bearbeiten sowie 
-selbstständig PAPs erstellen. 
+
+---
+
+Willkommen bei ww-flowchart! Diese Anwendung wurde speziell für Lehrkräfte entwickelt
+und bietet die Möglichkeit, interaktive Aufgaben rund um das Thema Programmablaufpläne
+(PAPs) zu erstellen. Schüler:innen können diese Arbeitsaufträge bearbeiten sowie
+selbstständig PAPs erstellen.
+
+## Change Log
+
+---
+
+### Version 0.7.0
+
+-   [x] Updated UI
+-   [x] Kompatibel für Nutzung in WebWriter
+-   [x] Feature: Zoom durch Scrollen im Canvas
+-   [x] Feature: Anpassung der Höhe des Canvas
+-   [x] Removed: Übersetzung mittels GPT
 
 ## Lizenz
-***
+
+---
+
 MIT License
 Copyright (c) 2023 Kevin Lu
 
