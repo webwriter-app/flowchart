@@ -1262,6 +1262,7 @@ export class FlowchartWidget extends LitElementWw {
 
     private handleWheel(event: WheelEvent) {
         if (this.isGrabbing) {
+            event.preventDefault();
             const zoomText = this.shadowRoot?.querySelector('#zoom-percentage') as HTMLSpanElement;
 
             if (event.deltaY < 0) {

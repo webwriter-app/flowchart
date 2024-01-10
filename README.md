@@ -11,6 +11,10 @@ selbstständig PAPs erstellen.
 
 ---
 
+### Version 0.7.1
+
+-   [x] Bugfix: Scrollen im Canvas
+
 ### Version 0.7.0
 
 -   [x] Updated UI
