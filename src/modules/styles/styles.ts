@@ -79,6 +79,22 @@ export const papWidgetStyles = css`
         flex-direction: row;
     }
 
+    .flowchart-menu.fullscreen {
+        top: 60px;
+        left: 10px;
+
+        height: auto;
+        bottom: unset;
+
+        width: 200px;
+
+        flex-direction: column;
+    }
+
+    .flowchart-menu.fullscreen button {
+        flex-grow: 0;
+    }
+
     .flowchart-menu svg {
         width: 100%;
         position: absolute;
@@ -190,7 +206,8 @@ export const papWidgetStyles = css`
     .zoom-button,
     .check-solution-button,
     .action-menu button,
-    .select-sequence-button {
+    .select-sequence-button,
+    .fullscreen-button {
         background-color: var(--button-color);
         color: white;
         border: none;
@@ -218,7 +235,8 @@ export const papWidgetStyles = css`
     .zoom-button:hover,
     .check-solution-button:hover,
     .action-menu button:hover,
-    .select-sequence-button:hover {
+    .select-sequence-button:hover,
+    .fullscreen-button:hover {
         background-color: var(--hover-color);
     }
 
@@ -240,9 +258,16 @@ export const papWidgetStyles = css`
     .zoom-button:active,
     .check-solution-button:active,
     .action-menu button:active,
-    .select-sequence-button:active {
+    .select-sequence-button:active,
+    .fullscreen-button:active {
         background-color: var(--button-color);
         box-shadow: 0px 0px 5px var(--hover-color);
+    }
+
+    .fullscreen-button svg {
+        fill: white;
+        width: 40px;
+        height: 30px;
     }
 
     .select-sequence-button {
@@ -727,7 +752,7 @@ export const papWidgetStyles = css`
         /* width: 100vw;
         height: 100vh; */
 
-        width: 100%;
+        /* width: 100%; */
         height: var(--widget-height);
 
         z-index: 0;

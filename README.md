@@ -11,6 +11,11 @@ selbstständig PAPs erstellen.
 
 ---
 
+### Version 0.7.2
+
+-   [x] Feature: Fullscreen-Modus
+-   [x] Bugfix: Scrollen nur möglich, wenn Element Fokus hat
+
 ### Version 0.7.1
 
 -   [x] Bugfix: Scrollen im Canvas

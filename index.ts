@@ -67,6 +67,7 @@ export class FlowchartWidget extends LitElementWw {
     @property({ type: Array, reflect: true, attribute: true }) helpList: ItemList[] = [];
 
     @property({ type: Number, reflect: true, attribute: true }) height: number = 400;
+    @property({ type: Number }) currentHeight: number = this.height;
 
     @property({ type: Array }) presetList: { name: string; graphNodes: GraphNode[] }[] = flowchartPresets;
 
@@ -84,6 +85,8 @@ export class FlowchartWidget extends LitElementWw {
     @property({ type: String, reflect: true, attribute: true }) font = 'Courier New';
     @property({ type: Number, reflect: true, attribute: true }) fontSize = 16;
     @property({ type: String, reflect: true, attribute: true }) theme = 'standard';
+
+    @property({ type: Boolean }) fullscreen = false;
 
     private canvas: HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D;
@@ -141,7 +144,7 @@ export class FlowchartWidget extends LitElementWw {
             <div class="workspace" @scroll="${this.handleScroll}">
                 <canvas
                     width="100%"
-                    height="${this.height}"
+                    height="${this.currentHeight}"
                     @mousedown="${this.handleMouseDown}"
                     @mouseup="${this.handleMouseUp}"
                     @mousemove="${this.handleMouseMove}"
@@ -157,7 +160,7 @@ export class FlowchartWidget extends LitElementWw {
                     @wheel="${this.handleWheel}"
                 ></canvas>
 
-                <div class="action-menu">
+                <div class="action-menu" style=${this.fullscreen ? 'top:10px;left:10px;' : ''}>
                     <button
                         id="grab-button"
                         @mouseenter="${(e) => createTooltip(e, 'Bewegen des Canvas')}"
@@ -191,6 +194,19 @@ export class FlowchartWidget extends LitElementWw {
                         style=${!this.alowStudentEdit ? 'display:none' : ''}
                     >
                         ${drawButton('delete', 'tool')}
+                    </button>
+                    <button
+                        @mouseenter="${(e) => createTooltip(e, 'Fullscreen')}"
+                        @mouseleave="${removeTooltip}"
+                        @click="${this.toggleFullscreen}"
+                        class="fullscreen-button"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" height="16" width="14" viewBox="0 0 448 512">
+                            <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                            <path
+                                d="M32 32C14.3 32 0 46.3 0 64v96c0 17.7 14.3 32 32 32s32-14.3 32-32V96h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H32zM64 352c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7 14.3 32 32 32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H64V352zM320 32c-17.7 0-32 14.3-32 32s14.3 32 32 32h64v64c0 17.7 14.3 32 32 32s32-14.3 32-32V64c0-17.7-14.3-32-32-32H320zM448 352c0-17.7-14.3-32-32-32s-32 14.3-32 32v64H320c-17.7 0-32 14.3-32 32s14.3 32 32 32h96c17.7 0 32-14.3 32-32V352z"
+                            />
+                        </svg>
                     </button>
                 </div>
 
@@ -231,7 +247,7 @@ export class FlowchartWidget extends LitElementWw {
                     )}
                 </div>
 
-                <div class="task-menu hidden">
+                <div class="task-menu hidden" style=${this.fullscreen ? 'top:10px;right:10px;' : ''}>
                     <button class="close-button" @click="${() => this.toggleMenu('task')}">×</button>
                     <div class="task-menu-wrapper">
                         ${this.taskList.length === 0
@@ -243,7 +259,7 @@ export class FlowchartWidget extends LitElementWw {
                     </div>
                 </div>
 
-                <div class="help-menu hidden">
+                <div class="help-menu hidden" style=${this.fullscreen ? 'top:10px;right:10px;' : ''}>
                     <button class="close-button" @click="${() => this.toggleMenu('help')}">×</button>
                     ${this.helpList.length === 0
                         ? html`<p class="no-help-message">Keine Hinweise!</p>`
@@ -296,7 +312,7 @@ export class FlowchartWidget extends LitElementWw {
                 class="y-rezise"
                 @dragend="${this.handleYResizeEnd}"
                 draggable="true"
-                style=${!this.alowStudentEdit ? 'display:none' : ''}
+                style=${!this.alowStudentEdit || this.fullscreen ? 'display:none' : ''}
             ></div>
         `;
     }
@@ -1091,9 +1107,9 @@ export class FlowchartWidget extends LitElementWw {
         console.log('firstUpdated');
         this.canvas = this.shadowRoot?.querySelector('canvas') as HTMLCanvasElement;
         this.canvas.width = this.clientWidth;
-        this.canvas.height = this.height;
+        this.canvas.height = this.currentHeight;
         const workspace = this.shadowRoot.querySelector('.workspace') as HTMLElement;
-        workspace.style.setProperty('--widget-height', `${this.height}px`);
+        workspace.style.setProperty('--widget-height', `${this.currentHeight}px`);
 
         this.ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D;
         this.updateCanvasOffset(); // Offset aktualisieren
@@ -1116,7 +1132,7 @@ export class FlowchartWidget extends LitElementWw {
 
     connectedCallback() {
         super.connectedCallback();
-        window.addEventListener('resize', this.updateCanvasSize);
+        // window.addEventListener('resize', this.updateCanvasSize);
         // window.addEventListener('keydown', this.handleKeyDown);
 
         // Konvertiert das Array in einen String und setzt es als Attribut
@@ -1126,8 +1142,8 @@ export class FlowchartWidget extends LitElementWw {
     }
 
     disconnectedCallback() {
-        window.removeEventListener('resize', this.updateCanvasSize);
-        window.removeEventListener('keydown', this.handleKeyDown);
+        // window.removeEventListener('resize', this.updateCanvasSize);
+        // window.removeEventListener('keydown', this.handleKeyDown);
 
         this.removeEventListener('startSelectSequence', this.selectSequence.bind(this));
         super.disconnectedCallback();
@@ -1177,7 +1193,11 @@ export class FlowchartWidget extends LitElementWw {
     // Passt die Canvasgröße an die aktuelle Größe des Fenster an
     updateCanvasSize = () => {
         this.canvas.width = this.clientWidth;
-        this.canvas.height = this.height;
+        this.canvas.height = this.currentHeight;
+
+        const workspace = this.shadowRoot.querySelector('.workspace') as HTMLElement;
+        workspace.style.setProperty('--widget-height', `${this.currentHeight}px`);
+
         this.redrawCanvas();
     };
 
@@ -1248,8 +1268,11 @@ export class FlowchartWidget extends LitElementWw {
 
     // Gibe die aktuellen Koordinaten der Maus zurück, welche den Offset des Canvas und des scrollen berücksichtigt.
     private getMouseCoordinates(event: MouseEvent) {
-        const offsetX = this.canvas.getBoundingClientRect().left;
+        let offsetX = this.canvas.getBoundingClientRect().left;
         const offsetY = this.canvas.getBoundingClientRect().top;
+        if (this.fullscreen) {
+            offsetX -= window.frameElement ? window.frameElement.getBoundingClientRect().left : 0;
+        }
         const scaleFactor = this.zoomLevel / 100; // Der Skalierungsfaktor aufgrund von Zoom
         const x = (event.clientX - offsetX) / scaleFactor;
         const y = (event.clientY - offsetY) / scaleFactor;
@@ -1261,7 +1284,7 @@ export class FlowchartWidget extends LitElementWw {
     }
 
     private handleWheel(event: WheelEvent) {
-        if (this.isGrabbing) {
+        if (this.isGrabbing && this.matches(':focus-within')) {
             event.preventDefault();
             const zoomText = this.shadowRoot?.querySelector('#zoom-percentage') as HTMLSpanElement;
 
@@ -1296,12 +1319,44 @@ export class FlowchartWidget extends LitElementWw {
     };
 
     private handleYResizeEnd(event: MouseEvent) {
-        this.height = Math.max(400, this.height + event.offsetY);
+        this.currentHeight = Math.max(400, this.currentHeight + event.offsetY);
+        this.height = this.currentHeight;
         //update css var
-        const workspace = this.shadowRoot.querySelector('.workspace') as HTMLElement;
-        workspace.style.setProperty('--widget-height', `${this.height}px`);
+
         this.updateCanvasSize();
         this.redrawCanvas();
+    }
+
+    private toggleFullscreen() {
+        if (document.fullscreenElement) {
+            document.exitFullscreen();
+        } else {
+            const height = window.screen.height;
+            const width = window.screen.width;
+
+            this.canvas.width = width;
+            this.canvas.height = height;
+
+            const workspace = this.shadowRoot.querySelector('.workspace') as HTMLElement;
+            workspace.style.setProperty('--widget-height', `${height}px`);
+
+            this.redrawCanvas();
+
+            this.requestFullscreen({ navigationUI: 'hide' });
+            this.shadowRoot.querySelector('.flowchart-menu').classList.add('fullscreen');
+
+            this.currentHeight = height;
+            this.fullscreen = true;
+
+            document.addEventListener('fullscreenchange', () => {
+                if (!document.fullscreenElement) {
+                    this.shadowRoot.querySelector('.flowchart-menu').classList.remove('fullscreen');
+                    this.fullscreen = false;
+                    this.currentHeight = this.height;
+                    this.updateCanvasSize();
+                }
+            });
+        }
     }
 
     // ------------------------ Prompt Funktionen ------------------------
