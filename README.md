@@ -11,6 +11,10 @@ selbstständig PAPs erstellen.
 
 ---
 
+### Version 0.7.3
+
+-   [x] Bugfix: @webwriter/lit had no version in package.json
+
 ### Version 0.7.2
 
 -   [x] Feature: Fullscreen-Modus

@@ -136,10 +136,13 @@ export class FlowchartWidget extends LitElementWw {
     private selectionRectangle?: { x: number; y: number; width: number; height: number };
     private checkOffset = true;
 
-    static styles = papWidgetStyles;
+    static style = papWidgetStyles;
 
     render() {
         return html`
+            <style>
+                ${papWidgetStyles}
+            </style>
             ${this.editable ? this.renderToolMenu() : ''}
             <div class="workspace" @scroll="${this.handleScroll}">
                 <canvas
