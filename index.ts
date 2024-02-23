@@ -54,7 +54,7 @@ import { ConfirmPrompt } from './src/components/confirm-prompt';
 import './src/components/confirm-prompt';
 import { PropertyValueMap } from '@lit/reactive-element';
 
-@customElement('ww-flowchart')
+@customElement('webwriter-flowchart')
 export class FlowchartWidget extends LitElementWw {
     @property({ type: Array, reflect: true, attribute: true }) graphNodes: GraphNode[] = [];
     @property({ type: Object }) selectedNode?: GraphNode;
@@ -138,12 +138,17 @@ export class FlowchartWidget extends LitElementWw {
 
     static style = papWidgetStyles;
 
+    public isEditable(): boolean {
+        return this.contentEditable === 'true' || this.contentEditable === '';
+    }
+
     render() {
+        console.log('render', this);
         return html`
             <style>
                 ${papWidgetStyles}
             </style>
-            ${this.editable ? this.renderToolMenu() : ''}
+            ${this.isEditable() ? this.renderToolMenu() : ''}
             <div class="workspace" @scroll="${this.handleScroll}">
                 <canvas
                     width="100%"
@@ -178,7 +183,7 @@ export class FlowchartWidget extends LitElementWw {
                         @mouseenter="${(e) => createTooltip(e, 'Aufgabenmenü')}"
                         @mouseleave="${removeTooltip}"
                         @click="${() => this.toggleMenu('task')}"
-                        style=${!this.editable && this.taskList.length == 0 ? 'display:none' : ''}
+                        style=${!this.isEditable() && this.taskList?.length == 0 ? 'display:none' : ''}
                     >
                         ${drawButton('task', 'tool')}
                     </button>
@@ -186,7 +191,7 @@ export class FlowchartWidget extends LitElementWw {
                         @mouseenter="${(e) => createTooltip(e, 'Hinweise')}"
                         @mouseleave="${removeTooltip}"
                         @click="${() => this.toggleMenu('help')}"
-                        style=${!this.editable && this.helpList.length == 0 ? 'display:none' : ''}
+                        style=${!this.isEditable() && this.helpList?.length == 0 ? 'display:none' : ''}
                     >
                         ${drawButton('help', 'tool')}
                     </button>
@@ -241,7 +246,7 @@ export class FlowchartWidget extends LitElementWw {
 
                 <div class="solution-menu hidden">
                     <div class="solution-titel">Pfad überprüfen</div>
-                    ${this.taskList.map((task) =>
+                    ${this.taskList?.map((task) =>
                         task.sequence
                             ? html`<button class="solution-button" @click="${() => this.checkSolution(task)}">
                                   ${task.titel}
@@ -253,7 +258,7 @@ export class FlowchartWidget extends LitElementWw {
                 <div class="task-menu hidden" style=${this.fullscreen ? 'top:10px;right:10px;' : ''}>
                     <button class="close-button" @click="${() => this.toggleMenu('task')}">×</button>
                     <div class="task-menu-wrapper">
-                        ${this.taskList.length === 0
+                        ${this.taskList?.length === 0
                             ? html`<p class="no-tasks-message">Keine Aufgaben!</p>`
                             : renderTasks.bind(this)(this.taskList)}
                         <button class="add-task-button editMode" @click="${this.addTask}">
@@ -264,7 +269,7 @@ export class FlowchartWidget extends LitElementWw {
 
                 <div class="help-menu hidden" style=${this.fullscreen ? 'top:10px;right:10px;' : ''}>
                     <button class="close-button" @click="${() => this.toggleMenu('help')}">×</button>
-                    ${this.helpList.length === 0
+                    ${this.helpList?.length === 0
                         ? html`<p class="no-help-message">Keine Hinweise!</p>`
                         : renderHelpList.bind(this)(this.helpList)}
                     <button class="add-help-button editMode" @click="${this.addHelp}">
@@ -321,7 +326,7 @@ export class FlowchartWidget extends LitElementWw {
     }
 
     private renderToolMenu() {
-        return html`<aside class="tool-menu" part="action">
+        return html`<aside class="tool-menu" part="options">
         <h2>Einstellungen</h2>
 
         <div class="setting-menu-container">
@@ -655,7 +660,7 @@ export class FlowchartWidget extends LitElementWw {
 
         // Prüfen, ob es eine Aufgabe mit einer Sequence gibt
         const taskWithSequenceExists = this.taskList.some((task) => task.sequence?.length);
-        if (this.isSelectingSequence && taskWithSequenceExists && !this.editable) {
+        if (this.isSelectingSequence && taskWithSequenceExists && !this.isEditable()) {
             solutionMenuElement.classList.remove('hidden');
         } else {
             solutionMenuElement.classList.add('hidden');
@@ -723,7 +728,7 @@ export class FlowchartWidget extends LitElementWw {
         });
 
         // Zeichne alle Knoten
-        this.graphNodes.forEach((element) => {
+        this.graphNodes?.forEach((element) => {
             drawGraphNode(this.ctx, element, this.graphSettings, this.selectedNodes, this.selectedSequence);
         });
 
@@ -1108,6 +1113,9 @@ export class FlowchartWidget extends LitElementWw {
 
     firstUpdated() {
         console.log('firstUpdated');
+
+        console.log('this', this.taskList.length);
+
         this.canvas = this.shadowRoot?.querySelector('canvas') as HTMLCanvasElement;
         this.canvas.width = this.clientWidth;
         this.canvas.height = this.currentHeight;
@@ -1153,7 +1161,7 @@ export class FlowchartWidget extends LitElementWw {
     }
 
     updated(changedProperties: Map<string, any>) {
-        if (changedProperties.has('editable') && this.editable) {
+        if (changedProperties.has('contentEditable') && this.isEditable()) {
             autoDeleteEmptyItems(
                 this,
                 this.taskList,
@@ -1171,7 +1179,7 @@ export class FlowchartWidget extends LitElementWw {
                 '.help-content'
             );
         }
-        updateDisabledState(this, this.editable);
+        updateDisabledState(this, this.isEditable());
     }
 
     // Wird aufgerufen, wenn ein Attribut des Elements geändert wird

@@ -1,25 +1,28 @@
 {
-    "name": "@webwriter/ww-flowchart",
-    "version": "0.7.3",
-    "description": "Create programme flowcharts, interactive tasks or translate flowcharts into natural language or pseudo code!",
-    "keywords": [
-        "webwriter-widget"
-    ],
-    "license": "MIT",
-    "author": "Kevin Lu",
-    "scripts": {
-        "dev": "vite --open",
-        "build": "vite build"
-    },
-    "dependencies": {
-        "@webwriter/lit": "0.7.1",
-        "axios": ">=1.4.0 <2.0.0-0",
-        "dotenv": ">=16.1.4 <17.0.0-0",
-        "lit": ">=2.4.0 <3.0.0-0",
-        "uuid": ">=9.0.0 <10.0.0-0"
-    },
-    "devDependencies": {
-        "typescript": ">=4.8.4 <5.0.0-0",
-        "vite": ">=3.1.6 <4.0.0-0"
-    }
+  "name": "@webwriter/flowchart",
+  "version": "1.0.0",
+  "description": "Create programme flowcharts, interactive tasks or translate flowcharts into natural language or pseudo code!",
+  "keywords": [
+    "webwriter-widget"
+  ],
+  "license": "MIT",
+  "author": "Kevin Lu",
+  "scripts": {
+    "dev": "vite --open",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@webwriter/lit": "^1.5.2",
+    "axios": ">=1.4.0 <2.0.0-0",
+    "dotenv": ">=16.1.4 <17.0.0-0",
+    "lit": ">=2.4.0 <3.0.0-0",
+    "uuid": ">=9.0.0 <10.0.0-0"
+  },
+  "devDependencies": {
+    "typescript": ">=4.8.4 <5.0.0-0",
+    "vite": ">=3.1.6 <4.0.0-0"
+  },
+  "exports": {
+    "./widgets/webwriter-flowchart": "./index.ts"
+  }
 }

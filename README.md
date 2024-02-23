@@ -1,8 +1,8 @@
-# ww-flowchart Widget
+# webwriter-flowchart Widget
 
 ---
 
-Willkommen bei ww-flowchart! Diese Anwendung wurde speziell für Lehrkräfte entwickelt
+Willkommen bei webwriter-flowchart! Diese Anwendung wurde speziell für Lehrkräfte entwickelt
 und bietet die Möglichkeit, interaktive Aufgaben rund um das Thema Programmablaufpläne
 (PAPs) zu erstellen. Schüler:innen können diese Arbeitsaufträge bearbeiten sowie
 selbstständig PAPs erstellen.

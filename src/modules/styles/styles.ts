@@ -31,7 +31,7 @@ export const papWidgetStyles = css`
         --widget-height: 400px;
     }
 
-    :host(:not([editable])) .editMode {
+    :host(:not([contentEditable])) .editMode {
         display: none;
     }
 

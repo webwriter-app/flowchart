@@ -283,7 +283,7 @@ ${task.content}</textarea
                     </button>
                     <button class="delete-task-button editMode" @click=${deleteTask}>Löschen</button>
                 </div>
-                <div class="task-button-container" style=${this.editable || !task.sequence ? 'display:none' : ''}>
+                <div class="task-button-container" style=${this.isEditable() || !task.sequence ? 'display:none' : ''}>
                     <button id="select-button" @click="${this.selectSequence}" class="select-sequence-button">
                         ${drawButton('select', 'tool')} Pfad auswählen
                     </button>
@@ -300,5 +300,5 @@ ${task.content}</textarea
         `;
     };
 
-    return html` <div class="task-container">${taskList.map((task, index) => renderTask(task, index))}</div> `;
+    return html` <div class="task-container">${taskList?.map((task, index) => renderTask(task, index))}</div> `;
 }

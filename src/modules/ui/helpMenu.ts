@@ -115,5 +115,5 @@ ${help.content}</textarea
         </div>`;
     };
 
-    return html`<div class="help-container">${helpList.map((help, i) => renderHelp(help, i))}</div>`;
+    return html`<div class="help-container">${helpList?.map((help, i) => renderHelp(help, i))}</div>`;
 }

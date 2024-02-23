@@ -7,7 +7,7 @@
   "resolved" "https://registry.npmjs.org/@lit-labs/ssr-dom-shim/-/ssr-dom-shim-1.1.2.tgz"
   "version" "1.1.2"
 
-"@lit/reactive-element@^1.0.0 || ^2.0.0", "@lit/reactive-element@^1.3.0", "@lit/reactive-element@^1.6.0":
+"@lit/reactive-element@^1.3.0", "@lit/reactive-element@^1.6.0":
   "integrity" "sha512-va15kYZr7KZNNPZdxONGQzpUr+4sxVu7V/VG7a8mRfPPXUyhEYj5RzXCQmGrlP3tAh0L3HHm5AjBMFYRqlM9SA=="
   "resolved" "https://registry.npmjs.org/@lit/reactive-element/-/reactive-element-1.6.1.tgz"
   "version" "1.6.1"
@@ -26,32 +26,26 @@
   "resolved" "https://registry.npmjs.org/@open-wc/dedupe-mixin/-/dedupe-mixin-1.4.0.tgz"
   "version" "1.4.0"
 
-"@open-wc/scoped-elements@^2.2.0":
-  "integrity" "sha512-12X4F4QGPWcvPbxAiJ4v8wQFCOu+laZHRGfTrkoj+3JzACCtuxHG49YbuqVzQ135QPKCuhP9wA0kpGGEfUegyg=="
-  "resolved" "https://registry.npmjs.org/@open-wc/scoped-elements/-/scoped-elements-2.2.4.tgz"
-  "version" "2.2.4"
+"@open-wc/scoped-elements@^3.0.3":
+  "integrity" "sha512-q4U+hFTQQRyorJILOpmBm6PY2hgjCnQe214nXJNjbJMQ9EvT55oyZ7C8BY5aFYJkytUyBoawlMpZt4F2xjdzHw=="
+  "resolved" "https://registry.npmjs.org/@open-wc/scoped-elements/-/scoped-elements-3.0.5.tgz"
+  "version" "3.0.5"
   dependencies:
-    "@lit/reactive-element" "^1.0.0 || ^2.0.0"
     "@open-wc/dedupe-mixin" "^1.4.0"
+    "lit" "^3.0.0"
 
 "@types/trusted-types@^2.0.2":
   "integrity" "sha512-NfQ4gyz38SL8sDNrSixxU2Os1a5xcdFxipAFxYEuLUlvU2uDwS4NUpsImcf1//SlWItCVMMLiylsxbmNMToV/g=="
   "resolved" "https://registry.npmjs.org/@types/trusted-types/-/trusted-types-2.0.3.tgz"
   "version" "2.0.3"
 
-"@webwriter/lit@0.7.1":
-  "integrity" "sha512-maP+FTPNPL1MlmSuFzHdzSt9UFg4OwpEMn++hlyFpUwv/Ct5Dh7YTyI+mdysZGpduegmi34oigUC45i9hhaFug=="
-  "resolved" "https://registry.npmjs.org/@webwriter/lit/-/lit-0.7.1.tgz"
-  "version" "0.7.1"
+"@webwriter/lit@^1.5.2":
+  "integrity" "sha512-vIAMHHixOWVTXy69ITYq9u9KfBKh5s366OGhX0+eRg/QTtuTClYaOtK/fA8EANQhfDmNfsf6raB/5Gr549E4NA=="
+  "resolved" "https://registry.npmjs.org/@webwriter/lit/-/lit-1.5.2.tgz"
+  "version" "1.5.2"
   dependencies:
-    "@open-wc/scoped-elements" "^2.2.0"
-    "@webwriter/model" "^0.4.1"
-    "lit" "^3.0.0"
-
-"@webwriter/model@^0.4.1":
-  "integrity" "sha512-/gByqRyQla4Bvec8EevMUzqKfZ4CxOS5iGHqd/h2eATdYJoKq/2EPU937ABAhLp5oF43eU1d0hjwGBooBx1CIw=="
-  "resolved" "https://registry.npmjs.org/@webwriter/model/-/model-0.4.1.tgz"
-  "version" "0.4.1"
+    "@open-wc/scoped-elements" "^3.0.3"
+    "lit" "^3.1.1"
 
 "asynckit@^0.4.0":
   "integrity" "sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q=="
@@ -182,6 +176,15 @@
     "@types/trusted-types" "^2.0.2"
 
 "lit@^3.0.0":
+  "integrity" "sha512-hF1y4K58+Gqrz+aAPS0DNBwPqPrg6P04DuWK52eMkt/SM9Qe9keWLcFgRcEKOLuDlRZlDsDbNL37Vr7ew1VCuw=="
+  "resolved" "https://registry.npmjs.org/lit/-/lit-3.1.1.tgz"
+  "version" "3.1.1"
+  dependencies:
+    "@lit/reactive-element" "^2.0.0"
+    "lit-element" "^4.0.0"
+    "lit-html" "^3.1.0"
+
+"lit@^3.1.1":
   "integrity" "sha512-hF1y4K58+Gqrz+aAPS0DNBwPqPrg6P04DuWK52eMkt/SM9Qe9keWLcFgRcEKOLuDlRZlDsDbNL37Vr7ew1VCuw=="
   "resolved" "https://registry.npmjs.org/lit/-/lit-3.1.1.tgz"
   "version" "3.1.1"
