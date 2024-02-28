@@ -1,5 +1,5 @@
 import { LitElementWw } from '@webwriter/lit';
-import { html, css } from 'lit';
+import { html, css, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -87,6 +87,8 @@ export class FlowchartWidget extends LitElementWw {
     @property({ type: String, reflect: true, attribute: true }) theme = 'standard';
 
     @property({ type: Boolean }) fullscreen = false;
+
+    static shadowRootOptions = { ...LitElement.shadowRootOptions, delegatesFocus: true };
 
     private canvas: HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D;

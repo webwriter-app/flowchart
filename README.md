@@ -11,6 +11,10 @@ selbstständig PAPs erstellen.
 
 ---
 
+### Version 1.0.1
+
+-   [x] Bugfix: Fehler beim Focus deligieren
+
 ### Version 0.7.3
 
 -   [x] Bugfix: @webwriter/lit had no version in package.json
