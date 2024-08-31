@@ -1,6 +1,6 @@
 {
   "name": "@webwriter/flowchart",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Create programme flowcharts, interactive tasks or translate flowcharts into natural language or pseudo code!",
   "keywords": [
     "webwriter-widget"
@@ -12,10 +12,10 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@webwriter/lit": "^1.5.2",
+    "@webwriter/lit": "^2.0.0",
     "axios": ">=1.4.0 <2.0.0-0",
     "dotenv": ">=16.1.4 <17.0.0-0",
-    "lit": ">=2.4.0 <3.0.0-0",
+    "lit": ">=3.0.0 <4.0.0-0",
     "uuid": ">=9.0.0 <10.0.0-0"
   },
   "devDependencies": {

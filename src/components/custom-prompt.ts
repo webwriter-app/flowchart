@@ -3,9 +3,9 @@ import { property, customElement } from 'lit/decorators.js';
 
 @customElement('custom-prompt')
 export class CustomPrompt extends LitElement {
-   @property({ type: String }) label: string;
-   @property({ type: Function }) onSubmit: (value: string) => void;
-   @property({ type: Function }) onCancel: () => void;
+   @property({ type: String }) accessor label: string;
+   @property({ type: Function }) accessor onSubmit: (value: string) => void;
+   @property({ type: Function }) accessor onCancel: () => void;
 
    static styles = css`
       :host {

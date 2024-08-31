@@ -56,37 +56,37 @@ import { PropertyValueMap } from '@lit/reactive-element';
 
 @customElement('webwriter-flowchart')
 export class FlowchartWidget extends LitElementWw {
-    @property({ type: Array, reflect: true, attribute: true }) graphNodes: GraphNode[] = [];
-    @property({ type: Object }) selectedNode?: GraphNode;
-    @property({ type: Array }) arrows: Arrow[] = [];
-    @property({ type: Object }) selectedArrow?: Arrow;
+    @property({ type: Array, reflect: true, attribute: true }) accessor graphNodes: GraphNode[] = [];
+    @property({ type: Object }) accessor selectedNode: GraphNode;
+    @property({ type: Array }) accessor arrows: Arrow[] = [];
+    @property({ type: Object }) accessor selectedArrow?: Arrow;
     getGraphNodes = () => this.graphNodes;
     getArrows = () => this.arrows;
 
-    @property({ type: Array, reflect: true, attribute: true }) taskList: ItemList[] = [];
-    @property({ type: Array, reflect: true, attribute: true }) helpList: ItemList[] = [];
+    @property({ type: Array, reflect: true, attribute: true }) accessor taskList: ItemList[] = [];
+    @property({ type: Array, reflect: true, attribute: true }) accessor helpList: ItemList[] = [];
 
-    @property({ type: Number, reflect: true, attribute: true }) height: number = 400;
-    @property({ type: Number }) currentHeight: number = this.height;
+    @property({ type: Number, reflect: true, attribute: true }) accessor height: number = 400;
+    @property({ type: Number }) accessor currentHeight: number = this.height;
 
-    @property({ type: Array }) presetList: { name: string; graphNodes: GraphNode[] }[] = flowchartPresets;
+    @property({ type: Array }) accessor presetList: { name: string; graphNodes: GraphNode[] }[] = flowchartPresets;
 
-    @property({ type: Object }) graphSettings = { font: 'Courier New', fontSize: 16, theme: 'standard' };
-    @property({ type: Number, reflect: true, attribute: true }) zoomLevel: number = 100; // in Prozent
+    @property({ type: Object }) accessor graphSettings = { font: 'Courier New', fontSize: 16, theme: 'standard' };
+    @property({ type: Number, reflect: true, attribute: true }) accessor zoomLevel: number = 100; // in Prozent
     private gridSize: number = 50;
     private dotSize: number = 1.5;
 
-    @property({ type: Number, reflect: true, attribute: true }) canvasOffsetX: number = 0;
-    @property({ type: Number, reflect: true, attribute: true }) canvasOffsetY: number = 0;
+    @property({ type: Number, reflect: true, attribute: true }) accessor canvasOffsetX: number = 0;
+    @property({ type: Number, reflect: true, attribute: true }) accessor canvasOffsetY: number = 0;
 
-    @property({ type: Boolean, reflect: true, attribute: true }) alowStudentEdit: boolean = false;
-    @property({ type: Boolean, reflect: true, attribute: true }) alowStudentPan: boolean = false;
+    @property({ type: Boolean, reflect: true, attribute: true }) accessor allowStudentEdit: boolean = false;
+    @property({ type: Boolean, reflect: true, attribute: true }) accessor alowStudentPan: boolean = false;
 
-    @property({ type: String, reflect: true, attribute: true }) font = 'Courier New';
-    @property({ type: Number, reflect: true, attribute: true }) fontSize = 16;
-    @property({ type: String, reflect: true, attribute: true }) theme = 'standard';
+    @property({ type: String, reflect: true, attribute: true }) accessor font = 'Courier New';
+    @property({ type: Number, reflect: true, attribute: true }) accessor fontSize = 16;
+    @property({ type: String, reflect: true, attribute: true }) accessor theme = 'standard';
 
-    @property({ type: Boolean }) fullscreen = false;
+    @property({ type: Boolean }) accessor fullscreen = false;
 
     static shadowRootOptions = { ...LitElement.shadowRootOptions, delegatesFocus: true };
 
@@ -131,10 +131,10 @@ export class FlowchartWidget extends LitElementWw {
     private promptType: 'node' | 'arrow' | null;
     private promptIndex: number | null;
 
-    @property({ type: String }) solutionMessage: string = '';
-    @property({ type: Boolean }) showSolution: boolean = false;
+    @property({ type: String }) accessor solutionMessage: string = '';
+    @property({ type: Boolean }) accessor showSolution: boolean = false;
 
-    @property({ type: Array }) selectedNodes: GraphNode[] = [];
+    @property({ type: Array }) accessor selectedNodes: GraphNode[] = [];
     private selectionRectangle?: { x: number; y: number; width: number; height: number };
     private checkOffset = true;
 
@@ -201,7 +201,7 @@ export class FlowchartWidget extends LitElementWw {
                         @mouseenter="${(e) => createTooltip(e, 'Lösche alles')}"
                         @mouseleave="${removeTooltip}"
                         @click="${this.showConfirmPrompt}"
-                        style=${!this.alowStudentEdit ? 'display:none' : ''}
+                        style=${!this.allowStudentEdit ? 'display:none' : ''}
                     >
                         ${drawButton('delete', 'tool')}
                     </button>
@@ -220,7 +220,7 @@ export class FlowchartWidget extends LitElementWw {
                     </button>
                 </div>
 
-                <div class="flowchart-menu" style=${!this.alowStudentEdit ? 'display:none' : ''}>
+                <div class="flowchart-menu" style=${!this.allowStudentEdit ? 'display:none' : ''}>
                     <button class="close-button" @click="${() => this.toggleMenu('flow')}">×</button>
                     <button @click="${() => this.addGraphNode('start', 'Start')}">
                         ${drawButton('start', 'flow')}
@@ -322,7 +322,7 @@ export class FlowchartWidget extends LitElementWw {
                 class="y-rezise"
                 @dragend="${this.handleYResizeEnd}"
                 draggable="true"
-                style=${!this.alowStudentEdit || this.fullscreen ? 'display:none' : ''}
+                style=${!this.allowStudentEdit || this.fullscreen ? 'display:none' : ''}
             ></div>
         `;
     }
@@ -403,9 +403,9 @@ export class FlowchartWidget extends LitElementWw {
                     type="checkbox"
                     id="editable-checkbox"
                     @change="${(e) => {
-                        this.alowStudentEdit = e.target.checked;
+                        this.allowStudentEdit = e.target.checked;
                     }}"
-                    ?checked="${this.alowStudentEdit}"
+                    ?checked="${this.allowStudentEdit}"
                 />
             </div>
             <div class="setting-item">
@@ -612,7 +612,7 @@ export class FlowchartWidget extends LitElementWw {
 
     // Zeige das Kontextmenü an, wenn ein Element angeklickt wurde
     private showContextMenu(event: MouseEvent) {
-        if (!this.alowStudentEdit) {
+        if (!this.allowStudentEdit) {
             return;
         }
 
@@ -819,7 +819,7 @@ export class FlowchartWidget extends LitElementWw {
 
         // Handhabung wenn Knoten gezogen wird
         if (!this.isGrabbing) {
-            if (!this.alowStudentEdit) {
+            if (!this.allowStudentEdit) {
                 return;
             }
 
@@ -872,7 +872,7 @@ export class FlowchartWidget extends LitElementWw {
         }
 
         if (!nodeUnderCursor && !this.isGrabbing && !this.selectedNode) {
-            if (!this.alowStudentEdit) {
+            if (!this.allowStudentEdit) {
                 return;
             }
 
@@ -1024,7 +1024,7 @@ export class FlowchartWidget extends LitElementWw {
             this.redrawCanvas();
         } else {
             if (!this.isGrabbing) {
-                if (!this.alowStudentEdit) {
+                if (!this.allowStudentEdit) {
                     return;
                 }
 
@@ -1061,7 +1061,7 @@ export class FlowchartWidget extends LitElementWw {
     }
 
     private handleDoubleClick(event: MouseEvent) {
-        if (!this.alowStudentEdit) {
+        if (!this.allowStudentEdit) {
             return;
         }
 

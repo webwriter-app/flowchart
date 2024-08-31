@@ -3,9 +3,9 @@ import { property, customElement } from 'lit/decorators.js';
 
 @customElement('confirm-prompt')
 export class ConfirmPrompt extends LitElement {
-   @property({ type: String }) label: string;
-   @property({ type: Function }) onConfirm: () => void;
-   @property({ type: Function }) onCancel: () => void;
+   @property({ type: String }) accessor label: string;
+   @property({ type: Function }) accessor onConfirm: () => void;
+   @property({ type: Function }) accessor onCancel: () => void;
 
    static styles = css`
    :host {
