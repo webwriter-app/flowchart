@@ -1,7 +1,7 @@
 {
   "name": "@webwriter/flowchart",
   "version": "1.0.2",
-  "description": "Create programme flowcharts, interactive tasks or translate flowcharts into natural language or pseudo code!",
+  "description": "Create programming flowcharts with interactive tasks. Translate flowcharts into natural language or pseudo code.",
   "keywords": [
     "webwriter-widget"
   ],
