@@ -23,6 +23,7 @@
     "vite": ">=3.1.6 <4.0.0-0"
   },
   "exports": {
-    "./widgets/webwriter-flowchart": "./index.ts"
+    "./widgets/webwriter-flowchart": "./index.ts",
+    "./*": {"source": "./*", "default": null}
   }
 }
