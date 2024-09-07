@@ -1,6 +1,6 @@
 {
   "name": "@webwriter/flowchart",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "Create programming flowcharts with interactive tasks. Translate flowcharts into natural language or pseudo code.",
   "keywords": [
     "webwriter-widget"
@@ -8,8 +8,7 @@
   "license": "MIT",
   "author": "Kevin Lu",
   "scripts": {
-    "dev": "vite --open",
-    "build": "vite build"
+    "prepublishOnly": "npx @webwriter/build"
   },
   "dependencies": {
     "@webwriter/lit": "^2.0.0",
@@ -23,7 +22,10 @@
     "vite": ">=3.1.6 <4.0.0-0"
   },
   "exports": {
-    "./widgets/webwriter-flowchart": "./index.ts",
-    "./*": {"source": "./*", "default": null}
+    "./widgets/webwriter-flowchart.*": {
+      "source": "./index.ts",
+      "default": "./dist/widgets/webwriter-flowchart.*"
+    },
+    "./package.json": "./package.json"
   }
 }
