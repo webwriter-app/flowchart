@@ -43,9 +43,6 @@ import { isArrowClicked } from './src/modules/helper/arrowHelper';
 import { getAnchors, highlightAnchor } from './src/modules/helper/anchorHelper';
 import { createArrowsFromGraphNodes, updatePresetIds } from './src/modules/helper/presetHelper';
 
-import { flowchartPresets } from './src/modules/presets/flowchartPresets';
-import { helpPresets } from './src/modules/presets/helpPresets';
-
 import { papWidgetStyles } from './src/modules/styles/styles';
 
 import { CustomPrompt } from './src/components/custom-prompt';
@@ -59,7 +56,7 @@ export class FlowchartWidget extends LitElementWw {
     @property({ type: Array, reflect: true, attribute: true }) accessor graphNodes: GraphNode[] = [];
     @property({ type: Object }) accessor selectedNode: GraphNode;
     @property({ type: Array }) accessor arrows: Arrow[] = [];
-    @property({ type: Object }) accessor selectedArrow?: Arrow;
+    @property({ type: Object }) accessor selectedArrow: Arrow;
     getGraphNodes = () => this.graphNodes;
     getArrows = () => this.arrows;
 
@@ -68,8 +65,6 @@ export class FlowchartWidget extends LitElementWw {
 
     @property({ type: Number, reflect: true, attribute: true }) accessor height: number = 400;
     @property({ type: Number }) accessor currentHeight: number = this.height;
-
-    @property({ type: Array }) accessor presetList: { name: string; graphNodes: GraphNode[] }[] = flowchartPresets;
 
     @property({ type: Object }) accessor graphSettings = { font: 'Courier New', fontSize: 16, theme: 'standard' };
     @property({ type: Number, reflect: true, attribute: true }) accessor zoomLevel: number = 100; // in Prozent
@@ -426,17 +421,6 @@ export class FlowchartWidget extends LitElementWw {
                     ?checked="${this.alowStudentPan}"
                 />
         </div>
-        <h2>Beispiele</h2>
-        <div class="preset-container">
-            <label>Beispiele:</label>
-            <button class="preset-button" @click="${() => this.showPreset('Erklärung')}">Erkärung</button>
-            <button class="preset-button" @click="${() => this.showPreset('Beispiel')}">Beispiel</button>
-            <button class="preset-button" @click="${() => this.showPreset('If/Else')}">If/Else</button>
-            <button class="preset-button" @click="${() => this.showPreset('For-Schleife')}">
-                For-Schleife
-            </button>
-            <button class="preset-button" @click="${() => this.showPreset('Switch')}">Switch</button>
-        </div>
     </aside>`;
     }
 
@@ -666,23 +650,6 @@ export class FlowchartWidget extends LitElementWw {
             solutionMenuElement.classList.remove('hidden');
         } else {
             solutionMenuElement.classList.add('hidden');
-        }
-    }
-
-    private showPreset(presetName: string) {
-        const preset = this.presetList.find((p) => p.name === presetName);
-
-        if (preset) {
-            const updatedPreset = updatePresetIds(preset.graphNodes);
-
-            this.graphNodes = [...this.graphNodes, ...updatedPreset];
-            this.arrows = createArrowsFromGraphNodes(this.arrows, this.graphNodes);
-
-            this.reconnectArrows();
-
-            this.redrawCanvas();
-        } else {
-            console.error(`Preset "${presetName}" nicht gefunden`);
         }
     }
 
