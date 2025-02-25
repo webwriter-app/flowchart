@@ -1,6 +1,6 @@
 {
 	"name": "@webwriter/flowchart",
-	"version": "2.0.2",
+	"version": "2.0.3",
 	"description": "Create programming flowcharts with interactive tasks. Translate flowcharts into natural language or pseudo code.",
 	"keywords": [
 		"webwriter-widget"
@@ -31,6 +31,7 @@
 		"./snippets/If-Else.html": "./snippets/If-Else.html",
 		"./snippets/Switch.html": "./snippets/Switch.html",
 		"./snippets/Kontextbeispiel.html": "./snippets/Kontextbeispiel.html",
-		"./package.json": "./package.json"
+		"./package.json": "./package.json",
+		"./icon": "./icon.svg"
 	}
 }
