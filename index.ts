@@ -176,7 +176,7 @@ export class FlowchartWidget extends LitElementWw {
                     >
                         ${drawButton('grab', 'tool')}
                     </button>
-                    <button
+                    <!-- <button
                         @mouseenter="${(e) => createTooltip(e, 'Aufgabenmenü')}"
                         @mouseleave="${removeTooltip}"
                         @click="${() => this.toggleMenu('task')}"
@@ -199,7 +199,7 @@ export class FlowchartWidget extends LitElementWw {
                         style=${!this.allowStudentEdit ? 'display:none' : ''}
                     >
                         ${drawButton('delete', 'tool')}
-                    </button>
+                    </button> -->
                     <button
                         @mouseenter="${(e) => createTooltip(e, 'Fullscreen')}"
                         @mouseleave="${removeTooltip}"
@@ -600,6 +600,7 @@ export class FlowchartWidget extends LitElementWw {
             return;
         }
 
+        const rect = this.getBoundingClientRect()
         const { x, y } = this.getMouseCoordinates(event);
 
         // Finde den angeklickten Knoten oder Verbindung und speichere sie
@@ -611,8 +612,8 @@ export class FlowchartWidget extends LitElementWw {
             const contextMenu = this.shadowRoot.getElementById('context-menu');
             if (contextMenu) {
                 contextMenu.style.display = 'block';
-                contextMenu.style.left = `${event.clientX}px`;
-                contextMenu.style.top = `${event.clientY}px`;
+                contextMenu.style.left = event.clientX - rect.left +"px";
+                contextMenu.style.top = event.clientY - rect.top +"px";
 
                 if (clickedNode) {
                     this.selectedNode = clickedNode;

@@ -1,9 +1,20 @@
 {
 	"name": "@webwriter/flowchart",
-	"version": "2.0.3",
+	"version": "2.0.4",
 	"description": "Create programming flowcharts with interactive tasks. Translate flowcharts into natural language or pseudo code.",
 	"keywords": [
-		"webwriter-widget"
+		"webwriter-widget",
+		"widget-lang-de",
+		"iscedf2013-99",
+		"isced2011-2",
+		"isced2011-3",
+		"isced2011-4",
+		"isced2011-5",
+		"isced2011-6",
+		"isced2011-7",
+		"flowchart",
+		"progression",
+		"logic"
 	],
 	"license": "MIT",
 	"author": "Kevin Lu",

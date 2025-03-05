@@ -29,6 +29,11 @@ export const papWidgetStyles = css`
         --scaled-grid-dot-size: var(--grid-dot-size);
 
         --widget-height: 400px;
+
+        border-width: 2px;
+        border-style: solid;
+        border-radius: 5px;
+        border-color: #6a6a6a;
     }
 
     :host(:not([contentEditable])) .editMode {
@@ -216,6 +221,7 @@ export const papWidgetStyles = css`
         padding: 5px;
         transition: var(--hover-transition);
         cursor: pointer;
+        margin:5px
     }
 
     .flowchart-menu button:hover,
