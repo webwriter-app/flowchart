@@ -1,48 +1,55 @@
 {
-	"name": "@webwriter/flowchart",
-	"version": "2.0.4",
-	"description": "Create programming flowcharts with interactive tasks. Translate flowcharts into natural language or pseudo code.",
-	"keywords": [
-		"webwriter-widget",
-		"widget-lang-de",
-		"iscedf2013-99",
-		"isced2011-2",
-		"isced2011-3",
-		"isced2011-4",
-		"isced2011-5",
-		"isced2011-6",
-		"isced2011-7",
-		"flowchart",
-		"progression",
-		"logic"
-	],
-	"license": "MIT",
-	"author": "Kevin Lu",
-	"scripts": {
-		"prepublishOnly": "npx @webwriter/build"
-	},
-	"dependencies": {
-		"@webwriter/lit": "^2.0.0",
-		"axios": ">=1.4.0 <2.0.0-0",
-		"dotenv": ">=16.1.4 <17.0.0-0",
-		"lit": ">=3.0.0 <4.0.0-0",
-		"uuid": ">=9.0.0 <10.0.0-0"
-	},
-	"devDependencies": {
-		"typescript": ">=4.8.4 <5.0.0-0",
-		"vite": ">=3.1.6 <4.0.0-0"
-	},
-	"exports": {
-		"./widgets/webwriter-flowchart.*": {
-			"source": "./index.ts",
-			"default": "./dist/widgets/webwriter-flowchart.*"
-		},
-		"./snippets/Erklaerung.html": "./snippets/Erklaerung.html",
-		"./snippets/For-Schleife.html": "./snippets/For-Schleife.html",
-		"./snippets/If-Else.html": "./snippets/If-Else.html",
-		"./snippets/Switch.html": "./snippets/Switch.html",
-		"./snippets/Kontextbeispiel.html": "./snippets/Kontextbeispiel.html",
-		"./package.json": "./package.json",
-		"./icon": "./icon.svg"
-	}
+    "name": "@webwriter/flowchart",
+    "version": "2.0.5",
+    "description": "Create programming flowcharts with interactive tasks. Use standardized Elements such as loops and Branchings.",
+    "keywords": [
+        "webwriter-widget",
+        "widget-lang-de",
+        "iscedf2013-99",
+        "isced2011-2",
+        "isced2011-3",
+        "isced2011-4",
+        "isced2011-5",
+        "isced2011-6",
+        "isced2011-7",
+        "flowchart",
+        "progression",
+        "logic"
+    ],
+    "license": "MIT",
+    "author": "Kevin Lu",
+    "scripts": {
+        "prepublishOnly": "npx @webwriter/build"
+    },
+    "dependencies": {
+        "@webwriter/lit": "^2.0.0",
+        "axios": ">=1.4.0 <2.0.0-0",
+        "dotenv": ">=16.1.4 <17.0.0-0",
+        "lit": ">=3.0.0 <4.0.0-0",
+        "uuid": ">=9.0.0 <10.0.0-0"
+    },
+    "devDependencies": {
+        "typescript": ">=4.8.4 <5.0.0-0",
+        "vite": ">=3.1.6 <4.0.0-0"
+    },
+    "exports": {
+        "./widgets/webwriter-flowchart.*": {
+            "source": "./index.ts",
+            "default": "./dist/widgets/webwriter-flowchart.*"
+        },
+        "./snippets/Erklaerung.html": "./snippets/Erklaerung.html",
+        "./snippets/For-Schleife.html": "./snippets/For-Schleife.html",
+        "./snippets/If-Else.html": "./snippets/If-Else.html",
+        "./snippets/Switch.html": "./snippets/Switch.html",
+        "./snippets/Kontextbeispiel.html": "./snippets/Kontextbeispiel.html",
+        "./package.json": "./package.json",
+        "./icon": "./icon.svg"
+    },
+    "editingConfig": {
+        ".":{
+            "description": {
+                "de": "Erstellung von Flussdiagrammen zur Programmierung mit standardisierten Elementen wie Schleifen und Verzweigungen."
+            }
+        }
+    }
 }

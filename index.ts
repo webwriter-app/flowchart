@@ -75,7 +75,7 @@ export class FlowchartWidget extends LitElementWw {
     @property({ type: Number, reflect: true, attribute: true }) accessor canvasOffsetY: number = 0;
 
     @property({ type: Boolean, reflect: true, attribute: true }) accessor allowStudentEdit: boolean = false;
-    @property({ type: Boolean, reflect: true, attribute: true }) accessor alowStudentPan: boolean = false;
+    @property({ type: Boolean, reflect: true, attribute: true }) accessor allowStudentPan: boolean = false;
 
     @property({ type: String, reflect: true, attribute: true }) accessor font = 'Courier New';
     @property({ type: Number, reflect: true, attribute: true }) accessor fontSize = 16;
@@ -172,7 +172,7 @@ export class FlowchartWidget extends LitElementWw {
                         @mouseleave="${removeTooltip}"
                         @click="${this.grabCanvas}"
                         class="${this.isGrabbing ? 'active' : ''}"
-                        style=${!this.alowStudentPan ? 'display:none' : ''}
+                        style=${(!this.allowStudentPan && !this.hasAttribute("contenteditable")) || (this.allowStudentPan && !this.allowStudentEdit && !this.hasAttribute("contenteditable")) ? 'display:none' : ''}
                     >
                         ${drawButton('grab', 'tool')}
                     </button>
@@ -215,7 +215,7 @@ export class FlowchartWidget extends LitElementWw {
                     </button>
                 </div>
 
-                <div class="flowchart-menu" style=${!this.allowStudentEdit ? 'display:none' : ''}>
+                <div class="flowchart-menu" style=${(!this.allowStudentEdit && !this.hasAttribute("contenteditable")) ? 'display:none' : ''}>
                     <button class="close-button" @click="${() => this.toggleMenu('flow')}">×</button>
                     <button @click="${() => this.addGraphNode('start', 'Start')}">
                         ${drawButton('start', 'flow')}
@@ -317,7 +317,7 @@ export class FlowchartWidget extends LitElementWw {
                 class="y-rezise"
                 @dragend="${this.handleYResizeEnd}"
                 draggable="true"
-                style=${!this.allowStudentEdit || this.fullscreen ? 'display:none' : ''}
+                style=${(!this.allowStudentEdit && !this.hasAttribute("contenteditable")) || this.fullscreen ? 'display:none' : ''}
             ></div>
         `;
     }
@@ -409,7 +409,7 @@ export class FlowchartWidget extends LitElementWw {
                     type="checkbox"
                     id="panable-checkbox"
                     @change="${(e) => {
-                        this.alowStudentPan = e.target.checked;
+                        this.allowStudentPan = e.target.checked;
                         if (e.target.checked) {
                             this.canvasOffsetX = 0;
                             this.canvasOffsetY = 0;
@@ -418,7 +418,7 @@ export class FlowchartWidget extends LitElementWw {
                             this.canvasOffsetY = parseFloat(this.canvas.style.getPropertyValue('--offset-y'));
                         }
                     }}"
-                    ?checked="${this.alowStudentPan}"
+                    ?checked="${this.allowStudentPan}"
                 />
         </div>
     </aside>`;
@@ -596,7 +596,7 @@ export class FlowchartWidget extends LitElementWw {
 
     // Zeige das Kontextmenü an, wenn ein Element angeklickt wurde
     private showContextMenu(event: MouseEvent) {
-        if (!this.allowStudentEdit) {
+        if ((!this.allowStudentEdit && !this.hasAttribute("contenteditable"))) {
             return;
         }
 
@@ -787,7 +787,7 @@ export class FlowchartWidget extends LitElementWw {
 
         // Handhabung wenn Knoten gezogen wird
         if (!this.isGrabbing) {
-            if (!this.allowStudentEdit) {
+            if ((!this.allowStudentEdit && !this.hasAttribute("contenteditable"))) {
                 return;
             }
 
@@ -840,7 +840,7 @@ export class FlowchartWidget extends LitElementWw {
         }
 
         if (!nodeUnderCursor && !this.isGrabbing && !this.selectedNode) {
-            if (!this.allowStudentEdit) {
+            if ((!this.allowStudentEdit && !this.hasAttribute("contenteditable"))) {
                 return;
             }
 
@@ -992,7 +992,7 @@ export class FlowchartWidget extends LitElementWw {
             this.redrawCanvas();
         } else {
             if (!this.isGrabbing) {
-                if (!this.allowStudentEdit) {
+                if ((!this.allowStudentEdit && !this.hasAttribute("contenteditable"))) {
                     return;
                 }
 
@@ -1029,7 +1029,7 @@ export class FlowchartWidget extends LitElementWw {
     }
 
     private handleDoubleClick(event: MouseEvent) {
-        if (!this.allowStudentEdit) {
+        if ((!this.allowStudentEdit && !this.hasAttribute("contenteditable"))) {
             return;
         }
 
@@ -1082,9 +1082,9 @@ export class FlowchartWidget extends LitElementWw {
     // ------------------------ Lifecycle ------------------------
 
     firstUpdated() {
-        console.log('firstUpdated');
+        // console.log('firstUpdated');
 
-        console.log('this', this.taskList.length);
+        // console.log('this', this.taskList.length);
 
         this.canvas = this.shadowRoot?.querySelector('canvas') as HTMLCanvasElement;
         this.canvas.width = this.clientWidth;
@@ -1103,6 +1103,10 @@ export class FlowchartWidget extends LitElementWw {
 
         this.applyZoom();
         this.redrawCanvas();
+
+        if(this.allowStudentPan && !this.allowStudentEdit && !this.hasAttribute("contenteditable")){
+            this.isGrabbing = true
+        }
 
         // Help Prelist
         // helpPresets.forEach((item) => {
@@ -1265,7 +1269,7 @@ export class FlowchartWidget extends LitElementWw {
     }
 
     private handleWheel(event: WheelEvent) {
-        if (this.isGrabbing && this.matches(':focus-within')) {
+        if ((this.allowStudentPan || this.hasAttribute("contenteditable")) && this.matches(':focus-within')) {
             event.preventDefault();
             const zoomText = this.shadowRoot?.querySelector('#zoom-percentage') as HTMLSpanElement;
 
@@ -1308,9 +1312,14 @@ export class FlowchartWidget extends LitElementWw {
         this.redrawCanvas();
     }
 
+    // FIXME: Exiting fullscreen in preview
     private toggleFullscreen() {
-        if (document.fullscreenElement) {
-            document.exitFullscreen();
+        if (this.ownerDocument.fullscreenElement) {
+            this.ownerDocument.exitFullscreen();
+            this.shadowRoot.querySelector('.flowchart-menu').classList.remove('fullscreen');
+            this.fullscreen = false;
+            this.currentHeight = this.height;
+            this.updateCanvasSize();
         } else {
             const height = window.screen.height;
             const width = window.screen.width;
@@ -1320,8 +1329,7 @@ export class FlowchartWidget extends LitElementWw {
 
             const workspace = this.shadowRoot.querySelector('.workspace') as HTMLElement;
             workspace.style.setProperty('--widget-height', `${height}px`);
-
-            this.redrawCanvas();
+            
 
             this.requestFullscreen({ navigationUI: 'hide' });
             this.shadowRoot.querySelector('.flowchart-menu').classList.add('fullscreen');
@@ -1329,13 +1337,8 @@ export class FlowchartWidget extends LitElementWw {
             this.currentHeight = height;
             this.fullscreen = true;
 
-            document.addEventListener('fullscreenchange', () => {
-                if (!document.fullscreenElement) {
-                    this.shadowRoot.querySelector('.flowchart-menu').classList.remove('fullscreen');
-                    this.fullscreen = false;
-                    this.currentHeight = this.height;
-                    this.updateCanvasSize();
-                }
+            this.addEventListener('fullscreenchange', () => {
+                this.requestUpdate()
             });
         }
     }
