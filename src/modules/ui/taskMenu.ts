@@ -83,7 +83,7 @@ export function addTask(
     saveSequence.onclick = () => {
         // Speicher die ausgewählte Sequence im TaskList und beende den Auswahlmodus
         const taskIndex = Array.from(taskContainer.children).indexOf(taskWrapper);
-        console.log('Index', taskIndex);
+        // console.log('Index', taskIndex);
         taskList[taskIndex].sequence = getSelectedSequence();
 
         setActiveSequenceButton(null);

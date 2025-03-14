@@ -145,7 +145,7 @@ export class FlowchartWidget extends LitElementWw {
     }
 
     render() {
-        console.log('render', this);
+        // console.log('render', this);
         return html`
             <style>
                 ${papWidgetStyles}
@@ -1216,7 +1216,7 @@ export class FlowchartWidget extends LitElementWw {
             this.selectedNodes.forEach((node) => {
                 // Entferne ausgewählten Knoten
                 this.graphNodes = this.graphNodes.filter((n) => n !== node);
-                console.log('nach dem löschen', this.graphNodes);
+                // console.log('nach dem löschen', this.graphNodes);
                 // Entferne die Verbindungsinformationen für alle betroffenen Knoten
                 this.arrows.forEach((arrow) => {
                     if (arrow.from === node || arrow.to === node) {
@@ -1352,7 +1352,7 @@ export class FlowchartWidget extends LitElementWw {
 
     private showCustomPrompt(type: 'node' | 'arrow', index: number) {
         const promptElement = this.shadowRoot.querySelector('custom-prompt') as CustomPrompt;
-        console.log(promptElement)
+        // console.log(promptElement)
         let currentText = '';
         if (type === 'node') {
             currentText = this.graphNodes[index].text;
