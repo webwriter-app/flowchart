@@ -2,6 +2,7 @@ import { css } from 'lit';
 
 export const papWidgetStyles = css`
     :host {
+        overflow: hidden!important;
         display: block;
         position: relative;
         width: 100%;

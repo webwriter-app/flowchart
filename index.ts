@@ -135,6 +135,11 @@ export class FlowchartWidget extends LitElementWw {
 
     static style = papWidgetStyles;
 
+    static scopedElements = {
+        'custom-prompt': CustomPrompt,
+        'confirm-prompt': ConfirmPrompt
+      };
+
     public isEditable(): boolean {
         return this.contentEditable === 'true' || this.contentEditable === '';
     }
@@ -1319,26 +1324,26 @@ export class FlowchartWidget extends LitElementWw {
             this.shadowRoot.querySelector('.flowchart-menu').classList.remove('fullscreen');
             this.fullscreen = false;
             this.currentHeight = this.height;
+            this.canvas.style.width = "100%"
+            this.canvas.style.height = ""
             this.updateCanvasSize();
         } else {
-            const height = window.screen.height;
-            const width = window.screen.width;
-
-            this.canvas.width = width;
-            this.canvas.height = height;
-
-            const workspace = this.shadowRoot.querySelector('.workspace') as HTMLElement;
-            workspace.style.setProperty('--widget-height', `${height}px`);
-            
-
             this.requestFullscreen({ navigationUI: 'hide' });
-            this.shadowRoot.querySelector('.flowchart-menu').classList.add('fullscreen');
 
-            this.currentHeight = height;
-            this.fullscreen = true;
+            setTimeout(() => {
+                const workspace = this.shadowRoot.querySelector('.workspace') as HTMLElement;
+                workspace.style.setProperty('--widget-height', `${window.outerHeight}px`);
+                this.shadowRoot.querySelector('.flowchart-menu').classList.add('fullscreen');
+                this.canvas.width = window.outerWidth;
+                this.canvas.height = window.outerHeight;
+                this.currentHeight = window.outerHeight;
+                this.fullscreen = true;
+            }, 100);
+
 
             this.addEventListener('fullscreenchange', () => {
                 this.requestUpdate()
+                this.updateCanvasSize();
             });
         }
     }
@@ -1347,7 +1352,7 @@ export class FlowchartWidget extends LitElementWw {
 
     private showCustomPrompt(type: 'node' | 'arrow', index: number) {
         const promptElement = this.shadowRoot.querySelector('custom-prompt') as CustomPrompt;
-
+        console.log(promptElement)
         let currentText = '';
         if (type === 'node') {
             currentText = this.graphNodes[index].text;
@@ -1357,9 +1362,8 @@ export class FlowchartWidget extends LitElementWw {
             }
         }
 
-        promptElement.setInputValue(currentText);
+        // promptElement.setInputValue(currentText);
         promptElement.classList.remove('hidden');
-
         this.shadowRoot.querySelector('custom-prompt').classList.remove('hidden');
 
         const onSubmit = (value: string) => {
