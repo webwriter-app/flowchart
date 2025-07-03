@@ -1246,8 +1246,24 @@ export class FlowchartWidget extends LitElementWw {
 
             this.selectedNode = undefined;
         } else if (this.selectedArrow) {
-            // Entferne den ausgewählten Pfeil und die zugehörigen Informationen in den verbundenen Knoten
-            removeOldConnection(this.selectedArrow.from, this.selectedArrow.to);
+            const fromNode = this.selectedArrow.from
+            const toNode = this.selectedArrow.to
+
+            // Entferne die Verbindungsinformation vom Startknoten 
+            if (fromNode.connections) {
+                fromNode.connections = fromNode.connections.filter(
+                    (connection) => connection.arrowID !== this.selectedArrow.id
+                );
+            }
+
+            // Entferne die Verbindungsinformation vom Endknoten 
+            if (toNode.connections) {
+                toNode.connections = toNode.connections.filter(
+                    (connection) => connection.arrowID !== this.selectedArrow.id
+                );
+            }
+
+            // Entferne den ausgewählten Pfeil
             this.arrows = this.arrows.filter((arrow) => arrow !== this.selectedArrow);
             this.selectedArrow = undefined;
         }
