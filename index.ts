@@ -1123,7 +1123,7 @@ export class FlowchartWidget extends LitElementWw {
     connectedCallback() {
         super.connectedCallback();
         // window.addEventListener('resize', this.updateCanvasSize);
-        // window.addEventListener('keydown', this.handleKeyDown);
+        window.addEventListener('keydown', this.handleKeyDown);
 
         // Konvertiert das Array in einen String und setzt es als Attribut
         //this.setAttribute('graph-nodes', JSON.stringify(this.graphNodes));
@@ -1133,7 +1133,7 @@ export class FlowchartWidget extends LitElementWw {
 
     disconnectedCallback() {
         // window.removeEventListener('resize', this.updateCanvasSize);
-        // window.removeEventListener('keydown', this.handleKeyDown);
+        window.removeEventListener('keydown', this.handleKeyDown);
 
         this.removeEventListener('startSelectSequence', this.selectSequence.bind(this));
         super.disconnectedCallback();
