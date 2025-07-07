@@ -76,11 +76,11 @@ export const papWidgetStyles = css`
 
     /*Side Menus */
     .flowchart-menu {
-        left: 0;
-        bottom: 10px;
-        right: 0;
-        gap: 10px;
-        padding-top: 30px;
+        left: 5px;
+        bottom: 5px;
+        right: 5px;
+        gap: 5px;
+        padding: 25px 5px 5px 5px;
         position: absolute;
         flex-direction: row;
     }
@@ -108,13 +108,13 @@ export const papWidgetStyles = css`
         top: 5px;
         left: 0;
 
-        height: 30px;
+        height: 40px;
     }
 
     .flowchart-menu button {
         flex-grow: 1;
-        margin: 0 5px;
-        height: 40px;
+        margin: 0px !important;
+        height: 50px;
         position: relative;
     }
 
