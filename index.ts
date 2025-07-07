@@ -1385,7 +1385,21 @@ export class FlowchartWidget extends LitElementWw {
         promptElement.classList.remove('hidden');
         this.shadowRoot.querySelector('custom-prompt').classList.remove('hidden');
 
-        const onSubmit = (value: string) => {
+        const onSubmit = (rawValue: string) => {
+
+            const labels: Record<string, string> = {
+                "start": "Start",
+                "op": "Operation",
+                "decision": "Verzweigung",
+                "i/o": "Ein-/Ausgabe",
+                "sub": "Unterprogramm",
+                "connector": "",
+                "end": "Ende",
+                "text": "Kommentar"
+            };
+        
+            const value = rawValue || labels[this.graphNodes[index].node];
+
             if (type === 'node') {
                 if (this.graphNodes[index].node === 'decision') {
                     this.graphNodes[index].text = '  ' + value + '  ';
