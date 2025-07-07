@@ -1050,6 +1050,9 @@ export class FlowchartWidget extends LitElementWw {
     }
 
     private handleAnchorClick(node: GraphNode, anchor: number) {
+        if(this.isArrowAnchorHovered) {
+            return
+        }
         this.isDrawingArrow = true;
         this.arrowStart = { node, anchor };
     }
