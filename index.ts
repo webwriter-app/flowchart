@@ -1307,17 +1307,37 @@ export class FlowchartWidget extends LitElementWw {
     private handleWheel(event: WheelEvent) {
         if ((this.allowStudentPan || this.hasAttribute("contenteditable")) && this.matches(':focus-within')) {
             event.preventDefault();
+    
             const zoomText = this.shadowRoot?.querySelector('#zoom-percentage') as HTMLSpanElement;
-
+    
+            // Get mouse position relative to canvas (screen space)
+            const rect = this.canvas.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+    
+            // Convert to world space before zoom
+            const prevScale = this.zoomLevel / 100;
+            const worldXBefore = mouseX / prevScale - this.canvasOffsetX;
+            const worldYBefore = mouseY / prevScale - this.canvasOffsetY;
+    
+            // Apply new zoom level
             if (event.deltaY < 0) {
-                this.zoomLevel = Math.min(this.zoomLevel + 10, 200); // Begrenze den Zoom auf 200%
+                this.zoomLevel = Math.min(this.zoomLevel + 10, 200);
             } else {
-                this.zoomLevel = Math.max(this.zoomLevel - 10, 50); // Begrenze den Zoom auf 50%
+                this.zoomLevel = Math.max(this.zoomLevel - 10, 50);
             }
-
+    
+            const newScale = this.zoomLevel / 100;
+    
+            // Adjust canvas offset to keep world point under cursor stable
+            this.canvasOffsetX = mouseX / newScale - worldXBefore;
+            this.canvasOffsetY = mouseY / newScale - worldYBefore;
+    
+            // Apply the zoom
             this.applyZoom();
         }
     }
+    
 
     private updateCanvasOffset() {
         const offsetX = this.canvas.getBoundingClientRect().left;
