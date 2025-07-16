@@ -415,13 +415,6 @@ export class FlowchartWidget extends LitElementWw {
                     id="panable-checkbox"
                     @change="${(e) => {
                         this.allowStudentPan = e.target.checked;
-                        if (e.target.checked) {
-                            this.canvasOffsetX = 0;
-                            this.canvasOffsetY = 0;
-                        } else {
-                            this.canvasOffsetX = parseFloat(this.canvas.style.getPropertyValue('--offset-x'));
-                            this.canvasOffsetY = parseFloat(this.canvas.style.getPropertyValue('--offset-y'));
-                        }
                     }}"
                     ?checked="${this.allowStudentPan}"
                 />
@@ -691,6 +684,25 @@ export class FlowchartWidget extends LitElementWw {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.scale(scaleFactor, scaleFactor);
 
+        // Draw the grid
+        const gridSize = this.gridSize;         // base spacing between grid points (unscaled)
+        const dotSize = this.dotSize;           // radius of each dot (unscaled)
+        const width = this.canvas.width / scaleFactor;
+        const height = this.canvas.height / scaleFactor;
+
+        this.ctx.fillStyle = "#104e8b";
+
+        // Draw dots in grid
+        for (let x = this.canvasOffsetX % gridSize; x < width; x += gridSize) {
+            for (let y = this.canvasOffsetY % gridSize; y < height; y += gridSize) {
+                this.ctx.beginPath();
+                this.ctx.arc(x, y, dotSize, 0, 2 * Math.PI);
+                this.ctx.fill();
+            }
+        }
+
+        this.ctx.translate(this.canvasOffsetX, this.canvasOffsetY)
+
         // this.getUserSettings();
 
         this.reconnectArrows();
@@ -823,7 +835,8 @@ export class FlowchartWidget extends LitElementWw {
 
         if (this.isGrabbing) {
             // Update Offset von Canvwas wenn dieser gezogen wird
-            this.grabStartPosition = { x, y };
+            const grabCoordinates = this.getMouseCoordinates(event, true)
+            this.grabStartPosition = { x: grabCoordinates.x, y: grabCoordinates.y };
             const offsetX = parseFloat(this.canvas.style.getPropertyValue('--offset-x'));
             const offsetY = parseFloat(this.canvas.style.getPropertyValue('--offset-y'));
             this.grabStartOffset = { x: offsetX, y: offsetY };
@@ -906,23 +919,13 @@ export class FlowchartWidget extends LitElementWw {
             );
             this.redrawCanvas();
         } else if (this.isGrabbing && this.grabStartPosition && this.grabStartOffset) {
-            const deltaX = x - this.grabStartPosition.x;
-            const deltaY = y - this.grabStartPosition.y;
+            const grabCoordinates = this.getMouseCoordinates(event, true)
+            const deltaX = grabCoordinates.x - this.grabStartPosition.x;
+            const deltaY = grabCoordinates.y - this.grabStartPosition.y;
 
-            // Aktualisiere die Koordinaten der Knoten und Verbindungen
-            this.graphNodes.forEach((element) => {
-                element.x += deltaX;
-                element.y += deltaY;
-            });
-
-            this.arrows.forEach((arrow) => {
-                if (arrow.points) {
-                    arrow.points.forEach((point) => {
-                        point.x += deltaX;
-                        point.y += deltaY;
-                    });
-                }
-            });
+            // Aktualisiere das Canvas Offset
+            this.canvasOffsetX = this.canvasOffsetX + deltaX
+            this.canvasOffsetY = this.canvasOffsetY + deltaY
 
             // Aktualisiere das Canvas anhand der Mausbewegung
             const offsetX = parseFloat(this.canvas.style.getPropertyValue('--offset-x'));
@@ -934,7 +937,7 @@ export class FlowchartWidget extends LitElementWw {
             this.redrawCanvas();
 
             // Aktualisiere die grabStartPosition auf die aktuelle Mausposition
-            this.grabStartPosition = { x, y };
+            this.grabStartPosition = { x: grabCoordinates.x, y: grabCoordinates.y };
         } else {
             if (this.isDragging && this.draggedNodes.length > 1) {
                 let deltaX: number;
@@ -1276,15 +1279,23 @@ export class FlowchartWidget extends LitElementWw {
     }
 
     // Gibe die aktuellen Koordinaten der Maus zurück, welche den Offset des Canvas und des scrollen berücksichtigt.
-    private getMouseCoordinates(event: MouseEvent) {
-        let offsetX = this.canvas.getBoundingClientRect().left;
-        const offsetY = this.canvas.getBoundingClientRect().top;
-        if (this.fullscreen) {
-            offsetX -= window.frameElement ? window.frameElement.getBoundingClientRect().left : 0;
+    private getMouseCoordinates(event: MouseEvent, withoutPan?: boolean) {
+        const rect = this.canvas.getBoundingClientRect();
+        const scaleFactor = this.zoomLevel / 100;
+    
+        // Mouse position relative to the top-left corner of the canvas
+        let x = (event.clientX - rect.left);
+        let y = (event.clientY - rect.top);
+    
+        // Apply scaling and panning only if not bypassed
+        if (!withoutPan) {
+            x = x / scaleFactor - this.canvasOffsetX;
+            y = y / scaleFactor - this.canvasOffsetY;
+        } else {
+            x = x / scaleFactor;
+            y = y / scaleFactor;
         }
-        const scaleFactor = this.zoomLevel / 100; // Der Skalierungsfaktor aufgrund von Zoom
-        const x = (event.clientX - offsetX) / scaleFactor;
-        const y = (event.clientY - offsetY) / scaleFactor;
+    
         return { x, y };
     }
 

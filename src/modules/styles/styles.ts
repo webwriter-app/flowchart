@@ -764,13 +764,7 @@ export const papWidgetStyles = css`
 
         z-index: 0;
 
-        background-size: var(--scaled-grid-size) var(--scaled-grid-size);
-        background-image: radial-gradient(
-            circle,
-            var(--grid-color) var(--scaled-grid-dot-size),
-            var(--grid-background-color) var(--scaled-grid-dot-size)
-        );
-        background-position: var(--offset-x) var(--offset-y);
+        background-color: white;
     }
 
     .y-rezise {
