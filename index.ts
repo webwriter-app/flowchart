@@ -755,8 +755,9 @@ export class FlowchartWidget extends LitElementWw {
         text: string
     ) {
         const workspace = this.shadowRoot?.querySelector('.workspace') as HTMLElement;
-        let centerX = this.canvas.width * 0.45 + workspace.scrollLeft;
-        let centerY = this.canvas.height * 0.45 + workspace.scrollTop;
+        const scaleFactor = this.zoomLevel / 100;
+        let centerX = (this.canvas.width * 0.4 + workspace.scrollLeft) / scaleFactor - this.canvasOffsetX;
+        let centerY = (this.canvas.height * 0.4 + workspace.scrollTop) / scaleFactor - this.canvasOffsetY;
 
         switch (this.addGraphNodeIndex) {
             case 0:
