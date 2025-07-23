@@ -1,0 +1,43 @@
+
+    // Do not modify this file by hand!
+    // Re-generate this file by running lit-localize
+
+    
+    
+
+    /* eslint-disable no-irregular-whitespace */
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+
+    export const templates = {
+      's275e8941632a9afa': `Proses`,
+'s2f7cd2e117fd0d01': `Ukuran huruf:`,
+'s30f853f2943ac1ec': `Pastel`,
+'s36480f2f59da17d3': `Tidak ada tugas!`,
+'s37edf2aec5ab122a': `Mono`,
+'s42c95e7175a54564': `Izinkan pengeditan:`,
+'s496067bc27deb87a': `Biarkan bergerak:`,
+'s4b10acae683d2978': `Layar penuh`,
+'s4f1565979d2815d9': `Memindahkan kanvas`,
+'s53a526d5c80c3e28': `Standar`,
+'s5e8250fb85d64c23': `Tutup`,
+'s70d2c6a9a84180ba': `Ketik teks baru:`,
+'s8045f0622a167858': `Zoom:`,
+'s82e06116110c9c3e': `Font:`,
+'s85e34dc8cc55f1a3': `Apakah Anda yakin, bahwa Anda ingin menghapus semuanya?`,
+'s9d8b8aa2b404c2c8': `Pengaturan`,
+'s9df2887de87a2a6b': `Tidak ada petunjuk!`,
+'sae1c7f13b7c0c47f': `Mulai`,
+'saf84ec86139d349e': `Komentar`,
+'sb67b82120563c611': `Petunjuk`,
+'sbadd7c696d344cfb': `Subprogram`,
+'sc797fd9076cc136d': `Tugas`,
+'sd8f923198e0c5c6a': `Akhir`,
+'sdc673e73b5c13aea': `Menghapus`,
+'se75767691e45c8f8': `Tema:`,
+'sef92ffa038c78883': `Keputusan`,
+'sf29271158220eded': `Hapus semua`,
+'sf6586f55cebdc732': `Hitam/Putih`,
+'sf755a4987e4c2af1': `Masukan/Keluaran`,
+'sfbfc89b3a12052d6': `Periksa jalur`,
+    };
+  

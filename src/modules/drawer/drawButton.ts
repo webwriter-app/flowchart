@@ -1,5 +1,8 @@
+import { FlowchartWidget } from "../../..";
+import { localized, msg } from "@lit/localize"
+
 // Funktion zum Zeichnen von Schaltflächenelementen
-export function drawButton(element: string, menu: 'flow' | 'tool' | 'task' | 'help' | 'translate') {
+export function drawButton(element: string, menu: 'flow' | 'tool' | 'task' | 'help' | 'translate', msg1: (template: string) => string ) {
     // Funktion zum übersichtlichen setzen der Attribute der SVG Grafiken
     function setAttributeList(element: SVGElement, attributes: { [key: string]: string }): void {
         for (const key in attributes) {
@@ -67,7 +70,7 @@ export function drawButton(element: string, menu: 'flow' | 'tool' | 'task' | 'he
                 'stroke-width': '2',
             });
             svg.appendChild(terminal);
-            element === 'start' ? (text.textContent = 'Start') : (text.textContent = 'Ende');
+            element === 'start' ? (text.textContent = msg(FlowchartWidget.labels["start"])) : (text.textContent = msg(FlowchartWidget.labels["end"]));
             break;
 
         case 'op':
@@ -82,7 +85,7 @@ export function drawButton(element: string, menu: 'flow' | 'tool' | 'task' | 'he
                 'stroke-width': '2',
             });
             svg.appendChild(operation);
-            text.textContent = 'Operation';
+            text.textContent = msg(FlowchartWidget.labels["op"]);
             break;
 
         case 'decision':
@@ -94,7 +97,7 @@ export function drawButton(element: string, menu: 'flow' | 'tool' | 'task' | 'he
                 'stroke-width': '2',
             });
             svg.appendChild(decision);
-            text.textContent = 'Verzweigung';
+            text.textContent = msg(FlowchartWidget.labels["decision"]);
             text.setAttribute('y', '32');
             break;
 
@@ -109,7 +112,7 @@ export function drawButton(element: string, menu: 'flow' | 'tool' | 'task' | 'he
                 'stroke-width': '2',
             });
             svg.appendChild(connector);
-            text.textContent = 'Übergangsstelle';
+            text.textContent = msg(FlowchartWidget.labels["connector"]);
             text.setAttribute('y', '50');
             break;
 
@@ -139,7 +142,7 @@ export function drawButton(element: string, menu: 'flow' | 'tool' | 'task' | 'he
                 'stroke-width': '2',
             });
             svg.appendChild(io);
-            text.textContent = 'Ein-/Ausgabe';
+            text.textContent = msg(FlowchartWidget.labels["i/o"]);
             break;
 
         case 'sub':
@@ -177,12 +180,12 @@ export function drawButton(element: string, menu: 'flow' | 'tool' | 'task' | 'he
             });
             svg.appendChild(lineR);
 
-            text.textContent = 'Unterprogramm';
+            text.textContent = msg(FlowchartWidget.labels["sub"]);
             text.setAttribute('x', '63');
             break;
 
         case 'text':
-            text.textContent = 'Kommentar';
+            text.textContent = msg(FlowchartWidget.labels["text"]);
             break;
 
         // Tool Menü
@@ -395,7 +398,7 @@ export function drawButton(element: string, menu: 'flow' | 'tool' | 'task' | 'he
                 'font-size': '16',
                 'font-family': 'Arial',
             });
-            text.textContent = 'Arbeitsauftrag hinzufügen';
+            text.textContent = msg('Add task');
             svg.appendChild(text);
             break;
 
@@ -409,7 +412,7 @@ export function drawButton(element: string, menu: 'flow' | 'tool' | 'task' | 'he
                 'font-size': '16',
                 'font-family': 'Arial',
             });
-            text.textContent = 'Hinweis hinzufügen';
+            text.textContent = msg('Add hint');
             svg.appendChild(text);
             break;
 
@@ -423,7 +426,7 @@ export function drawButton(element: string, menu: 'flow' | 'tool' | 'task' | 'he
                 'font-size': '16',
                 'font-family': 'Arial',
             });
-            text.textContent = 'Natürliche Sprache';
+            text.textContent = msg('Natural language');
             svg.appendChild(text);
             break;
         case 'pseudoCode':
@@ -435,12 +438,12 @@ export function drawButton(element: string, menu: 'flow' | 'tool' | 'task' | 'he
                 'font-size': '16',
                 'font-family': 'Arial',
             });
-            text.textContent = 'Pseudocode';
+            text.textContent = msg('Pseudocode');
             svg.appendChild(text);
             break;
 
         default:
-            console.log('Unbekannte SVG Bezeichnung');
+            console.log('Unknown SVG name');
     }
 
     return svg;

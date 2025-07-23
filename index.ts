@@ -51,8 +51,14 @@ import { ConfirmPrompt } from './src/components/confirm-prompt';
 import './src/components/confirm-prompt';
 import { PropertyValueMap } from '@lit/reactive-element';
 
+import { localized, msg } from "@lit/localize"
+import LOCALIZE from "./localization/generated"
+
 @customElement('webwriter-flowchart')
+@localized()
 export class FlowchartWidget extends LitElementWw {
+    public localize = LOCALIZE;
+
     @property({ type: Array, reflect: true, attribute: true }) accessor graphNodes: GraphNode[] = [];
     @property({ type: Object }) accessor selectedNode: GraphNode;
     @property({ type: Array }) accessor arrows: Arrow[] = [];
@@ -135,6 +141,17 @@ export class FlowchartWidget extends LitElementWw {
 
     static style = papWidgetStyles;
 
+    static labels: Record<string, string> = {
+        "start": "Start",
+        "op": "Process",
+        "decision": "Decision",
+        "i/o": "Input/Output",
+        "sub": "Subprogram",
+        "connector": "",
+        "end": "End",
+        "text": "Comment"
+    };
+
     static scopedElements = {
         'custom-prompt': CustomPrompt,
         'confirm-prompt': ConfirmPrompt
@@ -173,40 +190,40 @@ export class FlowchartWidget extends LitElementWw {
                 <div class="action-menu" style=${this.fullscreen ? 'top:10px;left:10px;' : ''}>
                     <button
                         id="grab-button"
-                        @mouseenter="${(e) => createTooltip(e, 'Bewegen des Canvas')}"
+                        @mouseenter="${(e) => createTooltip(e, msg('Move the canvas'))}"
                         @mouseleave="${removeTooltip}"
                         @click="${this.grabCanvas}"
                         class="${this.isGrabbing ? 'active' : ''}"
                         style=${(!this.allowStudentPan && !this.hasAttribute("contenteditable")) || (this.allowStudentPan && !this.allowStudentEdit && !this.hasAttribute("contenteditable")) ? 'display:none' : ''}
                     >
-                        ${drawButton('grab', 'tool')}
+                        ${drawButton('grab', 'tool', msg)}
                     </button>
                     <!-- <button
-                        @mouseenter="${(e) => createTooltip(e, 'Aufgabenmenü')}"
+                        @mouseenter="${(e) => createTooltip(e, msg('Tasks'))}"
                         @mouseleave="${removeTooltip}"
                         @click="${() => this.toggleMenu('task')}"
                         style=${!this.isEditable() && this.taskList?.length == 0 ? 'display:none' : ''}
                     >
-                        ${drawButton('task', 'tool')}
+                        ${drawButton('task', 'tool', msg)}
                     </button>
                     <button
-                        @mouseenter="${(e) => createTooltip(e, 'Hinweise')}"
+                        @mouseenter="${(e) => createTooltip(e, msg('Hints'))}"
                         @mouseleave="${removeTooltip}"
                         @click="${() => this.toggleMenu('help')}"
                         style=${!this.isEditable() && this.helpList?.length == 0 ? 'display:none' : ''}
                     >
-                        ${drawButton('help', 'tool')}
+                        ${drawButton('help', 'tool', msg)}
                     </button>
                     <button
-                        @mouseenter="${(e) => createTooltip(e, 'Lösche alles')}"
+                        @mouseenter="${(e) => createTooltip(e, msg('Delete all'))}"
                         @mouseleave="${removeTooltip}"
                         @click="${this.showConfirmPrompt}"
                         style=${!this.allowStudentEdit ? 'display:none' : ''}
                     >
-                        ${drawButton('delete', 'tool')}
+                        ${drawButton('delete', 'tool', msg)}
                     </button> -->
                     <button
-                        @mouseenter="${(e) => createTooltip(e, 'Fullscreen')}"
+                        @mouseenter="${(e) => createTooltip(e, msg('Fullscreen'))}"
                         @mouseleave="${removeTooltip}"
                         @click="${this.toggleFullscreen}"
                         class="fullscreen-button"
@@ -222,32 +239,32 @@ export class FlowchartWidget extends LitElementWw {
 
                 <div class="flowchart-menu" style=${(!this.allowStudentEdit && !this.hasAttribute("contenteditable")) ? 'display:none' : ''}>
                     <button class="close-button" @click="${() => this.toggleMenu('flow')}">×</button>
-                    <button @click="${() => this.addGraphNode('start', 'Start')}">
-                        ${drawButton('start', 'flow')}
+                    <button @click="${() => this.addGraphNode('start', msg(FlowchartWidget.labels["start"]))}">
+                        ${drawButton('start', 'flow', msg)}
                     </button>
-                    <button @click="${() => this.addGraphNode('op', 'Operation')}">${drawButton('op', 'flow')}</button>
-                    <button @click="${() => this.addGraphNode('decision', '  Verzweigung  ')}">
-                        ${drawButton('decision', 'flow')}
+                    <button @click="${() => this.addGraphNode('op', msg(FlowchartWidget.labels["op"]))}">${drawButton('op', 'flow', msg)}</button>
+                    <button @click="${() => this.addGraphNode('decision', '  ' + msg(FlowchartWidget.labels["decision"]) + '  ')}">
+                        ${drawButton('decision', 'flow', msg)}
                     </button>
-                    <button @click="${() => this.addGraphNode('i/o', 'Ein-/Ausgabe')}">
-                        ${drawButton('i/o', 'flow')}
+                    <button @click="${() => this.addGraphNode('i/o', msg(FlowchartWidget.labels["i/o"]))}">
+                        ${drawButton('i/o', 'flow', msg)}
                     </button>
-                    <button @click="${() => this.addGraphNode('sub', 'Unterprogramm')}">
-                        ${drawButton('sub', 'flow')}
+                    <button @click="${() => this.addGraphNode('sub', msg(FlowchartWidget.labels["sub"]))}">
+                        ${drawButton('sub', 'flow', msg)}
                     </button>
                     <button @click="${() => this.addGraphNode('connector', '')}">
-                        ${drawButton('connector', 'flow')}
+                        ${drawButton('connector', 'flow', msg)}
                     </button>
-                    <button @click="${() => this.addGraphNode('end', 'Ende')}">${drawButton('end', 'flow')}</button>
-                    <button @click="${() => this.addGraphNode('text', 'Kommentar')}">
-                        ${drawButton('text', 'flow')}
+                    <button @click="${() => this.addGraphNode('end', msg(FlowchartWidget.labels["end"]))}">${drawButton('end', 'flow', msg)}</button>
+                    <button @click="${() => this.addGraphNode('text', msg(FlowchartWidget.labels["text"]))}">
+                        ${drawButton('text', 'flow', msg)}
                     </button>
                 </div>
 
                 <button class="show-flowchart-button hidden" @click="${() => this.toggleMenu('flow')}">+</button>
 
                 <div class="solution-menu hidden">
-                    <div class="solution-titel">Pfad überprüfen</div>
+                    <div class="solution-titel">${msg('Check path')}</div>
                     ${this.taskList?.map((task) =>
                         task.sequence
                             ? html`<button class="solution-button" @click="${() => this.checkSolution(task)}">
@@ -261,10 +278,10 @@ export class FlowchartWidget extends LitElementWw {
                     <button class="close-button" @click="${() => this.toggleMenu('task')}">×</button>
                     <div class="task-menu-wrapper">
                         ${this.taskList?.length === 0
-                            ? html`<p class="no-tasks-message">Keine Aufgaben!</p>`
+                            ? html`<p class="no-tasks-message">${msg('No tasks!')}</p>`
                             : renderTasks.bind(this)(this.taskList)}
                         <button class="add-task-button editMode" @click="${this.addTask}">
-                            ${drawButton('addTask', 'task')}
+                            ${drawButton('addTask', 'task', msg)}
                         </button>
                     </div>
                 </div>
@@ -272,10 +289,10 @@ export class FlowchartWidget extends LitElementWw {
                 <div class="help-menu hidden" style=${this.fullscreen ? 'top:10px;right:10px;' : ''}>
                     <button class="close-button" @click="${() => this.toggleMenu('help')}">×</button>
                     ${this.helpList?.length === 0
-                        ? html`<p class="no-help-message">Keine Hinweise!</p>`
+                        ? html`<p class="no-help-message">${msg('No hints!')}</p>`
                         : renderHelpList.bind(this)(this.helpList)}
                     <button class="add-help-button editMode" @click="${this.addHelp}">
-                        ${drawButton('addHelp', 'help')}
+                        ${drawButton('addHelp', 'help', msg)}
                     </button>
                 </div>
 
@@ -283,31 +300,31 @@ export class FlowchartWidget extends LitElementWw {
                     <button class="close-button" @click="${() => this.toggleMenu('translate')}">×</button>
                     <div class="translate-menu-container">
                         <button class="translate-button" @click="${() => this.translateFlowchart('natural')}">
-                            ${drawButton('naturalLanguage', 'translate')}
+                            ${drawButton('naturalLanguage', 'translate', msg)}
                         </button>
                         <textarea id="naturalLanguageOutput" class="output-textarea hidden" disabled></textarea>
                     </div>
                     <div class="translate-menu-container">
                         <button class="translate-button" @click="${() => this.translateFlowchart('pseudo')}">
-                            ${drawButton('pseudoCode', 'translate')}
+                            ${drawButton('pseudoCode', 'translate', msg)}
                         </button>
                         <textarea id="pseudoCodeOutput" class="output-textarea hidden" disabled></textarea>
                     </div>
                 </div>
 
                 <div id="context-menu" class="context-menu">
-                    <div class="context-menu-item" @click="${() => this.deleteSelectedObject()}">Löschen</div>
+                    <div class="context-menu-item" @click="${() => this.deleteSelectedObject()}">${msg('Delete')}</div>
                 </div>
 
                 <custom-prompt
-                    label="Geben Sie einen neuen Text ein:"
+                    label="${msg('Type in the new text:')}"
                     @submit="${(event: CustomEvent) => this.handlePromptSubmit(event)}"
                     @cancel="${this.hidePrompt}"
                     class="hidden"
                 ></custom-prompt>
 
                 <confirm-prompt
-                    label="Sind Sie sicher, dass Sie alles löschen möchten?"
+                    label="${msg('Are you sure, that you want to delete everything?')}"
                     .onConfirm="${this.clearAll}"
                     .onCancel="${this.hidePrompt}"
                     class="hidden"
@@ -315,7 +332,7 @@ export class FlowchartWidget extends LitElementWw {
 
                 <div class="prompt ${this.showSolution ? '' : 'hidden'}">
                     <p>${this.solutionMessage}</p>
-                    <button @click="${this.closeSolution}">Schließen</button>
+                    <button @click="${this.closeSolution}">${msg('Close')}</button>
                 </div>
             </div>
             <div
@@ -329,11 +346,11 @@ export class FlowchartWidget extends LitElementWw {
 
     private renderToolMenu() {
         return html`<aside class="tool-menu" part="options">
-        <h2>Einstellungen</h2>
+        <h2>${msg('Settings')}</h2>
 
         <div class="setting-menu-container">
             <div class="setting-item">
-                <label>Schriftart:</label>
+                <label>${msg('Font:')}</label>
                 <select id="font-selector"
                     @change="${(e) => {
                         this.font = e.target.value;
@@ -348,7 +365,7 @@ export class FlowchartWidget extends LitElementWw {
                 </select>
             </div>
             <div class="setting-item">
-                <label>Schriftgröße:</label>
+                <label>${msg('Font size:')}</label>
                 <select id="font-size-selector"
                     @change="${(e) => {
                         this.fontSize = e.target.value;
@@ -365,7 +382,7 @@ export class FlowchartWidget extends LitElementWw {
                 </select>
             </div>
             <div class="setting-item">
-                <label>Farbthema:</label>
+                <label>${msg('Theme:')}</label>
                 <select id="color-theme-selector"
                     @change="${(e) => {
                         this.theme = e.target.value;
@@ -373,14 +390,14 @@ export class FlowchartWidget extends LitElementWw {
                         this.redrawCanvas();
                     }}"
                 >
-                    <option value="standard" selected>Standard</option>
-                    <option value="pastel">Pastel</option>
-                    <option value="mono">Mono</option>
-                    <option value="s/w">Schwarz/Weiß</option>
+                    <option value="standard" selected>${msg('Standard')}</option>
+                    <option value="pastel">${msg('Pastel')}</option>
+                    <option value="mono">${msg('Mono')}</option>
+                    <option value="s/w">${msg('Black/White')}</option>
                 </select>
             </div>
             <div class="setting-item">
-                <label>Zoomen:</label>
+                <label>${msg('Zoom:')}</label>
                 <div class="zoom-selector">
                     <button id="zoom-out-button" class="zoom-button"
                         @click="${(e) => {
@@ -398,7 +415,7 @@ export class FlowchartWidget extends LitElementWw {
                 </div>
             </div>
             <div class="setting-item">
-                <label>Bearbeiten erlauben:</label>
+                <label>${msg('Allow editing:')}</label>
                 <input
                     type="checkbox"
                     id="editable-checkbox"
@@ -409,7 +426,7 @@ export class FlowchartWidget extends LitElementWw {
                 />
             </div>
             <div class="setting-item">
-                <label>Bewegen erlauben:</label>
+                <label>${msg('Allow moving:')}</label>
                 <input
                     type="checkbox"
                     id="panable-checkbox"
@@ -1418,19 +1435,8 @@ export class FlowchartWidget extends LitElementWw {
         this.shadowRoot.querySelector('custom-prompt').classList.remove('hidden');
 
         const onSubmit = (rawValue: string) => {
-
-            const labels: Record<string, string> = {
-                "start": "Start",
-                "op": "Operation",
-                "decision": "Verzweigung",
-                "i/o": "Ein-/Ausgabe",
-                "sub": "Unterprogramm",
-                "connector": "",
-                "end": "Ende",
-                "text": "Kommentar"
-            };
         
-            const value = rawValue || labels[this.graphNodes[index].node];
+            const value = rawValue || msg(FlowchartWidget.labels[this.graphNodes[index].node]);
 
             if (type === 'node') {
                 if (this.graphNodes[index].node === 'decision') {
