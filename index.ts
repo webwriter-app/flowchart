@@ -49,78 +49,200 @@ import { CustomPrompt } from './src/components/custom-prompt';
 import './src/components/custom-prompt';
 import { ConfirmPrompt } from './src/components/confirm-prompt';
 import './src/components/confirm-prompt';
-import { PropertyValueMap } from '@lit/reactive-element';
 
 import { localized, msg } from "@lit/localize"
 import LOCALIZE from "./localization/generated"
 
+/**
+ * @summary Interactive flowchart widget with draggable nodes, connectable arrows, and built-in menus for tasks, hints, translation, and settings.
+ *
+ * @tag webwriter-flowchart
+ * @tagname webwriter-flowchart
+ *
+ * @attr {string} graph-nodes - JSON string representing an array of GraphNode objects. When set, arrows are recomputed.
+ * @attr {number} height - Canvas height in pixels. Default 400.
+ * @attr {number} zoom-level - Zoom percentage in the range [50, 200]. Default 100.
+ * @attr {number} canvas-offset-x - Horizontal pan offset in world units.
+ * @attr {number} canvas-offset-y - Vertical pan offset in world units.
+ * @attr {boolean} allow-student-edit - Enables student editing (adding, dragging, deleting).
+ * @attr {boolean} allow-student-pan - Enables student panning and zoom interaction.
+ * @attr {string} font - Font family used for node labels. Default "Courier New".
+ * @attr {number} font-size - Font size used for node labels. Default 16.
+ * @attr {string} theme - Color theme; one of "standard" | "pastel" | "mono" | "s/w". Default "standard".
+ *
+ * @prop {GraphNode[]} graphNodes - Current list of graph nodes (programmatic API).
+ * @prop {Arrow[]} arrows - Current list of arrows between nodes (programmatic API).
+ * @prop {ItemList[]} taskList - Tasks shown in the task menu.
+ * @prop {ItemList[]} helpList - Hints shown in the help menu.
+ * @prop {number} zoomLevel - Current zoom percentage (50–200).
+ * @prop {number} canvasOffsetX - Horizontal pan offset (world units).
+ * @prop {number} canvasOffsetY - Vertical pan offset (world units).
+ * @prop {string} font - Font family used for labels.
+ * @prop {number} fontSize - Font size used for labels.
+ * @prop {string} theme - Color theme name.
+ * @prop {boolean} fullscreen - Whether the widget is currently in fullscreen mode.
+ * @prop {string} solutionMessage - Message shown in the solution prompt.
+ * @prop {boolean} showSolution - Whether the solution prompt is visible.
+ *
+ * @csspart options - Styles the settings sidebar (tool menu).
+ *
+ * @cssprop [--scaled-grid-size=50px] - Spacing between grid dots (derived from zoom).
+ * @cssprop [--scaled-grid-dot-size=1.5px] - Dot radius for the background grid (derived from zoom).
+ * @cssprop --offset-x - Internal canvas left offset (managed by the widget).
+ * @cssprop --offset-y - Internal canvas top offset (managed by the widget).
+ * @cssprop --widget-height - Workspace height in pixels.
+ */
 @customElement('webwriter-flowchart')
 @localized()
 export class FlowchartWidget extends LitElementWw {
     public localize = LOCALIZE;
 
+    /**
+     * List of graph nodes comprising the flowchart.
+     * Reflected as the 'graph-nodes' attribute (expects JSON when set externally).
+     */
     @property({ type: Array, reflect: true, attribute: true }) accessor graphNodes: GraphNode[] = [];
+
+    /** @internal Currently selected/focused node. */
     @property({ type: Object }) accessor selectedNode: GraphNode;
+
+    /** List of arrows connecting nodes. */
     @property({ type: Array }) accessor arrows: Arrow[] = [];
+
+    /** @internal Currently selected/focused arrow. */
     @property({ type: Object }) accessor selectedArrow: Arrow;
+
+    /**
+     * Get the current nodes.
+     * @returns {GraphNode[]} Array of nodes
+     */
     getGraphNodes = () => this.graphNodes;
+
+    /**
+     * Get the current arrows.
+     * @returns {Arrow[]} Array of arrows
+     */
     getArrows = () => this.arrows;
 
+    /** Tasks visible in the task menu. */
     @property({ type: Array, reflect: true, attribute: true }) accessor taskList: ItemList[] = [];
+
+    /** Hints visible in the help menu. */
     @property({ type: Array, reflect: true, attribute: true }) accessor helpList: ItemList[] = [];
 
+    /** Canvas height (px). */
     @property({ type: Number, reflect: true, attribute: true }) accessor height: number = 400;
+
+    /** @internal Runtime canvas height; tracks drag-resize/fullscreen. */
     @property({ type: Number }) accessor currentHeight: number = this.height;
 
+    /** @internal Runtime graph rendering settings. */
     @property({ type: Object }) accessor graphSettings = { font: 'Courier New', fontSize: 16, theme: 'standard' };
-    @property({ type: Number, reflect: true, attribute: true }) accessor zoomLevel: number = 100; // in Prozent
+
+    /** Zoom level in percent [50–200]. */
+    @property({ type: Number, reflect: true, attribute: true }) accessor zoomLevel: number = 100;
+
+    /** @internal Base grid spacing (world units). */
     private gridSize: number = 50;
+
+    /** @internal Background grid dot radius (world units). */
     private dotSize: number = 1.5;
 
+    /** Horizontal pan offset (world units). */
     @property({ type: Number, reflect: true, attribute: true }) accessor canvasOffsetX: number = 0;
+
+    /** Vertical pan offset (world units). */
     @property({ type: Number, reflect: true, attribute: true }) accessor canvasOffsetY: number = 0;
 
+    /** Allow interactive editing (adding/dragging/deleting). */
     @property({ type: Boolean, reflect: true, attribute: true }) accessor allowStudentEdit: boolean = false;
+
+    /** Allow panning/zooming interactions. */
     @property({ type: Boolean, reflect: true, attribute: true }) accessor allowStudentPan: boolean = false;
 
+    /** Font family for node labels. */
     @property({ type: String, reflect: true, attribute: true }) accessor font = 'Courier New';
+
+    /** Font size for node labels. */
     @property({ type: Number, reflect: true, attribute: true }) accessor fontSize = 16;
+
+    /** Color theme name. */
     @property({ type: String, reflect: true, attribute: true }) accessor theme = 'standard';
 
+    /** Whether the widget is in fullscreen mode. */
     @property({ type: Boolean }) accessor fullscreen = false;
 
+    /** @internal Focus delegation for better keyboard support. */
     static shadowRootOptions = { ...LitElement.shadowRootOptions, delegatesFocus: true };
 
+    /** @internal Canvas element reference. */
     private canvas: HTMLCanvasElement;
+
+    /** @internal 2D drawing context for the canvas. */
     private ctx: CanvasRenderingContext2D;
 
+    /** @internal Drag state. */
     private isDragging = false;
+    /** @internal Node currently being dragged. */
     private draggedNode: GraphNode;
+    /** @internal Drag offset from the pointer to node origin. */
     private dragOffset = { x: 0, y: 0 };
+    /** @internal Group drag: the set of nodes being dragged. */
     private draggedNodes: GraphNode[] = [];
 
+    /** @internal Arrow drawing state. */
     private isDrawingArrow = false;
+    /** @internal Arrow start anchor. */
     private arrowStart?: { node: GraphNode; anchor: number };
+    /** @internal Temporary arrow endpoint while dragging. */
     private tempArrowEnd?: { x: number; y: number };
 
+    /** @internal Canvas panning (grab) state. */
     private isGrabbing = false;
+    /** @internal Start pointer position for grab. */
     private grabStartPosition?: { x: number; y: number };
+    /** @internal Start offset for grab. */
     private grabStartOffset?: { x: number; y: number };
 
+    /** @internal Currently hovered anchor on a node. */
     private hoveredAnchor?: { element: GraphNode; anchor: number };
+    /** @internal Whether an arrow anchor is hovered. */
     private isArrowAnchorHovered: boolean;
 
+    /** @internal Path selection mode (for solution checking). */
     private _isSelectingSequence = false;
+
+    /** @internal Currently selected path sequence. */
     private selectedSequence: { id: string; order: number; type: string }[] = [];
+
+    /**
+     * Get the currently selected path sequence.
+     * 
+     * @returns {Array<{ id: string; order: number; type: string }>} The currently selected sequence of path elements.
+     */
     getSelectedSequence = () => this.selectedSequence;
+
+    /** @internal Sequence button reference. */
     private activeSequenceButton: HTMLButtonElement | null = null;
+
+    /** Get the active sequence button.
+     * @returns {HTMLButtonElement|null} */
     getActiveSequenceButton = () => this.activeSequenceButton;
+
+    /** Set the active sequence button.
+     * @param {HTMLButtonElement|null} btn */
     setActiveSequenceButton = (btn: HTMLButtonElement | null) => {
         this.activeSequenceButton = btn;
     };
+
+    /** Whether path-selection mode is active.
+     * @returns {boolean} */
     get isSelectingSequence() {
         return this._isSelectingSequence;
     }
+
+    /** Set path-selection mode.
+     * @param {boolean} value */
     set isSelectingSequence(value: boolean) {
         const oldValue = this._isSelectingSequence;
         this._isSelectingSequence = value;
@@ -129,18 +251,30 @@ export class FlowchartWidget extends LitElementWw {
         }
     }
 
+    /** @internal prompt type and index for edit dialogs. */
     private promptType: 'node' | 'arrow' | null;
+    /** @internal prompt index for edit dialogs. */
     private promptIndex: number | null;
 
+    /** Message to show in the solution prompt. */
     @property({ type: String }) accessor solutionMessage: string = '';
+
+    /** Whether to show the solution prompt. */
     @property({ type: Boolean }) accessor showSolution: boolean = false;
 
+    /** @internal Multi-select of nodes (drag box). */
     @property({ type: Array }) accessor selectedNodes: GraphNode[] = [];
+
+    /** @internal Selection rectangle during drag-select. */
     private selectionRectangle?: { x: number; y: number; width: number; height: number };
+
+    /** @internal One-time offset gate for multi-drag. */
     private checkOffset = true;
 
+    /** @internal Component style (provided by papWidgetStyles). */
     static style = papWidgetStyles;
 
+    /** @internal Localized default labels per node type. */
     static labels: Record<string, string> = {
         "start": "Start",
         "op": "Process",
@@ -152,17 +286,22 @@ export class FlowchartWidget extends LitElementWw {
         "text": "Comment"
     };
 
+    /** @internal Scoped child elements used by the widget. */
     static scopedElements = {
         'custom-prompt': CustomPrompt,
         'confirm-prompt': ConfirmPrompt
-      };
+    };
 
+    /**
+     * Returns whether the widget is currently in an editable state
+     * based on the `contenteditable` attribute.
+     * @returns {boolean}
+     */
     public isEditable(): boolean {
         return this.contentEditable === 'true' || this.contentEditable === '';
     }
 
     render() {
-        // console.log('render', this);
         return html`
             <style>
                 ${papWidgetStyles}
@@ -344,6 +483,20 @@ export class FlowchartWidget extends LitElementWw {
         `;
     }
 
+    /**
+     * Render the settings sidebar (tool menu).
+     * Provides controls for:
+     * - Font family and size (updates `font`, `fontSize`, and `graphSettings`)
+     * - Theme (updates `theme` and `graphSettings`)
+     * - Zoom (updates `zoomLevel` and applies zoom)
+     * - Edit/pan toggles (`allowStudentEdit`, `allowStudentPan`)
+     *
+     * The aside uses `part="options"` to expose a CSS part for styling.
+     * Visibility of the sidebar is controlled by the caller in `render()` (shown only in edit mode).
+     *
+     * @returns {import('lit').TemplateResult} Lit template for the settings sidebar.
+     * @internal
+     */
     private renderToolMenu() {
         return html`<aside class="tool-menu" part="options">
         <h2>${msg('Settings')}</h2>
@@ -439,53 +592,17 @@ export class FlowchartWidget extends LitElementWw {
     </aside>`;
     }
 
-    // ------------------------ User interface Funktionen ------------------------
+    // ------------------------ User interface Functionality ------------------------
 
-    // private getUserSettings() {
-    //     const fontSelector = this.shadowRoot?.querySelector('#font-selector') as HTMLSelectElement;
-    //     const fontSizeSelector = this.shadowRoot?.querySelector('#font-size-selector') as HTMLSelectElement;
-    //     const themeSelector = this.shadowRoot?.querySelector('#color-theme-selector') as HTMLSelectElement;
-
-    //     this.graphSettings.font = fontSelector.value;
-    //     this.graphSettings.fontSize = parseInt(fontSizeSelector.value);
-    //     this.graphSettings.theme = themeSelector.value;
-    // }
-
-    // Variante ohne Netlify
-    // private translateFlowchart(language: 'natural' | 'pseudo') {
-    //    const messages = this.generateMessages(language);
-    //    document.body.style.cursor = 'wait';
-    //    fetch('https://api.openai.com/v1/chat/completions', {
-    //       method: 'POST',
-    //       headers: {
-    //          'Content-Type': 'application/json',
-    //          'Authorization': `Bearer `,
-    //       },
-    //       body: JSON.stringify({
-    //          "model": "gpt-3.5-turbo",
-    //          "messages": messages,
-    //          "max_tokens": 2000,
-    //       }),
-    //    })
-    //    .then(response => response.json())
-    //    .then(data => {
-    //       console.log(data)
-    //       const text = data.choices[0].message['content'].trim();
-    //       if (language === 'natural') {
-    //          let textAreaElement = this.shadowRoot.getElementById('naturalLanguageOutput') as HTMLTextAreaElement;
-    //          textAreaElement.value = text;
-    //          textAreaElement.classList.remove('hidden');
-    //      } else {
-    //          let textAreaElement = this.shadowRoot.getElementById('pseudoCodeOutput') as HTMLTextAreaElement;
-    //          textAreaElement.value = text;
-    //          textAreaElement.classList.remove('hidden');
-    //      }
-    //   })
-    //   .finally(() => {
-    //    document.body.style.cursor = 'auto';
-    //   });;
-    //  }
-
+    /**
+     * Translate the current flowchart into either natural language or pseudocode.
+     * Builds a chat-style message array via `generateMessages()`, shows a busy cursor,
+     * calls the Netlify function `/.netlify/functions/translateFlowchart`, and writes the
+     * returned `translation` into the corresponding output textarea.
+     *
+     * @param {'natural'|'pseudo'} language - Target format for the translation.
+     * @returns {void}
+     */
     private translateFlowchart(language: 'natural' | 'pseudo') {
         const messages = this.generateMessages(language);
         const translateButtons = this.shadowRoot.querySelectorAll('.translate-button');
@@ -522,14 +639,24 @@ export class FlowchartWidget extends LitElementWw {
             });
     }
 
+    
+    /**
+     * Build a chat-style message array that encodes the current flowchart structure.
+     * The system message instructs the translator for either natural language
+     * or pseudocode. The user message enumerates all nodes and their connections:
+     * ID, node type, text, anchors, directions, and connected node IDs (with optional text).
+     *
+     * @param {'natural'|'pseudo'} language - Controls the system directive in the messages.
+     * @returns {{ role: string; content: string }[]} Messages suitable for chat-completion APIs.
+     */
     private generateMessages(language: 'natural' | 'pseudo'): Array<{ role: string; content: string }> {
         let systemMessage: string;
         if (language === 'natural') {
             systemMessage =
-                'Die folgenden Daten stellen ein Programmablaufplan dar. Beschreibe den Ablaufplan in einfachen natürlichen Worten.';
+                'The following data represents a program flowchart. Describe the flowchart in simple, natural language.';
         } else {
             systemMessage =
-                'Die folgenden Daten stellen ein Programmablaufplan dar. Erzeuge aus den gegebenen Daten Pseudocode.';
+                'The following data represents a program flowchart. Generate pseudocode from the given data.';
         }
 
         let userMessage: string = '';
@@ -565,6 +692,14 @@ export class FlowchartWidget extends LitElementWw {
         ];
     }
 
+    /**
+     * Toggle path-selection mode for solution checking.
+     * When turning off the mode, clears the current selected sequence and any selected
+     * node/arrow/rectangle, then triggers a redraw. Also toggles the `active` class on
+     * the `#select-button` element (if present).
+     *
+     * @returns {void}
+     */
     selectSequence() {
         // Setze css style von Icon auf aktiv
         const selectButton = this.shadowRoot.getElementById('select-button');
@@ -584,6 +719,14 @@ export class FlowchartWidget extends LitElementWw {
         this.redrawCanvas();
     }
 
+    /**
+     * Compare the currently selected path sequence with a task's expected sequence.
+     * If length and element-wise id/type match, shows a success message; otherwise
+     * shows a failure message. Uses `showSolutionWithMessage()` to display the result.
+     *
+     * @param {ItemList} task - Task item, optionally containing a `sequence` array of {id, order, type}.
+     * @returns {void}
+     */
     checkSolution(task: ItemList) {
         // Prüfe, ob die Längen der ausgewählten Sequenz und der Aufgabensequenz übereinstimmen
         if (task.sequence && this.selectedSequence.length === task.sequence.length) {
@@ -603,13 +746,25 @@ export class FlowchartWidget extends LitElementWw {
         }
     }
 
-    // Zeige oder verstecke die angefragten Benutzeroberflächen
+        /**
+     * Show or hide one of the widget's overlay menus and move focus to the host.
+     *
+     * @param {'task'|'flow'|'context'|'preset'|'help'|'translate'|'setting'} menu - Menu identifier to toggle.
+     * @returns {void}
+     * @internal
+     */
     private toggleMenu(menu: 'task' | 'flow' | 'context' | 'preset' | 'help' | 'translate' | 'setting') {
         toggleMenu(this, menu);
         this.focus();
     }
 
-    // Zeige das Kontextmenü an, wenn ein Element angeklickt wurde
+    /**
+     * Display the context menu near the pointer when the user right-clicks a node or arrow (only in editable mode).
+     *
+     * @param {MouseEvent} event
+     * @returns {void}
+     * @internal
+     */
     private showContextMenu(event: MouseEvent) {
         if ((!this.allowStudentEdit && !this.hasAttribute("contenteditable"))) {
             return;
@@ -641,18 +796,47 @@ export class FlowchartWidget extends LitElementWw {
         }
     }
 
+    /**
+     * Programmatically set the selected path sequence.
+     * Overwrites the internal `selectedSequence` with the provided ordered descriptors.
+     *
+     * @param {{ id: string; order: number; type: string }[]} sequence - Ordered selection descriptors.
+     * @returns {void}
+     */
     setSelectedSequence = (sequence: { id: string; order: number; type: string }[]) => {
         this.selectedSequence = sequence;
     };
 
+    /**
+     * Append a new editable task with default title/content to the task list.
+     * Useful in edit mode to quickly scaffold tasks.
+     *
+     * @returns {void}
+     */
     private addTask() {
-        this.taskList = [...this.taskList, { titel: 'Titel', content: 'Aufgabe' }];
+        this.taskList = [...this.taskList, { titel: 'Title', content: 'Task' }];
     }
 
+    /**
+     * Append a new editable hint with default title/content to the help list.
+     * Useful in edit mode to scaffold hints.
+     *
+     * @returns {void}
+     */
     private addHelp() {
-        this.helpList = [...this.helpList, { titel: 'Titel', content: 'Hinweis' }];
+        this.helpList = [...this.helpList, { titel: 'Title', content: 'Hint' }];
     }
 
+    /**
+     * Show or hide the solution menu depending on:
+     * - Whether path-selection mode is active,
+     * - Whether at least one task contains a non-empty `sequence`,
+     * - And whether the widget is not in editable mode.
+     *
+     * Adds/removes the `hidden` class on `.solution-menu`.
+     *
+     * @returns {void}
+     */
     private showSolutionMenu() {
         const solutionMenuElement = this.shadowRoot?.querySelector('.solution-menu');
 
@@ -669,14 +853,26 @@ export class FlowchartWidget extends LitElementWw {
         }
     }
 
-    // Aktiviere Bewegungsmodus für das Canvas
+    /**
+     * Toggle canvas panning ("grab") mode and clear node selection.
+     * Delegates to the `grabCanvas()` UI utility to update internal state.
+     *
+     * @returns {void}
+     */
     private grabCanvas() {
         this.isGrabbing = grabCanvas(this, this.isGrabbing);
         this.selectedNode = undefined;
     }
 
-    // ------------------------ Reconnect Arrow Funktionen ------------------------
+    // ------------------------ Reconnect Arrow Functionality ------------------------
 
+    /**
+     * Reconnect arrow endpoints after mutations to `graphNodes`,
+     * ensuring `arrow.from` and `arrow.to` point to the current node instances
+     * (matched by their `id`). Safe to call after nodes are added/removed/reordered.
+     *
+     * @returns {void}
+     */
     private reconnectArrows() {
         this.arrows.forEach((arrow) => {
             const fromId = arrow.from.id;
@@ -692,8 +888,19 @@ export class FlowchartWidget extends LitElementWw {
         });
     }
 
-    // ------------------------ Drawer Funktionen ------------------------
+    // ------------------------ Drawer Functionality ------------------------
 
+    /**
+     * Full render pipeline:
+     * - Clears the canvas and applies the current zoom transform,
+     * - Draws the background grid (dots) honoring pan offsets,
+     * - Translates by pan offsets and reconnects arrows,
+     * - Recomputes arrow point geometry and draws arrows/nodes,
+     * - Draws anchors for the selected node/arrow,
+     * - Draws a temporary arrow while dragging, and a selection rectangle if active.
+     *
+     * @returns {void}
+     */
     private redrawCanvas() {
         // Bereinige das Canvas und berücksichtigt den Zoom Faktor
         const scaleFactor = this.zoomLevel / 100;
@@ -764,9 +971,16 @@ export class FlowchartWidget extends LitElementWw {
         // this.setAttribute('help-list', JSON.stringify(this.helpList));
     }
 
-    // Speichere die Position für den nächsten Knoten
+    /** @internal Cyclic index used by `addGraphNode()` to stagger the placement of quickly inserted nodes, preventing complete overlap. Values rotate through 0 → 1 → 2 → 0 ... */
     private addGraphNodeIndex = 0;
 
+    /**
+     * Adds a new graph node of the given type at the current viewport center.
+     * The node is appended to `graphNodes` and the canvas is redrawn.
+     * @param {'start'|'end'|'op'|'decision'|'connector'|'i/o'|'sub'|'text'} node - Node type.
+     * @param {string} text - Initial text label for the node.
+     * @returns {void}
+     */
     private addGraphNode(
         node: 'start' | 'end' | 'op' | 'decision' | 'connector' | 'i/o' | 'sub' | 'text',
         text: string
@@ -811,6 +1025,7 @@ export class FlowchartWidget extends LitElementWw {
 
     // ------------------------ Mouse-Events ------------------------
 
+    /** @internal Handles mousedown on the canvas (selection, drag, arrow creation). */
     private handleMouseDown(event: MouseEvent) {
         const { x, y } = this.getMouseCoordinates(event);
         const nodeUnderCursor = findLastGraphNode(this.ctx, this.graphNodes, x, y);
@@ -884,6 +1099,7 @@ export class FlowchartWidget extends LitElementWw {
         }
     }
 
+    /** @internal Handles mouseup on the canvas (finalizing drag or arrow creation). */
     private handleMouseUp(event: MouseEvent) {
         if (this.selectionRectangle) {
             this.selectionRectangle = undefined;
@@ -927,6 +1143,7 @@ export class FlowchartWidget extends LitElementWw {
         this.graphNodes = [...this.graphNodes];
     }
 
+    /** @internal Handles mousemove on the canvas (dragging/panning/hover anchors). */
     private handleMouseMove(event: MouseEvent) {
         const { x, y } = this.getMouseCoordinates(event);
         if (this.selectionRectangle) {
@@ -1010,6 +1227,7 @@ export class FlowchartWidget extends LitElementWw {
         this.redrawCanvas();
     }
 
+    /** @internal Handles clicks (select node/arrow, reorder for z-index, context menu). */
     private handleClick(event: MouseEvent) {
         const { x, y } = this.getMouseCoordinates(event);
 
@@ -1054,6 +1272,7 @@ export class FlowchartWidget extends LitElementWw {
         }
     }
 
+    /** @internal Handles double clicks (open edit prompts). */
     private handleDoubleClick(event: MouseEvent) {
         if ((!this.allowStudentEdit && !this.hasAttribute("contenteditable"))) {
             return;
@@ -1070,6 +1289,7 @@ export class FlowchartWidget extends LitElementWw {
         }
     }
 
+    /** @internal Begin arrow creation from a node anchor. */
     private handleAnchorClick(node: GraphNode, anchor: number) {
         if(this.isArrowAnchorHovered) {
             return
@@ -1078,8 +1298,10 @@ export class FlowchartWidget extends LitElementWw {
         this.arrowStart = { node, anchor };
     }
 
+    /** @internal Cached mousedown listener for node anchors; installed on the canvas when a node is selected. */
     private anchorMouseDownEvent: ((event: MouseEvent) => void) | null = null;
 
+    /** @internal Update anchor pointer listeners based on the selected node. */
     private updateAnchorListeners() {
         if (this.selectedNode && this.selectedNode.node !== 'text') {
             const anchors = getAnchors(this.ctx, this.selectedNode, 15);
@@ -1110,6 +1332,7 @@ export class FlowchartWidget extends LitElementWw {
 
     // ------------------------ Lifecycle ------------------------
 
+    /** @internal Lit lifecycle: canvas setup, zoom/apply, initial redraw. */
     firstUpdated() {
         // console.log('firstUpdated');
 
@@ -1136,14 +1359,9 @@ export class FlowchartWidget extends LitElementWw {
         if(this.allowStudentPan && !this.allowStudentEdit && !this.hasAttribute("contenteditable")){
             this.isGrabbing = true
         }
-
-        // Help Prelist
-        // helpPresets.forEach((item) => {
-        //    this.helpList.push(item);
-        //    addHelp(this, this.helpList);
-        // });
     }
 
+    /** @internal Lifecycle: wire global listeners and custom events. */
     connectedCallback() {
         super.connectedCallback();
         // window.addEventListener('resize', this.updateCanvasSize);
@@ -1155,6 +1373,7 @@ export class FlowchartWidget extends LitElementWw {
         this.addEventListener('startSelectSequence', this.selectSequence);
     }
 
+    /** @internal Lifecycle: teardown listeners. */
     disconnectedCallback() {
         // window.removeEventListener('resize', this.updateCanvasSize);
         window.removeEventListener('keydown', this.handleKeyDown);
@@ -1163,6 +1382,7 @@ export class FlowchartWidget extends LitElementWw {
         super.disconnectedCallback();
     }
 
+    /** @internal Lit lifecycle: re-render after contentEditable changes; auto-delete empty items. */
     updated(changedProperties: Map<string, any>) {
         if (changedProperties.has('contentEditable') && this.isEditable()) {
             autoDeleteEmptyItems(
@@ -1185,7 +1405,13 @@ export class FlowchartWidget extends LitElementWw {
         updateDisabledState(this, this.isEditable());
     }
 
-    // Wird aufgerufen, wenn ein Attribut des Elements geändert wird
+    /**
+     * When the 'graph-nodes' attribute changes, parse the JSON to `graphNodes`,
+     * recompute `arrows`, and redraw the canvas.
+     * @param {string} name
+     * @param {string} oldVal
+     * @param {string} newVal
+     */
     attributeChangedCallback(name: string, oldVal: string, newVal: string) {
         super.attributeChangedCallback(name, oldVal, newVal);
         if (name === 'graph-nodes') {
@@ -1202,9 +1428,9 @@ export class FlowchartWidget extends LitElementWw {
         }
     }
 
-    // ------------------------ Allgemeine Systemfunktionen ------------------------
+    // ------------------------ General System Functionality ------------------------
 
-    // Passt die Canvasgröße an die aktuelle Größe des Fenster an
+    /** @internal Recompute canvas dimensions and trigger redraw. */
     updateCanvasSize = () => {
         this.canvas.width = this.clientWidth;
         this.canvas.height = this.currentHeight;
@@ -1215,6 +1441,7 @@ export class FlowchartWidget extends LitElementWw {
         this.redrawCanvas();
     };
 
+    /** @internal Apply the current zoom level (50–200%) and redraw. */
     private applyZoom() {
         const scaleFactor = this.zoomLevel / 100;
         this.ctx.resetTransform();
@@ -1224,7 +1451,10 @@ export class FlowchartWidget extends LitElementWw {
         this.redrawCanvas();
     }
 
-    // Lösche alle Elemente vom Canvas
+    /**
+     * Clears all nodes and arrows; resets selection and temporary state; redraws the canvas.
+     * @returns {void}
+     */
     private clearAll() {
         this.graphNodes = [];
         this.selectedNode = undefined;
@@ -1233,7 +1463,7 @@ export class FlowchartWidget extends LitElementWw {
         this.redrawCanvas();
     }
 
-    // Lösche das ausgewählte Objekt
+    /** @internal Delete selected node(s) or arrow; maintain connections; redraw. */
     private deleteSelectedObject() {
         // Falls ein Knoten ausgewählt wurde, lösche den Knoten und alle zugehören Verbindungen
         if (this.selectedNodes) {
@@ -1296,7 +1526,12 @@ export class FlowchartWidget extends LitElementWw {
         this.redrawCanvas();
     }
 
-    // Gibe die aktuellen Koordinaten der Maus zurück, welche den Offset des Canvas und des scrollen berücksichtigt.
+    /**
+     * Converts a mouse event to world coordinates, accounting for zoom and pan.
+     * @param {MouseEvent} event
+     * @param {boolean} [withoutPan=false] - If true, ignore current pan offsets.
+     * @returns {{x:number,y:number}}
+     */
     private getMouseCoordinates(event: MouseEvent, withoutPan?: boolean) {
         const rect = this.canvas.getBoundingClientRect();
         const scaleFactor = this.zoomLevel / 100;
@@ -1317,10 +1552,27 @@ export class FlowchartWidget extends LitElementWw {
         return { x, y };
     }
 
+    /**
+     * Update canvas offset CSS variables when the workspace scrolls.
+     * Keeps pointer-to-world mapping consistent during scrolling.
+     *
+     * @param {Event} event
+     * @returns {void}
+     */
     private handleScroll(event: Event) {
         this.updateCanvasOffset();
     }
 
+    /**
+     * Zoom the canvas around the mouse pointer when panning is allowed or in edit mode.
+     * Prevents default wheel behavior, clamps zoom to [50, 200], and adjusts pan offsets
+     * so the world point under the cursor remains stable across zoom steps.
+     *
+     * Requires the widget to be focused (`:focus-within`) to activate.
+     *
+     * @param {WheelEvent} event
+     * @returns {void}
+     */
     private handleWheel(event: WheelEvent) {
         if ((this.allowStudentPan || this.hasAttribute("contenteditable")) && this.matches(':focus-within')) {
             event.preventDefault();
@@ -1356,6 +1608,7 @@ export class FlowchartWidget extends LitElementWw {
     }
     
 
+    /** @internal Sync CSS offset variables to the canvas bounding rect. */
     private updateCanvasOffset() {
         const offsetX = this.canvas.getBoundingClientRect().left;
         const offsetY = this.canvas.getBoundingClientRect().top;
@@ -1363,6 +1616,7 @@ export class FlowchartWidget extends LitElementWw {
         this.canvas.style.setProperty('--offset-y', `${offsetY}px`);
     }
 
+    /** @internal Key bindings (delete/backspace to remove selected item). */
     private handleKeyDown = (event: KeyboardEvent) => {
         const customPrompt = this.shadowRoot?.querySelector('custom-prompt');
         const confirmPrompt = this.shadowRoot?.querySelector('confirm-prompt');
@@ -1376,6 +1630,7 @@ export class FlowchartWidget extends LitElementWw {
         }
     };
 
+    /** @internal Drag-resize handle for widget height. */
     private handleYResizeEnd(event: MouseEvent) {
         this.currentHeight = Math.max(400, this.currentHeight + event.offsetY);
         this.height = this.currentHeight;
@@ -1385,7 +1640,7 @@ export class FlowchartWidget extends LitElementWw {
         this.redrawCanvas();
     }
 
-    // FIXME: Exiting fullscreen in preview
+    /** @internal Toggle fullscreen rendering and size recalculation. */
     private toggleFullscreen() {
         if (this.ownerDocument.fullscreenElement) {
             this.ownerDocument.exitFullscreen();
@@ -1416,8 +1671,9 @@ export class FlowchartWidget extends LitElementWw {
         }
     }
 
-    // ------------------------ Prompt Funktionen ------------------------
+    // ------------------------ Prompt Functionality ------------------------
 
+    /** @internal Open input prompt for node/arrow text editing. */
     private showCustomPrompt(type: 'node' | 'arrow', index: number) {
         const promptElement = this.shadowRoot.querySelector('custom-prompt') as CustomPrompt;
         // console.log(promptElement)
@@ -1430,7 +1686,6 @@ export class FlowchartWidget extends LitElementWw {
             }
         }
 
-        // promptElement.setInputValue(currentText);
         promptElement.classList.remove('hidden');
         this.shadowRoot.querySelector('custom-prompt').classList.remove('hidden');
 
@@ -1459,6 +1714,7 @@ export class FlowchartWidget extends LitElementWw {
         promptElement.onCancel = onCancel;
     }
 
+    /** @internal Open confirm prompt to clear all content. */
     private showConfirmPrompt() {
         const confirmPrompt = this.shadowRoot.querySelector('confirm-prompt') as ConfirmPrompt;
         confirmPrompt.classList.remove('hidden');
@@ -1479,6 +1735,7 @@ export class FlowchartWidget extends LitElementWw {
         (this.shadowRoot.querySelector('confirm-prompt') as ConfirmPrompt).onCancel = onCancel;
     }
 
+    /** @internal Hide any open prompts and disable related key listeners. */
     private hidePrompt() {
         const customPrompt = this.shadowRoot.querySelector('custom-prompt');
         const confirmPrompt = this.shadowRoot.querySelector('confirm-prompt') as ConfirmPrompt;
@@ -1493,6 +1750,7 @@ export class FlowchartWidget extends LitElementWw {
         }
     }
 
+    /** @internal Handle prompt submissions, update text, reorder arrows for z-index. */
     private handlePromptSubmit(event: CustomEvent) {
         const newText = event.detail.value;
 
@@ -1508,11 +1766,13 @@ export class FlowchartWidget extends LitElementWw {
         this.hidePrompt();
     }
 
+    /** @internal Show solution overlay with a message. */
     private showSolutionWithMessage(message: string) {
         this.solutionMessage = message;
         this.showSolution = true;
     }
 
+    /** @internal Close the solution overlay. */
     private closeSolution() {
         this.showSolution = false;
     }
