@@ -54,7 +54,7 @@ import { localized, msg } from "@lit/localize"
 import LOCALIZE from "./localization/generated"
 
 /**
- * @summary Interactive flowchart widget with draggable nodes, connectable arrows, and built-in menus for tasks, hints, translation, and settings.
+ * @summary Create programming flowcharts with interactive tasks. Use standardized Elements such as loops and Branchings.
  *
  * @tag webwriter-flowchart
  * @tagname webwriter-flowchart

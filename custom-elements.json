@@ -1,0 +1,786 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "index.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "FlowchartWidget",
+          "cssProperties": [
+            {
+              "description": "Spacing between grid dots (derived from zoom).",
+              "name": "--scaled-grid-size",
+              "default": "50px"
+            },
+            {
+              "description": "Dot radius for the background grid (derived from zoom).",
+              "name": "--scaled-grid-dot-size",
+              "default": "1.5px"
+            },
+            {
+              "description": "Internal canvas left offset (managed by the widget).",
+              "name": "--offset-x"
+            },
+            {
+              "description": "Internal canvas top offset (managed by the widget).",
+              "name": "--offset-y"
+            },
+            {
+              "description": "Workspace height in pixels.",
+              "name": "--widget-height"
+            }
+          ],
+          "cssParts": [
+            {
+              "description": "Styles the settings sidebar (tool menu).",
+              "name": "options"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "localize",
+              "privacy": "public",
+              "default": "LOCALIZE"
+            },
+            {
+              "kind": "field",
+              "name": "graphNodes",
+              "type": {
+                "text": "GraphNode[]"
+              },
+              "default": "[]",
+              "description": "Current list of graph nodes (programmatic API).",
+              "attribute": "graphNodes",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "arrows",
+              "type": {
+                "text": "Arrow[]"
+              },
+              "default": "[]",
+              "description": "Current list of arrows between nodes (programmatic API).",
+              "attribute": "arrows"
+            },
+            {
+              "kind": "field",
+              "name": "getGraphNodes",
+              "description": "Get the current nodes.",
+              "return": {
+                "type": {
+                  "text": "GraphNode[]"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "getArrows",
+              "description": "Get the current arrows.",
+              "return": {
+                "type": {
+                  "text": "Arrow[]"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "taskList",
+              "type": {
+                "text": "ItemList[]"
+              },
+              "default": "[]",
+              "description": "Tasks shown in the task menu.",
+              "attribute": "taskList",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "helpList",
+              "type": {
+                "text": "ItemList[]"
+              },
+              "default": "[]",
+              "description": "Hints shown in the help menu.",
+              "attribute": "helpList",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "height",
+              "type": {
+                "text": "number"
+              },
+              "default": "400",
+              "description": "Canvas height (px).",
+              "attribute": "height",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "zoomLevel",
+              "type": {
+                "text": "number"
+              },
+              "default": "100",
+              "description": "Current zoom percentage (50–200).",
+              "attribute": "zoomLevel",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "canvasOffsetX",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "description": "Horizontal pan offset (world units).",
+              "attribute": "canvasOffsetX",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "canvasOffsetY",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "description": "Vertical pan offset (world units).",
+              "attribute": "canvasOffsetY",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "allowStudentEdit",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Allow interactive editing (adding/dragging/deleting).",
+              "attribute": "allowStudentEdit",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "allowStudentPan",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Allow panning/zooming interactions.",
+              "attribute": "allowStudentPan",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "font",
+              "type": {
+                "text": "string"
+              },
+              "default": "'Courier New'",
+              "description": "Font family used for labels.",
+              "attribute": "font",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "fontSize",
+              "type": {
+                "text": "number"
+              },
+              "default": "16",
+              "description": "Font size used for labels.",
+              "attribute": "fontSize",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "theme",
+              "type": {
+                "text": "string"
+              },
+              "default": "'standard'",
+              "description": "Color theme name.",
+              "attribute": "theme",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "fullscreen",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Whether the widget is currently in fullscreen mode.",
+              "attribute": "fullscreen"
+            },
+            {
+              "kind": "field",
+              "name": "getSelectedSequence",
+              "description": "Get the currently selected path sequence.",
+              "return": {
+                "type": {
+                  "text": "Array<{ id: string; order: number; type: string }>"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "getActiveSequenceButton",
+              "description": "Get the active sequence button.",
+              "return": {
+                "type": {
+                  "text": "HTMLButtonElement|null"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "setActiveSequenceButton",
+              "description": "Set the active sequence button.",
+              "parameters": [
+                {
+                  "name": "btn",
+                  "type": {
+                    "text": "HTMLButtonElement|null"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "isSelectingSequence",
+              "description": "Set path-selection mode.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "solutionMessage",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "Message shown in the solution prompt.",
+              "attribute": "solutionMessage"
+            },
+            {
+              "kind": "field",
+              "name": "showSolution",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Whether the solution prompt is visible.",
+              "attribute": "showSolution"
+            },
+            {
+              "kind": "method",
+              "name": "isEditable",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "description": "Returns whether the widget is currently in an editable state\nbased on the `contenteditable` attribute."
+            },
+            {
+              "kind": "method",
+              "name": "translateFlowchart",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "language",
+                  "type": {
+                    "text": "'natural'|'pseudo'"
+                  },
+                  "description": "Target format for the translation."
+                }
+              ],
+              "description": "Translate the current flowchart into either natural language or pseudocode.\nBuilds a chat-style message array via `generateMessages()`, shows a busy cursor,\ncalls the Netlify function `/.netlify/functions/translateFlowchart`, and writes the\nreturned `translation` into the corresponding output textarea.",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "generateMessages",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "{ role: string; content: string }[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "language",
+                  "type": {
+                    "text": "'natural'|'pseudo'"
+                  },
+                  "description": "Controls the system directive in the messages."
+                }
+              ],
+              "description": "Build a chat-style message array that encodes the current flowchart structure.\nThe system message instructs the translator for either natural language\nor pseudocode. The user message enumerates all nodes and their connections:\nID, node type, text, anchors, directions, and connected node IDs (with optional text)."
+            },
+            {
+              "kind": "method",
+              "name": "selectSequence",
+              "description": "Toggle path-selection mode for solution checking.\nWhen turning off the mode, clears the current selected sequence and any selected\nnode/arrow/rectangle, then triggers a redraw. Also toggles the `active` class on\nthe `#select-button` element (if present).",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "checkSolution",
+              "parameters": [
+                {
+                  "name": "task",
+                  "type": {
+                    "text": "ItemList"
+                  },
+                  "description": "Task item, optionally containing a `sequence` array of {id, order, type}."
+                }
+              ],
+              "description": "Compare the currently selected path sequence with a task's expected sequence.\nIf length and element-wise id/type match, shows a success message; otherwise\nshows a failure message. Uses `showSolutionWithMessage()` to display the result.",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "setSelectedSequence",
+              "description": "Programmatically set the selected path sequence.\nOverwrites the internal `selectedSequence` with the provided ordered descriptors.",
+              "parameters": [
+                {
+                  "description": "Ordered selection descriptors.",
+                  "name": "sequence",
+                  "type": {
+                    "text": "{ id: string; order: number; type: string }[]"
+                  }
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "addTask",
+              "privacy": "private",
+              "description": "Append a new editable task with default title/content to the task list.\nUseful in edit mode to quickly scaffold tasks.",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "addHelp",
+              "privacy": "private",
+              "description": "Append a new editable hint with default title/content to the help list.\nUseful in edit mode to scaffold hints.",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "showSolutionMenu",
+              "privacy": "private",
+              "description": "Show or hide the solution menu depending on:\n- Whether path-selection mode is active,\n- Whether at least one task contains a non-empty `sequence`,\n- And whether the widget is not in editable mode.\n\nAdds/removes the `hidden` class on `.solution-menu`.",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "grabCanvas",
+              "privacy": "private",
+              "description": "Toggle canvas panning (\"grab\") mode and clear node selection.\nDelegates to the `grabCanvas()` UI utility to update internal state.",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "reconnectArrows",
+              "privacy": "private",
+              "description": "Reconnect arrow endpoints after mutations to `graphNodes`,\nensuring `arrow.from` and `arrow.to` point to the current node instances\n(matched by their `id`). Safe to call after nodes are added/removed/reordered.",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "redrawCanvas",
+              "privacy": "private",
+              "description": "Full render pipeline:\n- Clears the canvas and applies the current zoom transform,\n- Draws the background grid (dots) honoring pan offsets,\n- Translates by pan offsets and reconnects arrows,\n- Recomputes arrow point geometry and draws arrows/nodes,\n- Draws anchors for the selected node/arrow,\n- Draws a temporary arrow while dragging, and a selection rectangle if active.",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "addGraphNode",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "node",
+                  "type": {
+                    "text": "'start'|'end'|'op'|'decision'|'connector'|'i/o'|'sub'|'text'"
+                  },
+                  "description": "Node type."
+                },
+                {
+                  "name": "text",
+                  "type": {
+                    "text": "string"
+                  },
+                  "description": "Initial text label for the node."
+                }
+              ],
+              "description": "Adds a new graph node of the given type at the current viewport center.\nThe node is appended to `graphNodes` and the canvas is redrawn.",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "clearAll",
+              "privacy": "private",
+              "description": "Clears all nodes and arrows; resets selection and temporary state; redraws the canvas.",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "getMouseCoordinates",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": {
+                    "text": "MouseEvent"
+                  }
+                },
+                {
+                  "name": "withoutPan",
+                  "optional": true,
+                  "type": {
+                    "text": "boolean"
+                  },
+                  "description": "If true, ignore current pan offsets."
+                }
+              ],
+              "description": "Converts a mouse event to world coordinates, accounting for zoom and pan.",
+              "return": {
+                "type": {
+                  "text": "{x:number,y:number}"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleScroll",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": {
+                    "text": "Event"
+                  }
+                }
+              ],
+              "description": "Update canvas offset CSS variables when the workspace scrolls.\nKeeps pointer-to-world mapping consistent during scrolling.",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleWheel",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": {
+                    "text": "WheelEvent"
+                  }
+                }
+              ],
+              "description": "Zoom the canvas around the mouse pointer when panning is allowed or in edit mode.\nPrevents default wheel behavior, clamps zoom to [50, 200], and adjusts pan offsets\nso the world point under the cursor remains stable across zoom steps.\n\nRequires the widget to be focused (`:focus-within`) to activate.",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "JSON string representing an array of GraphNode objects. When set, arrows are recomputed.",
+              "name": "graph-nodes"
+            },
+            {
+              "type": {
+                "text": "number"
+              },
+              "description": "Canvas height (px).",
+              "name": "height",
+              "default": "400",
+              "fieldName": "height"
+            },
+            {
+              "type": {
+                "text": "number"
+              },
+              "description": "Zoom percentage in the range [50, 200]. Default 100.",
+              "name": "zoom-level"
+            },
+            {
+              "type": {
+                "text": "number"
+              },
+              "description": "Horizontal pan offset in world units.",
+              "name": "canvas-offset-x"
+            },
+            {
+              "type": {
+                "text": "number"
+              },
+              "description": "Vertical pan offset in world units.",
+              "name": "canvas-offset-y"
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Enables student editing (adding, dragging, deleting).",
+              "name": "allow-student-edit"
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Enables student panning and zoom interaction.",
+              "name": "allow-student-pan"
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Font family used for labels.",
+              "name": "font",
+              "default": "'Courier New'",
+              "fieldName": "font"
+            },
+            {
+              "type": {
+                "text": "number"
+              },
+              "description": "Font size used for node labels. Default 16.",
+              "name": "font-size"
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Color theme name.",
+              "name": "theme",
+              "default": "'standard'",
+              "fieldName": "theme"
+            },
+            {
+              "name": "graphNodes",
+              "type": {
+                "text": "GraphNode[]"
+              },
+              "default": "[]",
+              "description": "Current list of graph nodes (programmatic API).",
+              "fieldName": "graphNodes"
+            },
+            {
+              "name": "arrows",
+              "type": {
+                "text": "Arrow[]"
+              },
+              "default": "[]",
+              "description": "Current list of arrows between nodes (programmatic API).",
+              "fieldName": "arrows"
+            },
+            {
+              "name": "taskList",
+              "type": {
+                "text": "ItemList[]"
+              },
+              "default": "[]",
+              "description": "Tasks shown in the task menu.",
+              "fieldName": "taskList"
+            },
+            {
+              "name": "helpList",
+              "type": {
+                "text": "ItemList[]"
+              },
+              "default": "[]",
+              "description": "Hints shown in the help menu.",
+              "fieldName": "helpList"
+            },
+            {
+              "name": "zoomLevel",
+              "type": {
+                "text": "number"
+              },
+              "default": "100",
+              "description": "Current zoom percentage (50–200).",
+              "fieldName": "zoomLevel"
+            },
+            {
+              "name": "canvasOffsetX",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "description": "Horizontal pan offset (world units).",
+              "fieldName": "canvasOffsetX"
+            },
+            {
+              "name": "canvasOffsetY",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "description": "Vertical pan offset (world units).",
+              "fieldName": "canvasOffsetY"
+            },
+            {
+              "name": "allowStudentEdit",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Allow interactive editing (adding/dragging/deleting).",
+              "fieldName": "allowStudentEdit"
+            },
+            {
+              "name": "allowStudentPan",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Allow panning/zooming interactions.",
+              "fieldName": "allowStudentPan"
+            },
+            {
+              "name": "fontSize",
+              "type": {
+                "text": "number"
+              },
+              "default": "16",
+              "description": "Font size used for labels.",
+              "fieldName": "fontSize"
+            },
+            {
+              "name": "fullscreen",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Whether the widget is currently in fullscreen mode.",
+              "fieldName": "fullscreen"
+            },
+            {
+              "name": "solutionMessage",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "Message shown in the solution prompt.",
+              "fieldName": "solutionMessage"
+            },
+            {
+              "name": "showSolution",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Whether the solution prompt is visible.",
+              "fieldName": "showSolution"
+            }
+          ],
+          "superclass": {
+            "name": "LitElementWw",
+            "package": "@webwriter/lit"
+          },
+          "tagName": "webwriter-flowchart",
+          "customElement": true,
+          "summary": "Create programming flowcharts with interactive tasks. Use standardized Elements such as loops and Branchings."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "FlowchartWidget",
+          "declaration": {
+            "name": "FlowchartWidget",
+            "module": "index.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "webwriter-flowchart",
+          "declaration": {
+            "name": "FlowchartWidget",
+            "module": "index.ts"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -89,9 +89,11 @@
     "./snippets/Kontextbeispiel.html": "./snippets/Kontextbeispiel.html",
     "./package.json": "./package.json",
     "./icon": "./icon.svg",
-    "./editing-config.json": "./editing-config.json"
+    "./editing-config.json": "./editing-config.json",
+    "./custom-elements.json": "./custom-elements.json"
   },
   "editingConfig": {
     ".": {}
-  }
+  },
+  "customElements": "custom-elements.json"
 }
