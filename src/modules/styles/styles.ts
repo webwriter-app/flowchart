@@ -633,6 +633,7 @@ export const papWidgetStyles = css`
         flex: 1;
         text-align: left;
         margin-left: 10px;
+		appearance: none;
     }
 
     .setting-item select:hover {
