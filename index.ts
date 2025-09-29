@@ -310,7 +310,7 @@ export class FlowchartWidget extends LitElementWw {
             <div class="workspace" @scroll="${this.handleScroll}">
                 <canvas
                     width="100%"
-                    height="${this.currentHeight}"
+                    height="${this.currentHeight * (window.devicePixelRatio || 1)}"
                     @mousedown="${this.handleMouseDown}"
                     @mouseup="${this.handleMouseUp}"
                     @mousemove="${this.handleMouseMove}"
@@ -902,17 +902,18 @@ export class FlowchartWidget extends LitElementWw {
      * @returns {void}
      */
     private redrawCanvas() {
+		const dpi = window.devicePixelRatio || 1;
         // Bereinige das Canvas und berücksichtigt den Zoom Faktor
         const scaleFactor = this.zoomLevel / 100;
         this.ctx.resetTransform();
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.ctx.scale(scaleFactor, scaleFactor);
+        this.ctx.scale(scaleFactor * dpi, scaleFactor * dpi);
 
         // Draw the grid
         const gridSize = this.gridSize;         // base spacing between grid points (unscaled)
         const dotSize = this.dotSize;           // radius of each dot (unscaled)
-        const width = this.canvas.width / scaleFactor;
-        const height = this.canvas.height / scaleFactor;
+        const width = this.canvas.width / scaleFactor / dpi;
+        const height = this.canvas.height / scaleFactor / dpi;
 
         this.ctx.fillStyle = "#104e8b";
 
@@ -986,9 +987,10 @@ export class FlowchartWidget extends LitElementWw {
         text: string
     ) {
         const workspace = this.shadowRoot?.querySelector('.workspace') as HTMLElement;
+		const dpi = window.devicePixelRatio || 1;
         const scaleFactor = this.zoomLevel / 100;
-        let centerX = (this.canvas.width * 0.4 + workspace.scrollLeft) / scaleFactor - this.canvasOffsetX;
-        let centerY = (this.canvas.height * 0.4 + workspace.scrollTop) / scaleFactor - this.canvasOffsetY;
+        let centerX = (this.canvas.width / dpi * 0.4 + workspace.scrollLeft) / scaleFactor - this.canvasOffsetX;
+        let centerY = (this.canvas.height / dpi * 0.4 + workspace.scrollTop) / scaleFactor - this.canvasOffsetY;
 
         switch (this.addGraphNodeIndex) {
             case 0:
@@ -1339,8 +1341,9 @@ export class FlowchartWidget extends LitElementWw {
         // console.log('this', this.taskList.length);
 
         this.canvas = this.shadowRoot?.querySelector('canvas') as HTMLCanvasElement;
-        this.canvas.width = this.clientWidth;
-        this.canvas.height = this.currentHeight;
+		const dpi = window.devicePixelRatio || 1;
+        this.canvas.width = this.clientWidth * dpi;
+        this.canvas.height = this.currentHeight * dpi;
         const workspace = this.shadowRoot.querySelector('.workspace') as HTMLElement;
         workspace.style.setProperty('--widget-height', `${this.currentHeight}px`);
 
@@ -1432,8 +1435,9 @@ export class FlowchartWidget extends LitElementWw {
 
     /** @internal Recompute canvas dimensions and trigger redraw. */
     updateCanvasSize = () => {
-        this.canvas.width = this.clientWidth;
-        this.canvas.height = this.currentHeight;
+		const dpi = window.devicePixelRatio || 1;
+        this.canvas.width = this.clientWidth * dpi;
+        this.canvas.height = this.currentHeight * dpi;
 
         const workspace = this.shadowRoot.querySelector('.workspace') as HTMLElement;
         workspace.style.setProperty('--widget-height', `${this.currentHeight}px`);
@@ -1443,9 +1447,10 @@ export class FlowchartWidget extends LitElementWw {
 
     /** @internal Apply the current zoom level (50–200%) and redraw. */
     private applyZoom() {
+		const dpi = window.devicePixelRatio || 1;
         const scaleFactor = this.zoomLevel / 100;
         this.ctx.resetTransform();
-        this.ctx.scale(scaleFactor, scaleFactor);
+        this.ctx.scale(scaleFactor * dpi, scaleFactor * dpi);
         this.canvas.style.setProperty('--scaled-grid-size', `${scaleFactor * this.gridSize}px`);
         this.canvas.style.setProperty('--scaled-grid-dot-size', `${scaleFactor * this.dotSize}px`);
         this.redrawCanvas();
@@ -1657,8 +1662,9 @@ export class FlowchartWidget extends LitElementWw {
                 const workspace = this.shadowRoot.querySelector('.workspace') as HTMLElement;
                 workspace.style.setProperty('--widget-height', `${window.outerHeight}px`);
                 this.shadowRoot.querySelector('.flowchart-menu').classList.add('fullscreen');
-                this.canvas.width = window.outerWidth;
-                this.canvas.height = window.outerHeight;
+				const dpi = window.devicePixelRatio || 1;
+                this.canvas.width = window.outerWidth * dpi;
+                this.canvas.height = window.outerHeight * dpi;
                 this.currentHeight = window.outerHeight;
                 this.fullscreen = true;
             }, 100);
