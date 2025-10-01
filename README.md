@@ -1,5 +1,5 @@
-# Flowchart (`@webwriter/flowchart@2.0.8`)
-[License: MIT](LICENSE) | Version: 2.0.8
+# Flowchart (`@webwriter/flowchart@2.0.9`)
+[License: MIT](LICENSE) | Version: 2.0.9
 
 Create programming flowcharts with interactive tasks. Use standardized Elements such as loops and Branchings.
 
@@ -8,11 +8,11 @@ Create programming flowcharts with interactive tasks. Use standardized Elements 
 
 | Name | Import Path |
 | :--: | :---------: |
-| Erklaerung | @webwriter/flowchart/snippets/Erklaerung.html |
-| For Schleife | @webwriter/flowchart/snippets/For-Schleife.html |
-| If Else | @webwriter/flowchart/snippets/If-Else.html |
-| Switch | @webwriter/flowchart/snippets/Switch.html |
-| Kontextbeispiel | @webwriter/flowchart/snippets/Kontextbeispiel.html |
+| Erklaerung | `@webwriter/flowchart/snippets/Erklaerung.html` |
+| For Schleife | `@webwriter/flowchart/snippets/For-Schleife.html` |
+| If Else | `@webwriter/flowchart/snippets/If-Else.html` |
+| Switch | `@webwriter/flowchart/snippets/Switch.html` |
+| Kontextbeispiel | `@webwriter/flowchart/snippets/Kontextbeispiel.html` |
 
 
 
@@ -108,4 +108,4 @@ npm install @webwriter/flowchart
 
 
 ---
-*Generated with @webwriter/build@1.8.1*
+*Generated with @webwriter/build@1.9.0*
