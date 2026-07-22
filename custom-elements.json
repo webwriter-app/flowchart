@@ -156,13 +156,33 @@
             },
             {
               "kind": "field",
-              "name": "allowStudentEdit",
+              "name": "disableStudentEdit",
               "type": {
                 "text": "boolean"
               },
               "default": "false",
-              "description": "Allow interactive editing (adding/dragging/deleting).",
-              "attribute": "allowStudentEdit",
+              "description": "Disables interactive editing (adding/dragging/deleting).",
+              "attribute": "disableStudentEdit",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "allowStudentEdit",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "disableStudentPan",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Disables panning/zooming interactions.",
+              "attribute": "disableStudentPan",
               "reflects": true
             },
             {
@@ -171,10 +191,8 @@
               "type": {
                 "text": "boolean"
               },
-              "default": "false",
-              "description": "Allow panning/zooming interactions.",
-              "attribute": "allowStudentPan",
-              "reflects": true
+              "privacy": "private",
+              "readonly": true
             },
             {
               "kind": "field",
@@ -299,7 +317,7 @@
                   "text": "boolean"
                 }
               },
-              "description": "Returns whether the widget is currently in an editable state\nbased on the `contenteditable` attribute."
+              "description": "Returns whether the widget is currently in an editable state\r\nbased on the `contenteditable` attribute."
             },
             {
               "kind": "method",
@@ -314,7 +332,7 @@
                   "description": "Target format for the translation."
                 }
               ],
-              "description": "Translate the current flowchart into either natural language or pseudocode.\nBuilds a chat-style message array via `generateMessages()`, shows a busy cursor,\ncalls the Netlify function `/.netlify/functions/translateFlowchart`, and writes the\nreturned `translation` into the corresponding output textarea.",
+              "description": "Translate the current flowchart into either natural language or pseudocode.\r\nBuilds a chat-style message array via `generateMessages()`, shows a busy cursor,\r\ncalls the Netlify function `/.netlify/functions/translateFlowchart`, and writes the\r\nreturned `translation` into the corresponding output textarea.",
               "return": {
                 "type": {
                   "text": "void"
@@ -339,12 +357,12 @@
                   "description": "Controls the system directive in the messages."
                 }
               ],
-              "description": "Build a chat-style message array that encodes the current flowchart structure.\nThe system message instructs the translator for either natural language\nor pseudocode. The user message enumerates all nodes and their connections:\nID, node type, text, anchors, directions, and connected node IDs (with optional text)."
+              "description": "Build a chat-style message array that encodes the current flowchart structure.\r\nThe system message instructs the translator for either natural language\r\nor pseudocode. The user message enumerates all nodes and their connections:\r\nID, node type, text, anchors, directions, and connected node IDs (with optional text)."
             },
             {
               "kind": "method",
               "name": "selectSequence",
-              "description": "Toggle path-selection mode for solution checking.\nWhen turning off the mode, clears the current selected sequence and any selected\nnode/arrow/rectangle, then triggers a redraw. Also toggles the `active` class on\nthe `#select-button` element (if present).",
+              "description": "Toggle path-selection mode for solution checking.\r\nWhen turning off the mode, clears the current selected sequence and any selected\r\nnode/arrow/rectangle, then triggers a redraw. Also toggles the `active` class on\r\nthe `#select-button` element (if present).",
               "return": {
                 "type": {
                   "text": "void"
@@ -363,7 +381,7 @@
                   "description": "Task item, optionally containing a `sequence` array of {id, order, type}."
                 }
               ],
-              "description": "Compare the currently selected path sequence with a task's expected sequence.\nIf length and element-wise id/type match, shows a success message; otherwise\nshows a failure message. Uses `showSolutionWithMessage()` to display the result.",
+              "description": "Compare the currently selected path sequence with a task's expected sequence.\r\nIf length and element-wise id/type match, shows a success message; otherwise\r\nshows a failure message. Uses `showSolutionWithMessage()` to display the result.",
               "return": {
                 "type": {
                   "text": "void"
@@ -373,7 +391,7 @@
             {
               "kind": "field",
               "name": "setSelectedSequence",
-              "description": "Programmatically set the selected path sequence.\nOverwrites the internal `selectedSequence` with the provided ordered descriptors.",
+              "description": "Programmatically set the selected path sequence.\r\nOverwrites the internal `selectedSequence` with the provided ordered descriptors.",
               "parameters": [
                 {
                   "description": "Ordered selection descriptors.",
@@ -393,7 +411,7 @@
               "kind": "method",
               "name": "addTask",
               "privacy": "private",
-              "description": "Append a new editable task with default title/content to the task list.\nUseful in edit mode to quickly scaffold tasks.",
+              "description": "Append a new editable task with default title/content to the task list.\r\nUseful in edit mode to quickly scaffold tasks.",
               "return": {
                 "type": {
                   "text": "void"
@@ -404,7 +422,7 @@
               "kind": "method",
               "name": "addHelp",
               "privacy": "private",
-              "description": "Append a new editable hint with default title/content to the help list.\nUseful in edit mode to scaffold hints.",
+              "description": "Append a new editable hint with default title/content to the help list.\r\nUseful in edit mode to scaffold hints.",
               "return": {
                 "type": {
                   "text": "void"
@@ -415,7 +433,7 @@
               "kind": "method",
               "name": "showSolutionMenu",
               "privacy": "private",
-              "description": "Show or hide the solution menu depending on:\n- Whether path-selection mode is active,\n- Whether at least one task contains a non-empty `sequence`,\n- And whether the widget is not in editable mode.\n\nAdds/removes the `hidden` class on `.solution-menu`.",
+              "description": "Show or hide the solution menu depending on:\r\n- Whether path-selection mode is active,\r\n- Whether at least one task contains a non-empty `sequence`,\r\n- And whether the widget is not in editable mode.\r\n\r\nAdds/removes the `hidden` class on `.solution-menu`.",
               "return": {
                 "type": {
                   "text": "void"
@@ -426,7 +444,7 @@
               "kind": "method",
               "name": "grabCanvas",
               "privacy": "private",
-              "description": "Toggle canvas panning (\"grab\") mode and clear node selection.\nDelegates to the `grabCanvas()` UI utility to update internal state.",
+              "description": "Toggle canvas panning (\"grab\") mode and clear node selection.\r\nDelegates to the `grabCanvas()` UI utility to update internal state.",
               "return": {
                 "type": {
                   "text": "void"
@@ -437,7 +455,7 @@
               "kind": "method",
               "name": "reconnectArrows",
               "privacy": "private",
-              "description": "Reconnect arrow endpoints after mutations to `graphNodes`,\nensuring `arrow.from` and `arrow.to` point to the current node instances\n(matched by their `id`). Safe to call after nodes are added/removed/reordered.",
+              "description": "Reconnect arrow endpoints after mutations to `graphNodes`,\r\nensuring `arrow.from` and `arrow.to` point to the current node instances\r\n(matched by their `id`). Safe to call after nodes are added/removed/reordered.",
               "return": {
                 "type": {
                   "text": "void"
@@ -448,7 +466,7 @@
               "kind": "method",
               "name": "redrawCanvas",
               "privacy": "private",
-              "description": "Full render pipeline:\n- Clears the canvas and applies the current zoom transform,\n- Draws the background grid (dots) honoring pan offsets,\n- Translates by pan offsets and reconnects arrows,\n- Recomputes arrow point geometry and draws arrows/nodes,\n- Draws anchors for the selected node/arrow,\n- Draws a temporary arrow while dragging, and a selection rectangle if active.",
+              "description": "Full render pipeline:\r\n- Clears the canvas and applies the current zoom transform,\r\n- Draws the background grid (dots) honoring pan offsets,\r\n- Translates by pan offsets and reconnects arrows,\r\n- Recomputes arrow point geometry and draws arrows/nodes,\r\n- Draws anchors for the selected node/arrow,\r\n- Draws a temporary arrow while dragging, and a selection rectangle if active.",
               "return": {
                 "type": {
                   "text": "void"
@@ -475,7 +493,7 @@
                   "description": "Initial text label for the node."
                 }
               ],
-              "description": "Adds a new graph node of the given type at the current viewport center.\nThe node is appended to `graphNodes` and the canvas is redrawn.",
+              "description": "Adds a new graph node of the given type at the current viewport center.\r\nThe node is appended to `graphNodes` and the canvas is redrawn.",
               "return": {
                 "type": {
                   "text": "void"
@@ -532,7 +550,7 @@
                   }
                 }
               ],
-              "description": "Update canvas offset CSS variables when the workspace scrolls.\nKeeps pointer-to-world mapping consistent during scrolling.",
+              "description": "Update canvas offset CSS variables when the workspace scrolls.\r\nKeeps pointer-to-world mapping consistent during scrolling.",
               "return": {
                 "type": {
                   "text": "void"
@@ -551,7 +569,7 @@
                   }
                 }
               ],
-              "description": "Zoom the canvas around the mouse pointer when panning is allowed or in edit mode.\nPrevents default wheel behavior, clamps zoom to [50, 200], and adjusts pan offsets\nso the world point under the cursor remains stable across zoom steps.\n\nRequires the widget to be focused (`:focus-within`) to activate.",
+              "description": "Zoom the canvas around the mouse pointer when panning is allowed or in edit mode.\r\nPrevents default wheel behavior, clamps zoom to [50, 200], and adjusts pan offsets\r\nso the world point under the cursor remains stable across zoom steps.\r\n\r\nRequires the widget to be focused (`:focus-within`) to activate.",
               "return": {
                 "type": {
                   "text": "void"
@@ -700,22 +718,22 @@
               "fieldName": "canvasOffsetY"
             },
             {
-              "name": "allowStudentEdit",
+              "name": "disableStudentEdit",
               "type": {
                 "text": "boolean"
               },
               "default": "false",
-              "description": "Allow interactive editing (adding/dragging/deleting).",
-              "fieldName": "allowStudentEdit"
+              "description": "Disables interactive editing (adding/dragging/deleting).",
+              "fieldName": "disableStudentEdit"
             },
             {
-              "name": "allowStudentPan",
+              "name": "disableStudentPan",
               "type": {
                 "text": "boolean"
               },
               "default": "false",
-              "description": "Allow panning/zooming interactions.",
-              "fieldName": "allowStudentPan"
+              "description": "Disables panning/zooming interactions.",
+              "fieldName": "disableStudentPan"
             },
             {
               "name": "fontSize",

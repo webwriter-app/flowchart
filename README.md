@@ -54,8 +54,8 @@ npm install @webwriter/flowchart
 | `zoomLevel` (`zoomLevel`) | `number` | Current zoom percentage (50–200). | `100` | ✓ |
 | `canvasOffsetX` (`canvasOffsetX`) | `number` | Horizontal pan offset (world units). | `0` | ✓ |
 | `canvasOffsetY` (`canvasOffsetY`) | `number` | Vertical pan offset (world units). | `0` | ✓ |
-| `allowStudentEdit` (`allowStudentEdit`) | `boolean` | Allow interactive editing (adding/dragging/deleting). | `false` | ✓ |
-| `allowStudentPan` (`allowStudentPan`) | `boolean` | Allow panning/zooming interactions. | `false` | ✓ |
+| `disableStudentEdit` (`disableStudentEdit`) | `boolean` | Disables interactive editing (adding/dragging/deleting). | `false` | ✓ |
+| `disableStudentPan` (`disableStudentPan`) | `boolean` | Disables panning/zooming interactions. | `false` | ✓ |
 | `font` (`font`) | `string` | Font family used for labels. | `'Courier New'` | ✓ |
 | `fontSize` (`fontSize`) | `number` | Font size used for labels. | `16` | ✓ |
 | `theme` (`theme`) | `string` | Color theme name. | `'standard'` | ✓ |
@@ -108,4 +108,4 @@ npm install @webwriter/flowchart
 
 
 ---
-*Generated with @webwriter/build@1.9.0*
+*Generated with @webwriter/build@1.9.1*

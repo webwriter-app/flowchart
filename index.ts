@@ -154,11 +154,13 @@ export class FlowchartWidget extends LitElementWw {
     /** Vertical pan offset (world units). */
     @property({ type: Number, reflect: true, attribute: true }) accessor canvasOffsetY: number = 0;
 
-    /** Allow interactive editing (adding/dragging/deleting). */
-    @property({ type: Boolean, reflect: true, attribute: true }) accessor allowStudentEdit: boolean = false;
+    /** Disables interactive editing (adding/dragging/deleting). */
+    @property({ type: Boolean, reflect: true, attribute: true }) accessor disableStudentEdit: boolean = false;
+    private get allowStudentEdit(): boolean { return !this.disableStudentEdit; }
 
-    /** Allow panning/zooming interactions. */
-    @property({ type: Boolean, reflect: true, attribute: true }) accessor allowStudentPan: boolean = false;
+    /** Disables panning/zooming interactions. */
+    @property({ type: Boolean, reflect: true, attribute: true }) accessor disableStudentPan: boolean = false;
+    private get allowStudentPan(): boolean { return !this.disableStudentPan; }
 
     /** Font family for node labels. */
     @property({ type: String, reflect: true, attribute: true }) accessor font = 'Courier New';
@@ -576,7 +578,7 @@ export class FlowchartWidget extends LitElementWw {
                     type="checkbox"
                     id="editable-checkbox"
                     @change="${(e) => {
-                        this.allowStudentEdit = e.target.checked;
+                        this.disableStudentEdit = !e.target.checked;
                     }}"
                     ?checked="${this.allowStudentEdit}"
                 />
@@ -587,7 +589,7 @@ export class FlowchartWidget extends LitElementWw {
                     type="checkbox"
                     id="panable-checkbox"
                     @change="${(e) => {
-                        this.allowStudentPan = e.target.checked;
+                        this.disableStudentPan = !e.target.checked;
                     }}"
                     ?checked="${this.allowStudentPan}"
                 />
