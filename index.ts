@@ -175,6 +175,9 @@ export class FlowchartWidget extends LitElementWw {
     /** @internal Focus delegation for better keyboard support. */
     static shadowRootOptions = { ...LitElement.shadowRootOptions, delegatesFocus: true };
 
+    /** @internal Keeps the canvas in sync with the host box (fullscreen, window resize). */
+    private resizeObserver = new ResizeObserver(() => this.syncLayout());
+
     /** @internal Canvas element reference. */
     private canvas: HTMLCanvasElement;
 
@@ -1373,6 +1376,8 @@ export class FlowchartWidget extends LitElementWw {
         // Konvertiert das Array in einen String und setzt es als Attribut
         //this.setAttribute('graph-nodes', JSON.stringify(this.graphNodes));
 
+        this.resizeObserver.observe(this);
+        this.addEventListener('fullscreenchange', this.syncLayout);
         this.addEventListener('startSelectSequence', this.selectSequence);
     }
 
@@ -1381,6 +1386,8 @@ export class FlowchartWidget extends LitElementWw {
         // window.removeEventListener('resize', this.updateCanvasSize);
         window.removeEventListener('keydown', this.handleKeyDown);
 
+        this.resizeObserver.disconnect();
+        this.removeEventListener('fullscreenchange', this.syncLayout);
         this.removeEventListener('startSelectSequence', this.selectSequence.bind(this));
         super.disconnectedCallback();
     }
@@ -1645,37 +1652,36 @@ export class FlowchartWidget extends LitElementWw {
         this.redrawCanvas();
     }
 
-    /** @internal Toggle fullscreen rendering and size recalculation. */
+    /** @internal Toggle fullscreen. The resulting layout change is picked up by `syncLayout`. */
     private toggleFullscreen() {
-        if (this.ownerDocument.fullscreenElement) {
+        if (this.isFullscreen) {
             this.ownerDocument.exitFullscreen();
-            this.shadowRoot.querySelector('.flowchart-menu').classList.remove('fullscreen');
-            this.fullscreen = false;
-            this.currentHeight = this.height;
-            this.canvas.style.width = "100%"
-            this.canvas.style.height = ""
-            this.updateCanvasSize();
         } else {
             this.requestFullscreen({ navigationUI: 'hide' });
-
-            setTimeout(() => {
-                const workspace = this.shadowRoot.querySelector('.workspace') as HTMLElement;
-                workspace.style.setProperty('--widget-height', `${window.outerHeight}px`);
-                this.shadowRoot.querySelector('.flowchart-menu').classList.add('fullscreen');
-				const dpi = window.devicePixelRatio || 1;
-                this.canvas.width = window.outerWidth * dpi;
-                this.canvas.height = window.outerHeight * dpi;
-                this.currentHeight = window.outerHeight;
-                this.fullscreen = true;
-            }, 100);
-
-
-            this.addEventListener('fullscreenchange', () => {
-                this.requestUpdate()
-                this.updateCanvasSize();
-            });
         }
     }
+
+    /** @internal Whether this widget is the fullscreen element. */
+    private get isFullscreen(): boolean {
+        return this.ownerDocument.fullscreenElement === this;
+    }
+
+    /** @internal Update canvas with the current fullscreen state and height. */
+    private syncLayout = () => {
+        if (!this.canvas) return;
+
+        const fullscreen = this.isFullscreen;
+
+        if (fullscreen !== this.fullscreen) {
+            this.shadowRoot.querySelector('.flowchart-menu').classList.toggle('fullscreen', fullscreen);
+            this.fullscreen = fullscreen;
+        }
+
+        this.currentHeight = fullscreen ? this.clientHeight : this.height;
+        this.canvas.style.width = '100%';
+        this.canvas.style.height = '';
+        this.updateCanvasSize();
+    };
 
     // ------------------------ Prompt Functionality ------------------------
 
