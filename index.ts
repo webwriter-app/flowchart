@@ -202,6 +202,18 @@ export class FlowchartWidget extends LitElementWw {
     /** @internal Temporary arrow endpoint while dragging. */
     private tempArrowEnd?: { x: number; y: number };
 
+    /** @internal Currently active pointers on the canvas (id → last screen position). Drives multi-touch gestures. */
+    private activePointers = new Map<number, { x: number; y: number }>();
+
+    /** @internal Type of the most recent pointer ("mouse" | "touch" | "pen"). Used to enlarge hit targets for touch. */
+    private lastPointerType: string = 'mouse';
+
+    /** @internal Active two-finger pinch/pan gesture state (zoom + pan around the finger midpoint). */
+    private pinchState?: { startDist: number; startZoom: number; lastMidX: number; lastMidY: number };
+
+    /** @internal Blocks single-pointer handling for leftover fingers after a multi-touch gesture. */
+    private suppressSinglePointer = false;
+
     /** @internal Canvas panning (grab) state. */
     private isGrabbing = false;
     /** @internal Start pointer position for grab. */
@@ -316,9 +328,10 @@ export class FlowchartWidget extends LitElementWw {
                 <canvas
                     width="100%"
                     height="${this.currentHeight * (window.devicePixelRatio || 1)}"
-                    @mousedown="${this.handleMouseDown}"
-                    @mouseup="${this.handleMouseUp}"
-                    @mousemove="${this.handleMouseMove}"
+                    @pointerdown="${this.handlePointerDown}"
+                    @pointerup="${this.handlePointerUp}"
+                    @pointermove="${this.handlePointerMove}"
+                    @pointercancel="${this.handlePointerCancel}"
                     @dblclick="${this.handleDoubleClick}"
                     @click="${(event: MouseEvent) => {
                         this.handleClick(event);
@@ -1030,6 +1043,182 @@ export class FlowchartWidget extends LitElementWw {
         drawGraphNode(this.ctx, element, this.graphSettings, this.selectedNodes, this.selectedSequence);
     }
 
+    // ------------------------ Pointer-Events (mouse / touch / pen) ------------------------
+
+    /**
+     * @internal Unified pointer entry point. Tracks every active pointer so that
+     * multi-touch gestures (two-finger pinch-zoom and pan) can be distinguished
+     * from single-pointer interactions (drag, arrow creation, selection).
+     */
+    private handlePointerDown(event: PointerEvent) {
+        this.lastPointerType = event.pointerType;
+        this.activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+        // Start pinch gesture if two fingers are down, cancel any single-pointer interaction
+        if (this.activePointers.size === 2) {
+            this.cancelSinglePointerInteraction();
+            this.suppressSinglePointer = true;
+            this.beginPinch();
+            return;
+        }
+        // Ignore more than two fingers
+        if (this.activePointers.size > 2) {
+            return;
+        }
+
+        try {
+            this.canvas.setPointerCapture(event.pointerId);
+        } catch (e) { }
+
+        this.handleMouseDown(event);
+    }
+
+    /** @internal Unified pointer move: routes to the pinch gesture or the single-pointer logic. */
+    private handlePointerMove(event: PointerEvent) {
+        if (this.activePointers.has(event.pointerId)) {
+            this.activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+        }
+
+        if (this.pinchState && this.activePointers.size >= 2) {
+            this.updatePinch();
+            return;
+        }
+
+        // Leftover fingers from a multi-touch gesture must not resume a stale interaction
+        if (this.suppressSinglePointer || this.activePointers.size > 1) {
+            return;
+        }
+
+        this.handleMouseMove(event);
+    }
+
+    /** @internal Unified pointer up: finalizes a gesture or the single-pointer interaction. */
+    private handlePointerUp(event: PointerEvent) {
+        this.activePointers.delete(event.pointerId);
+        try {
+            this.canvas.releasePointerCapture(event.pointerId);
+        } catch (e) { }
+
+        if (this.pinchState && this.activePointers.size < 2) {
+            this.pinchState = undefined;
+            this.endMultiTouchGesture();
+            return;
+        }
+
+        if (this.suppressSinglePointer) {
+            this.endMultiTouchGesture();
+            return;
+        }
+
+        this.handleMouseUp(event);
+    }
+
+    /** @internal Pointer aborted by the system: clean up all transient state. */
+    private handlePointerCancel(event: PointerEvent) {
+        this.activePointers.delete(event.pointerId);
+        try {
+            this.canvas.releasePointerCapture(event.pointerId);
+        } catch (e) { }
+        if (this.activePointers.size < 2) {
+            this.pinchState = undefined;
+        }
+        this.cancelSinglePointerInteraction();
+        this.endMultiTouchGesture();
+    }
+
+    /**
+     * @internal Wind down a multi-touch gesture as fingers are lifted.
+     *
+     * Once every finger is gone the suppression is released. If exactly one finger
+     * remains while the canvas is in grab mode, panning is re-armed from that finger's
+     * *current* position — otherwise `handleMouseMove` would keep panning relative to
+     * the pre-pinch `grabStartPosition` and make the canvas jump.
+     */
+    private endMultiTouchGesture() {
+        if (this.activePointers.size === 0) {
+            this.suppressSinglePointer = false;
+            return;
+        }
+
+        if (this.activePointers.size === 1 && this.isGrabbing) {
+            const [remaining] = [...this.activePointers.values()];
+            const grabCoordinates = this.getCanvasCoordinates(remaining.x, remaining.y, true);
+            this.grabStartPosition = { x: grabCoordinates.x, y: grabCoordinates.y };
+            this.grabStartOffset = {
+                x: parseFloat(this.canvas.style.getPropertyValue('--offset-x')),
+                y: parseFloat(this.canvas.style.getPropertyValue('--offset-y')),
+            };
+            this.suppressSinglePointer = false;
+        }
+    }
+
+    /** @internal Euclidean distance between the two active pointers (screen px). */
+    private pinchDistance(): number {
+        const pts = [...this.activePointers.values()];
+        return Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+    }
+
+    /** @internal Midpoint between the two active pointers (screen coordinates). */
+    private pinchMidpoint(): { x: number; y: number } {
+        const pts = [...this.activePointers.values()];
+        return { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 };
+    }
+
+    /** @internal Initialise a two-finger pinch gesture. Requires pan/edit permission. */
+    private beginPinch() {
+        if (!(this.allowStudentPan || this.hasAttribute('contenteditable'))) {
+            return;
+        }
+        const mid = this.pinchMidpoint();
+        this.pinchState = {
+            startDist: this.pinchDistance(),
+            startZoom: this.zoomLevel,
+            lastMidX: mid.x,
+            lastMidY: mid.y,
+        };
+    }
+
+    /** @internal Apply the current two-finger gesture: pan by midpoint movement, zoom by finger spread. */
+    private updatePinch() {
+        if (!this.pinchState) {
+            return;
+        }
+        const rect = this.canvas.getBoundingClientRect();
+        const dist = this.pinchDistance();
+        const mid = this.pinchMidpoint();
+
+        // Pan
+        const scale = this.zoomLevel / 100;
+        this.canvasOffsetX += (mid.x - this.pinchState.lastMidX) / scale;
+        this.canvasOffsetY += (mid.y - this.pinchState.lastMidY) / scale;
+        this.pinchState.lastMidX = mid.x;
+        this.pinchState.lastMidY = mid.y;
+
+        // Zoom
+        if (this.pinchState.startDist > 0) {
+            const targetZoom = this.pinchState.startZoom * (dist / this.pinchState.startDist);
+            this.zoomAtPoint(mid.x - rect.left, mid.y - rect.top, targetZoom);
+        } else {
+            this.redrawCanvas();
+        }
+    }
+
+    /** @internal Reset any in-progress single-pointer interaction. */
+    private cancelSinglePointerInteraction() {
+        this.isDragging = false;
+        this.draggedNode = undefined;
+        this.draggedNodes = [];
+        this.isDrawingArrow = false;
+        this.arrowStart = undefined;
+        this.tempArrowEnd = undefined;
+        this.selectionRectangle = undefined;
+        this.checkOffset = true;
+        this.grabStartPosition = undefined;
+        this.grabStartOffset = undefined;
+
+        this.redrawCanvas();
+    }
+
     // ------------------------ Mouse-Events ------------------------
 
     /** @internal Handles mousedown on the canvas (selection, drag, arrow creation). */
@@ -1148,6 +1337,8 @@ export class FlowchartWidget extends LitElementWw {
         this.checkOffset = true;
 
         this.graphNodes = [...this.graphNodes];
+
+        this.redrawCanvas();
     }
 
     /** @internal Handles mousemove on the canvas (dragging/panning/hover anchors). */
@@ -1313,18 +1504,20 @@ export class FlowchartWidget extends LitElementWw {
         if (this.selectedNode && this.selectedNode.node !== 'text') {
             const anchors = getAnchors(this.ctx, this.selectedNode, 15);
 
-            // Entferne zuerst den bestehenden mousedown-EventListener, falls vorhanden
+            // Entferne zuerst den bestehenden pointerdown-EventListener, falls vorhanden
             if (this.anchorMouseDownEvent && this.canvas) {
-                this.canvas.removeEventListener('mousedown', this.anchorMouseDownEvent);
+                this.canvas.removeEventListener('pointerdown', this.anchorMouseDownEvent);
                 this.anchorMouseDownEvent = null;
             }
 
             // Erstelle den neuen EventListener und speicher ihn in der anchorMouseDownEvent-Variable
             this.anchorMouseDownEvent = (event) => {
                 const { x, y } = this.getMouseCoordinates(event);
+                // Größere Trefferfläche für Finger, damit Pfeile auf Touch-Geräten erstellbar sind
+                const hitRadius = this.lastPointerType === 'touch' ? 18 : 8;
                 anchors.forEach((position, index) => {
                     const distance = Math.sqrt((position.x - x) ** 2 + (position.y - y) ** 2);
-                    if (distance <= 8) {
+                    if (distance <= hitRadius) {
                         this.handleAnchorClick(this.selectedNode, index);
                     }
                 });
@@ -1332,7 +1525,7 @@ export class FlowchartWidget extends LitElementWw {
 
             // Füge den neuen EventListener hinzu
             if (this.canvas) {
-                this.canvas.addEventListener('mousedown', this.anchorMouseDownEvent);
+                this.canvas.addEventListener('pointerdown', this.anchorMouseDownEvent);
             }
         }
     }
@@ -1363,6 +1556,7 @@ export class FlowchartWidget extends LitElementWw {
 
         this.applyZoom();
         this.redrawCanvas();
+        this.updateTouchAction();
 
         if(this.allowStudentPan && !this.allowStudentEdit && !this.hasAttribute("contenteditable")){
             this.isGrabbing = true
@@ -1415,6 +1609,7 @@ export class FlowchartWidget extends LitElementWw {
             );
         }
         updateDisabledState(this, this.isEditable());
+        this.updateTouchAction();
     }
 
     /**
@@ -1441,6 +1636,14 @@ export class FlowchartWidget extends LitElementWw {
     }
 
     // ------------------------ General System Functionality ------------------------
+
+    /** @internal Keep the canvas `touch-action` in sync with interactivity. */
+    private updateTouchAction() {
+        if (!this.canvas) return;
+        const interactive =
+            this.allowStudentEdit || this.allowStudentPan || this.hasAttribute('contenteditable');
+        this.canvas.style.touchAction = interactive ? 'none' : 'auto';
+    }
 
     /** @internal Recompute canvas dimensions and trigger redraw. */
     updateCanvasSize = () => {
@@ -1547,12 +1750,25 @@ export class FlowchartWidget extends LitElementWw {
      * @returns {{x:number,y:number}}
      */
     private getMouseCoordinates(event: MouseEvent, withoutPan?: boolean) {
+        return this.getCanvasCoordinates(event.clientX, event.clientY, withoutPan);
+    }
+
+    /**
+     * Converts a viewport position to world coordinates, accounting for zoom and pan.
+     *
+     * @param {number} clientX - Viewport X position.
+     * @param {number} clientY - Viewport Y position.
+     * @param {boolean} withoutPan - If true, ignore current pan offsets.
+     * @returns {{x:number,y:number}}
+     * @internal
+     */
+    private getCanvasCoordinates(clientX: number, clientY: number, withoutPan?: boolean) {
         const rect = this.canvas.getBoundingClientRect();
         const scaleFactor = this.zoomLevel / 100;
     
-        // Mouse position relative to the top-left corner of the canvas
-        let x = (event.clientX - rect.left);
-        let y = (event.clientY - rect.top);
+        // Position relative to the top-left corner of the canvas
+        let x = (clientX - rect.left);
+        let y = (clientY - rect.top);
     
         // Apply scaling and panning only if not bypassed
         if (!withoutPan) {
@@ -1591,34 +1807,39 @@ export class FlowchartWidget extends LitElementWw {
         if ((this.allowStudentPan || this.hasAttribute("contenteditable")) && this.matches(':focus-within')) {
             event.preventDefault();
     
-            const zoomText = this.shadowRoot?.querySelector('#zoom-percentage') as HTMLSpanElement;
-    
-            // Get mouse position relative to canvas (screen space)
+            // Get pointer position relative to canvas (screen space)
             const rect = this.canvas.getBoundingClientRect();
-            const mouseX = event.clientX - rect.left;
-            const mouseY = event.clientY - rect.top;
-    
-            // Convert to world space before zoom
-            const prevScale = this.zoomLevel / 100;
-            const worldXBefore = mouseX / prevScale - this.canvasOffsetX;
-            const worldYBefore = mouseY / prevScale - this.canvasOffsetY;
-    
-            // Apply new zoom level
-            if (event.deltaY < 0) {
-                this.zoomLevel = Math.min(this.zoomLevel + 10, 200);
-            } else {
-                this.zoomLevel = Math.max(this.zoomLevel - 10, 50);
-            }
-    
-            const newScale = this.zoomLevel / 100;
-    
-            // Adjust canvas offset to keep world point under cursor stable
-            this.canvasOffsetX = mouseX / newScale - worldXBefore;
-            this.canvasOffsetY = mouseY / newScale - worldYBefore;
-    
-            // Apply the zoom
-            this.applyZoom();
+            const delta = event.deltaY < 0 ? 10 : -10;
+            this.zoomAtPoint(event.clientX - rect.left, event.clientY - rect.top, this.zoomLevel + delta);
         }
+    }
+
+    /**
+     * Zoom to a target level while keeping the world point under a given screen position stable.
+     * Shared by mouse-wheel zoom and two-finger pinch zoom. Clamps the zoom to [50, 200].
+     *
+     * @param {number} screenX - X position within the canvas (px, relative to its top-left).
+     * @param {number} screenY - Y position within the canvas (px, relative to its top-left).
+     * @param {number} targetZoom - Desired zoom percentage (clamped to [50, 200]).
+     * @returns {void}
+     * @internal
+     */
+    private zoomAtPoint(screenX: number, screenY: number, targetZoom: number) {
+        // Convert to world space before zoom
+        const prevScale = this.zoomLevel / 100;
+        const worldXBefore = screenX / prevScale - this.canvasOffsetX;
+        const worldYBefore = screenY / prevScale - this.canvasOffsetY;
+    
+        // Apply and clamp the new zoom level
+        this.zoomLevel = Math.max(50, Math.min(200, Math.round(targetZoom)));
+        const newScale = this.zoomLevel / 100;
+    
+        // Adjust canvas offset to keep world point under anchor stable
+        this.canvasOffsetX = screenX / newScale - worldXBefore;
+        this.canvasOffsetY = screenY / newScale - worldYBefore;
+    
+        // Apply the zoom
+        this.applyZoom();
     }
     
 

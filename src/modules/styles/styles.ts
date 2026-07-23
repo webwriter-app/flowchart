@@ -766,6 +766,11 @@ export const papWidgetStyles = css`
         z-index: 0;
 
         background-color: white;
+
+        touch-action: none;
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
     }
 
     .y-rezise {
