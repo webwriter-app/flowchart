@@ -32,8 +32,8 @@ export function getArrowInformation(ctx: CanvasRenderingContext2D, from: GraphNo
 }
 
 // Überprüft ob ein Klick eine Verbindung/Pfeil berührt hat, 
-export function isArrowClicked(mouseX: number, mouseY: number, points: { x: number; y: number }[]): boolean {
-   const clickTolerance = 8;
+export function isArrowClicked(mouseX: number, mouseY: number, points: { x: number; y: number }[], tolerance: number = 8): boolean {
+   const clickTolerance = tolerance;
 
    for (let i = 0; i < points.length - 1; i++) {
       const startPoint = points[i];

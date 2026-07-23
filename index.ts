@@ -214,6 +214,21 @@ export class FlowchartWidget extends LitElementWw {
     /** @internal Blocks single-pointer handling for leftover fingers after a multi-touch gesture. */
     private suppressSinglePointer = false;
 
+    /** @internal Pending long-press timer; opens the context menu on touch devices. */
+    private longPressTimer?: ReturnType<typeof setTimeout>;
+
+    /** @internal Viewport position where the current long-press candidate started. */
+    private longPressOrigin?: { x: number; y: number };
+
+    /** @internal Delay before a stationary touch counts as a long press (ms). */
+    private static readonly LONG_PRESS_DELAY = 500;
+
+    /** @internal Movement (px) that cancels a long press, tolerating natural finger jitter. */
+    private static readonly LONG_PRESS_MOVE_TOLERANCE = 10;
+
+    /** @internal Swallows the synthetic click after a long press, which would close the menu again. */
+    private suppressNextClick = false;
+
     /** @internal Canvas panning (grab) state. */
     private isGrabbing = false;
     /** @internal Start pointer position for grab. */
@@ -334,6 +349,10 @@ export class FlowchartWidget extends LitElementWw {
                     @pointercancel="${this.handlePointerCancel}"
                     @dblclick="${this.handleDoubleClick}"
                     @click="${(event: MouseEvent) => {
+                        if (this.suppressNextClick) {
+                            this.suppressNextClick = false;
+                            return;
+                        }
                         this.handleClick(event);
                         this.toggleMenu('context');
                     }}"
@@ -784,24 +803,38 @@ export class FlowchartWidget extends LitElementWw {
      * @internal
      */
     private showContextMenu(event: MouseEvent) {
+        this.openContextMenuAt(event.clientX, event.clientY);
+    }
+
+    /**
+     * Open the context menu for the node or arrow at a viewport position (only in editable mode).
+     *
+     * @param {number} clientX - Viewport X position.
+     * @param {number} clientY - Viewport Y position.
+     * @returns {boolean} True if an element was hit and the menu was opened.
+     * @internal
+     */
+    private openContextMenuAt(clientX: number, clientY: number): boolean {
         if ((!this.allowStudentEdit && !this.hasAttribute("contenteditable"))) {
-            return;
+            return false;
         }
 
         const rect = this.getBoundingClientRect()
-        const { x, y } = this.getMouseCoordinates(event);
+        const { x, y } = this.getCanvasCoordinates(clientX, clientY);
 
         // Finde den angeklickten Knoten oder Verbindung und speichere sie
         const clickedNode = findLastGraphNode(this.ctx, this.graphNodes, x, y);
-        const clickedArrowIndex = this.arrows.findIndex((arrow) => isArrowClicked(x, y, arrow.points));
+        const clickedArrowIndex = this.arrows.findIndex((arrow) =>
+            isArrowClicked(x, y, arrow.points, this.arrowHitTolerance)
+        );
 
         // Falls ein Element angeklickt wurde, wird das Kontextmenü angezeigt
         if (clickedNode || clickedArrowIndex !== -1) {
             const contextMenu = this.shadowRoot.getElementById('context-menu');
             if (contextMenu) {
                 contextMenu.style.display = 'block';
-                contextMenu.style.left = event.clientX - rect.left +"px";
-                contextMenu.style.top = event.clientY - rect.top +"px";
+                contextMenu.style.left = clientX - rect.left +"px";
+                contextMenu.style.top = clientY - rect.top +"px";
 
                 if (clickedNode) {
                     this.selectedNode = clickedNode;
@@ -810,8 +843,16 @@ export class FlowchartWidget extends LitElementWw {
                     this.selectedArrow = this.arrows[clickedArrowIndex];
                     this.selectedNode = undefined;
                 }
+                this.redrawCanvas();
+                return true;
             }
         }
+        return false;
+    }
+
+    /** @internal Hit tolerance for arrows; widened for touch so thin lines stay tappable. */
+    private get arrowHitTolerance(): number {
+        return this.lastPointerType === 'touch' ? 16 : 8;
     }
 
     /**
@@ -1052,10 +1093,16 @@ export class FlowchartWidget extends LitElementWw {
      */
     private handlePointerDown(event: PointerEvent) {
         this.lastPointerType = event.pointerType;
+
+        if (this.activePointers.size === 0) {
+            this.suppressNextClick = false;
+        }
+
         this.activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
 
         // Start pinch gesture if two fingers are down, cancel any single-pointer interaction
         if (this.activePointers.size === 2) {
+            this.cancelLongPress();
             this.cancelSinglePointerInteraction();
             this.suppressSinglePointer = true;
             this.beginPinch();
@@ -1070,6 +1117,10 @@ export class FlowchartWidget extends LitElementWw {
             this.canvas.setPointerCapture(event.pointerId);
         } catch (e) { }
 
+        if (event.pointerType !== 'mouse') {
+            this.startLongPress(event.clientX, event.clientY);
+        }
+
         this.handleMouseDown(event);
     }
 
@@ -1077,6 +1128,16 @@ export class FlowchartWidget extends LitElementWw {
     private handlePointerMove(event: PointerEvent) {
         if (this.activePointers.has(event.pointerId)) {
             this.activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+        }
+
+        if (this.longPressOrigin) {
+            const moved = Math.hypot(
+                event.clientX - this.longPressOrigin.x,
+                event.clientY - this.longPressOrigin.y
+            );
+            if (moved > FlowchartWidget.LONG_PRESS_MOVE_TOLERANCE) {
+                this.cancelLongPress();
+            }
         }
 
         if (this.pinchState && this.activePointers.size >= 2) {
@@ -1094,6 +1155,7 @@ export class FlowchartWidget extends LitElementWw {
 
     /** @internal Unified pointer up: finalizes a gesture or the single-pointer interaction. */
     private handlePointerUp(event: PointerEvent) {
+        this.cancelLongPress();
         this.activePointers.delete(event.pointerId);
         try {
             this.canvas.releasePointerCapture(event.pointerId);
@@ -1115,6 +1177,7 @@ export class FlowchartWidget extends LitElementWw {
 
     /** @internal Pointer aborted by the system: clean up all transient state. */
     private handlePointerCancel(event: PointerEvent) {
+        this.cancelLongPress();
         this.activePointers.delete(event.pointerId);
         try {
             this.canvas.releasePointerCapture(event.pointerId);
@@ -1201,6 +1264,43 @@ export class FlowchartWidget extends LitElementWw {
         } else {
             this.redrawCanvas();
         }
+    }
+
+    /** @internal Arm the long-press timer for a fresh touch/pen contact. */
+    private startLongPress(clientX: number, clientY: number) {
+        this.cancelLongPress();
+        this.longPressOrigin = { x: clientX, y: clientY };
+        this.longPressTimer = setTimeout(
+            () => this.triggerLongPress(clientX, clientY),
+            FlowchartWidget.LONG_PRESS_DELAY
+        );
+    }
+
+    /** @internal Disarm a pending long press (movement, release or a second finger). */
+    private cancelLongPress() {
+        if (this.longPressTimer !== undefined) {
+            clearTimeout(this.longPressTimer);
+            this.longPressTimer = undefined;
+        }
+        this.longPressOrigin = undefined;
+    }
+
+    /**
+     * @internal Fire the long press: abort the drag this touch had started and open the
+     * context menu. The press only counts as consumed if an element was actually hit —
+     * a long press on empty canvas stays an ordinary interaction.
+     */
+    private triggerLongPress(clientX: number, clientY: number) {
+        this.longPressTimer = undefined;
+        this.longPressOrigin = undefined;
+
+        if (!this.openContextMenuAt(clientX, clientY)) {
+            return;
+        }
+
+        this.cancelSinglePointerInteraction();
+        this.suppressSinglePointer = true;
+        this.suppressNextClick = true;
     }
 
     /** @internal Reset any in-progress single-pointer interaction. */
@@ -1451,7 +1551,7 @@ export class FlowchartWidget extends LitElementWw {
                     this.updateAnchorListeners();
                 }
                 // Finde den angeklickte Pfeilindex, oder entferne die Auswahl, wenn kein Pfeil angeklickt wurde
-                const selectedArrowIndex = this.arrows.findIndex((arrow) => isArrowClicked(x, y, arrow.points));
+                const selectedArrowIndex = this.arrows.findIndex((arrow) => isArrowClicked(x, y, arrow.points, this.arrowHitTolerance));
                 // Wenn ein Pfeil angeklickt wurde, setze die property selectedArrow auf den angeklickten Pfeil
                 // und verändere die Reihenfolge im Array, damit der angeklickte Pfeil immer vollständig gefärbt angezeigt wird
                 if (selectedArrowIndex !== -1) {
@@ -1478,7 +1578,7 @@ export class FlowchartWidget extends LitElementWw {
 
         const { x, y } = this.getMouseCoordinates(event);
         const clickedNodeIndex = findGraphNodeLastIndex(this.ctx, this.graphNodes, x, y);
-        const selectedArrowIndex = this.arrows.findIndex((arrow) => isArrowClicked(x, y, arrow.points));
+        const selectedArrowIndex = this.arrows.findIndex((arrow) => isArrowClicked(x, y, arrow.points, this.arrowHitTolerance));
 
         if (clickedNodeIndex !== -1 && this.graphNodes[clickedNodeIndex].node !== 'connector') {
             handleGraphNodeDoubleClick(clickedNodeIndex, (type, index) => this.showCustomPrompt(type, index));
@@ -1582,6 +1682,7 @@ export class FlowchartWidget extends LitElementWw {
         // window.removeEventListener('resize', this.updateCanvasSize);
         window.removeEventListener('keydown', this.handleKeyDown);
 
+        this.cancelLongPress();
         this.resizeObserver.disconnect();
         this.removeEventListener('fullscreenchange', this.syncLayout);
         this.removeEventListener('startSelectSequence', this.selectSequence.bind(this));

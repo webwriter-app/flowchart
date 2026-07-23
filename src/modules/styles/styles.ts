@@ -691,6 +691,12 @@ export const papWidgetStyles = css`
         background-color: var(--hover-color);
     }
 
+    @media (pointer: coarse) {
+        .context-menu {
+            font-size: 16px;
+        }
+    }
+
     .tooltip {
         position: absolute;
         background-color: var(--menu-color);
