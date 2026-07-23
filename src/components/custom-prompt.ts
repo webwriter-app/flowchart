@@ -106,6 +106,10 @@ export class CustomPrompt extends LitElement {
         inputElement.value = value;
       }
     }
+
+   focusInput() {
+      this.shadowRoot?.querySelector('input')?.focus();
+   }
 }
 
 

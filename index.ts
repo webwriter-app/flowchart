@@ -229,6 +229,27 @@ export class FlowchartWidget extends LitElementWw {
     /** @internal Swallows the synthetic click after a long press, which would close the menu again. */
     private suppressNextClick = false;
 
+    /** @internal Viewport position where the current single-pointer contact started. */
+    private singlePointerStart?: { x: number; y: number };
+
+    /** @internal Timestamp of the last recognised tap, for double-tap detection (0 = none). */
+    private lastTapTime = 0;
+
+    /** @internal Viewport position of the last recognised tap. */
+    private lastTapPosition?: { x: number; y: number };
+
+    /** @internal Maximum gap between two taps to count as a double tap (ms). */
+    private static readonly DOUBLE_TAP_DELAY = 300;
+
+    /** @internal Maximum distance between two taps to count as a double tap (px). */
+    private static readonly DOUBLE_TAP_DISTANCE = 25;
+
+    /**
+     * @internal Swallows a native `dblclick` that a browser may emit in addition to the
+     * double tap we already handled ourselves, so the edit prompt does not open twice.
+     */
+    private suppressNativeDoubleClick = false;
+
     /** @internal Canvas panning (grab) state. */
     private isGrabbing = false;
     /** @internal Start pointer position for grab. */
@@ -347,7 +368,13 @@ export class FlowchartWidget extends LitElementWw {
                     @pointerup="${this.handlePointerUp}"
                     @pointermove="${this.handlePointerMove}"
                     @pointercancel="${this.handlePointerCancel}"
-                    @dblclick="${this.handleDoubleClick}"
+                    @dblclick="${(event: MouseEvent) => {
+                        if (this.suppressNativeDoubleClick) {
+                            this.suppressNativeDoubleClick = false;
+                            return;
+                        }
+                        this.handleDoubleClick(event);
+                    }}"
                     @click="${(event: MouseEvent) => {
                         if (this.suppressNextClick) {
                             this.suppressNextClick = false;
@@ -1096,6 +1123,8 @@ export class FlowchartWidget extends LitElementWw {
 
         if (this.activePointers.size === 0) {
             this.suppressNextClick = false;
+            this.suppressNativeDoubleClick = false;
+            this.singlePointerStart = { x: event.clientX, y: event.clientY };
         }
 
         this.activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
@@ -1173,6 +1202,11 @@ export class FlowchartWidget extends LitElementWw {
         }
 
         this.handleMouseUp(event);
+
+        // Touch browsers do not reliably dispatch `dblclick` from a double tap
+        if (event.pointerType !== 'mouse') {
+            this.detectDoubleTap(event);
+        }
     }
 
     /** @internal Pointer aborted by the system: clean up all transient state. */
@@ -1264,6 +1298,43 @@ export class FlowchartWidget extends LitElementWw {
         } else {
             this.redrawCanvas();
         }
+    }
+
+    /** @internal Recognise a double tap and run the double-click logic (label editing). */
+    private detectDoubleTap(event: PointerEvent) {
+        // Wurde gezogen, ist es kein Tippen; eine begonnene Doppeltipp-Folge verfällt.
+        const start = this.singlePointerStart;
+        const moved = start
+            ? Math.hypot(event.clientX - start.x, event.clientY - start.y)
+            : Number.POSITIVE_INFINITY;
+        this.singlePointerStart = undefined;
+
+        if (moved > FlowchartWidget.LONG_PRESS_MOVE_TOLERANCE) {
+            this.lastTapTime = 0;
+            this.lastTapPosition = undefined;
+            return;
+        }
+
+        const gap = Date.now() - this.lastTapTime;
+        const distance = this.lastTapPosition
+            ? Math.hypot(event.clientX - this.lastTapPosition.x, event.clientY - this.lastTapPosition.y)
+            : Number.POSITIVE_INFINITY;
+
+        if (
+            this.lastTapTime !== 0 &&
+            gap <= FlowchartWidget.DOUBLE_TAP_DELAY &&
+            distance <= FlowchartWidget.DOUBLE_TAP_DISTANCE
+        ) {
+            // Zurücksetzen, damit ein drittes Tippen nicht sofort erneut auslöst
+            this.lastTapTime = 0;
+            this.lastTapPosition = undefined;
+            this.suppressNativeDoubleClick = true;
+            this.handleDoubleClick(event);
+            return;
+        }
+
+        this.lastTapTime = Date.now();
+        this.lastTapPosition = { x: event.clientX, y: event.clientY };
     }
 
     /** @internal Arm the long-press timer for a fresh touch/pen contact. */
@@ -2024,6 +2095,8 @@ export class FlowchartWidget extends LitElementWw {
 
         promptElement.classList.remove('hidden');
         this.shadowRoot.querySelector('custom-prompt').classList.remove('hidden');
+
+        promptElement.focusInput();
 
         const onSubmit = (rawValue: string) => {
         
