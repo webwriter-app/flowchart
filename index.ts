@@ -2080,37 +2080,59 @@ export class FlowchartWidget extends LitElementWw {
 
     // ------------------------ Prompt Functionality ------------------------
 
+    /**
+     * Store an arrow label so it survives serialization.
+     *
+     * @param {Arrow} arrow - The arrow whose label changed.
+     * @param {string} text - The new label.
+     * @returns {void}
+     * @internal
+     */
+    private persistArrowText(arrow: Arrow, text: string) {
+        arrow.text = text;
+
+        const connection = arrow.from?.connections?.find(
+            (candidate) => candidate.arrowID === arrow.id && candidate.direction === 'to'
+        );
+
+        if (connection) {
+            connection.text = text;
+        }
+    }
+
+    /**
+     * @internal Make sure Lit notices changes to `graphNodes` after in-place edits.
+     */
+    private commitGraphNodes() {
+        this.graphNodes = [...this.graphNodes];
+    }
+
     /** @internal Open input prompt for node/arrow text editing. */
     private showCustomPrompt(type: 'node' | 'arrow', index: number) {
         const promptElement = this.shadowRoot.querySelector('custom-prompt') as CustomPrompt;
         // console.log(promptElement)
-        let currentText = '';
-        if (type === 'node') {
-            currentText = this.graphNodes[index].text;
-        } else {
-            if (this.arrows[index].text) {
-                currentText = this.arrows[index].text;
-            }
-        }
+        const currentText = (type === 'node' ? this.graphNodes[index].text : this.arrows[index].text || '').trim();
 
         promptElement.classList.remove('hidden');
         this.shadowRoot.querySelector('custom-prompt').classList.remove('hidden');
 
+        promptElement.setInputValue(currentText);
         promptElement.focusInput();
 
         const onSubmit = (rawValue: string) => {
         
-            const value = rawValue || msg(FlowchartWidget.labels[this.graphNodes[index].node]);
+            const value = (rawValue || '').trim();
 
             if (type === 'node') {
-                if (this.graphNodes[index].node === 'decision') {
-                    this.graphNodes[index].text = '  ' + value + '  ';
-                } else {
-                    this.graphNodes[index].text = value;
-                }
+                const node = this.graphNodes[index];
+                const text = value || msg(FlowchartWidget.labels[node.node]);
+                node.text = node.node === 'decision' ? '  ' + text + '  ' : text;
             } else {
-                this.arrows[index].text = value;
+                this.persistArrowText(this.arrows[index], value);
             }
+
+            // Beide Fälle ändern graphNodes nur in-place; erst das macht sie im Attribut sichtbar
+            this.commitGraphNodes();
             this.redrawCanvas();
             this.shadowRoot.querySelector('custom-prompt').classList.add('hidden');
         };
@@ -2166,11 +2188,12 @@ export class FlowchartWidget extends LitElementWw {
         if (this.promptType === 'node') {
             this.graphNodes[this.promptIndex].text = newText;
         } else if (this.promptType === 'arrow') {
-            this.arrows[this.promptIndex].text = newText;
             const selectedArrow = this.arrows[this.promptIndex];
+            this.persistArrowText(selectedArrow, newText);
             this.arrows.splice(this.promptIndex, 1);
             this.arrows.push(selectedArrow);
         }
+        this.commitGraphNodes();
         this.redrawCanvas();
         this.hidePrompt();
     }
