@@ -5,6 +5,7 @@ import { FlowchartWidget } from '../../..';
 import { html } from 'lit';
 import { drawButton } from '../drawer/drawButton';
 import { createTooltip, removeTooltip } from './generalUI';
+import { msg } from '@lit/localize';
 
 export function addTask(
     element: HTMLElement,
@@ -27,7 +28,7 @@ export function addTask(
     const taskTitle = document.createElement('input');
     taskTitle.type = 'text';
     taskTitle.className = 'task-title';
-    taskTitle.placeholder = 'Überschrift';
+    taskTitle.placeholder = msg('Heading');
     taskTitle.addEventListener('change', (event) => {
         const index = Array.from(taskContainer.children).indexOf(taskWrapper);
         taskList[index].titel = (event.target as HTMLInputElement).value;
@@ -35,7 +36,7 @@ export function addTask(
 
     const taskContent = document.createElement('textarea');
     taskContent.className = 'task-content';
-    taskContent.placeholder = 'Inhalt... \nÄnderungen werden automatisch gespeichert.';
+    taskContent.placeholder = msg('Content...') + '\n' + msg('Changes are saved automatically.');
     taskContent.addEventListener('input', (event) => {
         const target = event.target as HTMLTextAreaElement;
         target.style.height = 'auto';
@@ -64,7 +65,7 @@ export function addTask(
     const cancelSequence = document.createElement('button');
     cancelSequence.className = 'cancel-sequence-button editMode';
     cancelSequence.style.display = 'none';
-    cancelSequence.textContent = 'Abbrechen';
+    cancelSequence.textContent = msg('Cancel');
     cancelSequence.onclick = () => {
         // Breche das hinzufügen von einer Sequenz ab.
         setActiveSequenceButton(null);
@@ -79,7 +80,7 @@ export function addTask(
     const saveSequence = document.createElement('button');
     saveSequence.className = 'save-sequence-button editMode';
     saveSequence.style.display = 'none';
-    saveSequence.textContent = 'Pfad speichern';
+    saveSequence.textContent = msg('Save path');
     saveSequence.onclick = () => {
         // Speicher die ausgewählte Sequence im TaskList und beende den Auswahlmodus
         const taskIndex = Array.from(taskContainer.children).indexOf(taskWrapper);
@@ -98,7 +99,7 @@ export function addTask(
 
     const addSequence = document.createElement('button');
     addSequence.className = 'add-sequence-button editMode';
-    addSequence.textContent = 'Pfad hinzufügen';
+    addSequence.textContent = msg('Add path');
     addSequence.onclick = () => {
         // Überprüfen, ob ein anderer Button bereits aktiv ist.
         let activeSequenceButton = getActiveSequenceButton();
@@ -150,7 +151,7 @@ export function addTask(
 
     const deleteTask = document.createElement('button');
     deleteTask.className = 'delete-task-button editMode';
-    deleteTask.textContent = 'Löschen';
+    deleteTask.textContent = msg('Delete');
     deleteTask.onclick = () => {
         const index = Array.from(taskContainer.children).indexOf(taskWrapper);
         taskList.splice(index, 1);
@@ -262,30 +263,30 @@ export function renderTasks(this: FlowchartWidget, taskList: ItemList[]) {
                 <input
                     type="text"
                     class="task-title"
-                    placeholder="Überschrift"
+                    placeholder="${msg('Heading')}"
                     value="${task.titel}"
                     @change=${onTitleChange}
                 />
                 <textarea
                     class="task-content"
-                    placeholder="Inhalt... Änderungen werden automatisch gespeichert."
+                    placeholder="${msg('Content...')} ${msg('Changes are saved automatically.')}"
                     @change=${onContentChange}
                 >
 ${task.content}</textarea
                 >
                 <div class="task-button-container editMode">
-                    <button class="add-sequence-button editMode" @click=${addSequence}>Pfad hinzufügen</button>
+                    <button class="add-sequence-button editMode" @click=${addSequence}>${msg('Add path')}</button>
                     <button class="cancel-sequence-button editMode" style="display:none" @click=${cancelSequence}>
-                        Abbrechen
+                        ${msg('Cancel')}
                     </button>
                     <button class="save-sequence-button editMode" style="display:none" @click=${saveSequence}>
-                        Pfad speichern
+                        ${msg('Save path')}
                     </button>
-                    <button class="delete-task-button editMode" @click=${deleteTask}>Löschen</button>
+                    <button class="delete-task-button editMode" @click=${deleteTask}>${msg('Delete')}</button>
                 </div>
                 <div class="task-button-container" style=${this.isEditable() || !task.sequence ? 'display:none' : ''}>
                     <button id="select-button" @click="${this.selectSequence}" class="select-sequence-button">
-                        ${drawButton('select', 'tool')} Pfad auswählen
+                        ${drawButton('select', 'tool')} ${msg('Select path')}
                     </button>
                     <button
                         class="check-solution-button"
@@ -293,7 +294,7 @@ ${task.content}</textarea
                         @click=${() => this.checkSolution(task)}
                         ?disabled=${!this.isSelectingSequence}
                     >
-                        Lösung prüfen
+                        ${msg('Check solution')}
                     </button>
                 </div>
             </div>

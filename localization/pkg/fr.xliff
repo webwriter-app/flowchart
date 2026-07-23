@@ -1,6 +1,7 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:2.0" version="2.1" srcLang="en" trgLang="fr">
 <file id="." original=".">
-<unit id="description"><segment><source></source><target></target></segment></unit>
+<unit id="description"><segment><source>Create programming flowcharts with interactive tasks. Use standardized Elements such as loops and Branchings.</source><target>Créez des organigrammes de programmation avec des tâches interactives. Utilisez des éléments standardisés tels que les boucles et les branchements.</target></segment></unit>
+<unit id="label"><segment><source>Flowchart</source><target>Organigramme</target></segment></unit>
 </file>
 </xliff>

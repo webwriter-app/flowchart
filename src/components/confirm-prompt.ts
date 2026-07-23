@@ -1,6 +1,8 @@
 import { LitElement, html, css, } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
+import { localized, msg } from '@lit/localize';
 
+@localized()
 @customElement('confirm-prompt')
 export class ConfirmPrompt extends LitElement {
    @property({ type: String }) accessor label: string;
@@ -61,7 +63,7 @@ export class ConfirmPrompt extends LitElement {
          <div>
             <label>${this.label}</label>
             <div class="button-container">
-               <button @click="${this.handleCancel}">Abbrechen</button>
+               <button @click="${this.handleCancel}">${msg('Cancel')}</button>
                <button @click="${this.handleConfirm}">OK</button>
             </div>
          </div>

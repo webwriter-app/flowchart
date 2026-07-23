@@ -328,16 +328,19 @@ export class FlowchartWidget extends LitElementWw {
     static style = papWidgetStyles;
 
     /** @internal Localized default labels per node type. */
-    static labels: Record<string, string> = {
-        "start": "Start",
-        "op": "Process",
-        "decision": "Decision",
-        "i/o": "Input/Output",
-        "sub": "Subprogram",
-        "connector": "",
-        "end": "End",
-        "text": "Comment"
-    };
+    static label(node: string): string {
+        switch (node) {
+            case 'start': return msg('Start');
+            case 'op': return msg('Process');
+            case 'decision': return msg('Decision');
+            case 'i/o': return msg('Input/Output');
+            case 'sub': return msg('Subprogram');
+            case 'connector': return '';
+            case 'end': return msg('End');
+            case 'text': return msg('Comment');
+            default: return '';
+        }
+    }
 
     /** @internal Scoped child elements used by the widget. */
     static scopedElements = {
@@ -399,7 +402,7 @@ export class FlowchartWidget extends LitElementWw {
                         class="${this.isGrabbing ? 'active' : ''}"
                         style=${(!this.allowStudentPan && !this.hasAttribute("contenteditable")) || (this.allowStudentPan && !this.allowStudentEdit && !this.hasAttribute("contenteditable")) ? 'display:none' : ''}
                     >
-                        ${drawButton('grab', 'tool', msg)}
+                        ${drawButton('grab', 'tool')}
                     </button>
                     <!-- <button
                         @mouseenter="${(e) => createTooltip(e, msg('Tasks'))}"
@@ -407,7 +410,7 @@ export class FlowchartWidget extends LitElementWw {
                         @click="${() => this.toggleMenu('task')}"
                         style=${!this.isEditable() && this.taskList?.length == 0 ? 'display:none' : ''}
                     >
-                        ${drawButton('task', 'tool', msg)}
+                        ${drawButton('task', 'tool')}
                     </button>
                     <button
                         @mouseenter="${(e) => createTooltip(e, msg('Hints'))}"
@@ -415,7 +418,7 @@ export class FlowchartWidget extends LitElementWw {
                         @click="${() => this.toggleMenu('help')}"
                         style=${!this.isEditable() && this.helpList?.length == 0 ? 'display:none' : ''}
                     >
-                        ${drawButton('help', 'tool', msg)}
+                        ${drawButton('help', 'tool')}
                     </button>
                     <button
                         @mouseenter="${(e) => createTooltip(e, msg('Delete all'))}"
@@ -423,7 +426,7 @@ export class FlowchartWidget extends LitElementWw {
                         @click="${this.showConfirmPrompt}"
                         style=${!this.allowStudentEdit ? 'display:none' : ''}
                     >
-                        ${drawButton('delete', 'tool', msg)}
+                        ${drawButton('delete', 'tool')}
                     </button> -->
                     <button
                         @mouseenter="${(e) => createTooltip(e, msg('Fullscreen'))}"
@@ -442,25 +445,25 @@ export class FlowchartWidget extends LitElementWw {
 
                 <div class="flowchart-menu" style=${(!this.allowStudentEdit && !this.hasAttribute("contenteditable")) ? 'display:none' : ''}>
                     <button class="close-button" @click="${() => this.toggleMenu('flow')}">×</button>
-                    <button @click="${() => this.addGraphNode('start', msg(FlowchartWidget.labels["start"]))}">
-                        ${drawButton('start', 'flow', msg)}
+                    <button @click="${() => this.addGraphNode('start', FlowchartWidget.label('start'))}">
+                        ${drawButton('start', 'flow')}
                     </button>
-                    <button @click="${() => this.addGraphNode('op', msg(FlowchartWidget.labels["op"]))}">${drawButton('op', 'flow', msg)}</button>
-                    <button @click="${() => this.addGraphNode('decision', '  ' + msg(FlowchartWidget.labels["decision"]) + '  ')}">
-                        ${drawButton('decision', 'flow', msg)}
+                    <button @click="${() => this.addGraphNode('op', FlowchartWidget.label('op'))}">${drawButton('op', 'flow')}</button>
+                    <button @click="${() => this.addGraphNode('decision', '  ' + FlowchartWidget.label('decision') + '  ')}">
+                        ${drawButton('decision', 'flow')}
                     </button>
-                    <button @click="${() => this.addGraphNode('i/o', msg(FlowchartWidget.labels["i/o"]))}">
-                        ${drawButton('i/o', 'flow', msg)}
+                    <button @click="${() => this.addGraphNode('i/o', FlowchartWidget.label('i/o'))}">
+                        ${drawButton('i/o', 'flow')}
                     </button>
-                    <button @click="${() => this.addGraphNode('sub', msg(FlowchartWidget.labels["sub"]))}">
-                        ${drawButton('sub', 'flow', msg)}
+                    <button @click="${() => this.addGraphNode('sub', FlowchartWidget.label('sub'))}">
+                        ${drawButton('sub', 'flow')}
                     </button>
                     <button @click="${() => this.addGraphNode('connector', '')}">
-                        ${drawButton('connector', 'flow', msg)}
+                        ${drawButton('connector', 'flow')}
                     </button>
-                    <button @click="${() => this.addGraphNode('end', msg(FlowchartWidget.labels["end"]))}">${drawButton('end', 'flow', msg)}</button>
-                    <button @click="${() => this.addGraphNode('text', msg(FlowchartWidget.labels["text"]))}">
-                        ${drawButton('text', 'flow', msg)}
+                    <button @click="${() => this.addGraphNode('end', FlowchartWidget.label('end'))}">${drawButton('end', 'flow')}</button>
+                    <button @click="${() => this.addGraphNode('text', FlowchartWidget.label('text'))}">
+                        ${drawButton('text', 'flow')}
                     </button>
                 </div>
 
@@ -484,7 +487,7 @@ export class FlowchartWidget extends LitElementWw {
                             ? html`<p class="no-tasks-message">${msg('No tasks!')}</p>`
                             : renderTasks.bind(this)(this.taskList)}
                         <button class="add-task-button editMode" @click="${this.addTask}">
-                            ${drawButton('addTask', 'task', msg)}
+                            ${drawButton('addTask', 'task')}
                         </button>
                     </div>
                 </div>
@@ -495,7 +498,7 @@ export class FlowchartWidget extends LitElementWw {
                         ? html`<p class="no-help-message">${msg('No hints!')}</p>`
                         : renderHelpList.bind(this)(this.helpList)}
                     <button class="add-help-button editMode" @click="${this.addHelp}">
-                        ${drawButton('addHelp', 'help', msg)}
+                        ${drawButton('addHelp', 'help')}
                     </button>
                 </div>
 
@@ -503,13 +506,13 @@ export class FlowchartWidget extends LitElementWw {
                     <button class="close-button" @click="${() => this.toggleMenu('translate')}">×</button>
                     <div class="translate-menu-container">
                         <button class="translate-button" @click="${() => this.translateFlowchart('natural')}">
-                            ${drawButton('naturalLanguage', 'translate', msg)}
+                            ${drawButton('naturalLanguage', 'translate')}
                         </button>
                         <textarea id="naturalLanguageOutput" class="output-textarea hidden" disabled></textarea>
                     </div>
                     <div class="translate-menu-container">
                         <button class="translate-button" @click="${() => this.translateFlowchart('pseudo')}">
-                            ${drawButton('pseudoCode', 'translate', msg)}
+                            ${drawButton('pseudoCode', 'translate')}
                         </button>
                         <textarea id="pseudoCodeOutput" class="output-textarea hidden" disabled></textarea>
                     </div>
@@ -800,13 +803,13 @@ export class FlowchartWidget extends LitElementWw {
                     this.selectedSequence[i].id !== task.sequence[i].id ||
                     this.selectedSequence[i].type !== task.sequence[i].type
                 ) {
-                    this.showSolutionWithMessage('Der ausgewählte Pfad ist leider falsch!');
+                    this.showSolutionWithMessage(msg('Unfortunately, the selected path is wrong!'));
                     return;
                 }
             }
-            this.showSolutionWithMessage('Der ausgewählte Pfad ist korrekt!');
+            this.showSolutionWithMessage(msg('The selected path is correct!'));
         } else {
-            this.showSolutionWithMessage('Der ausgewählte Pfad ist leider falsch!');
+            this.showSolutionWithMessage(msg('Unfortunately, the selected path is wrong!'));
         }
     }
 
@@ -900,7 +903,7 @@ export class FlowchartWidget extends LitElementWw {
      * @returns {void}
      */
     private addTask() {
-        this.taskList = [...this.taskList, { titel: 'Title', content: 'Task' }];
+        this.taskList = [...this.taskList, { titel: msg('Title'), content: msg('Task') }];
     }
 
     /**
@@ -910,7 +913,7 @@ export class FlowchartWidget extends LitElementWw {
      * @returns {void}
      */
     private addHelp() {
-        this.helpList = [...this.helpList, { titel: 'Title', content: 'Hint' }];
+        this.helpList = [...this.helpList, { titel: msg('Title'), content: msg('Hint') }];
     }
 
     /**
@@ -2125,7 +2128,7 @@ export class FlowchartWidget extends LitElementWw {
 
             if (type === 'node') {
                 const node = this.graphNodes[index];
-                const text = value || msg(FlowchartWidget.labels[node.node]);
+                const text = value || FlowchartWidget.label(node.node);
                 node.text = node.node === 'decision' ? '  ' + text + '  ' : text;
             } else {
                 this.persistArrowText(this.arrows[index], value);

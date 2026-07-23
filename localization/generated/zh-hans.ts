@@ -9,7 +9,21 @@
     /* eslint-disable @typescript-eslint/no-explicit-any */
 
     export const templates = {
-      'sae1c7f13b7c0c47f': `Start`,
+      's94d0e033f72fca89': `Add task`,
+'s4f5fcf942bca6be5': `Add hint`,
+'s99a474c8e41b56f0': `Natural language`,
+'s44f386b424330b66': `Pseudocode`,
+'s20b232c96ed539f0': `Content...`,
+'sbc401e67067321d8': `Changes are saved automatically.`,
+'sdc673e73b5c13aea': `Delete`,
+'s9dcffdd89c8e0f58': `Hint`,
+'s2f2044f2431a32d5': `Heading`,
+'s2ceb11be2290bb1b': `Cancel`,
+'s6228ab313e3c8dcf': `Save path`,
+'s930f77519fda90bb': `Add path`,
+'sed8da8a9b794e4a0': `Select path`,
+'s5be397a47866f7de': `Check solution`,
+'sae1c7f13b7c0c47f': `Start`,
 's275e8941632a9afa': `Process`,
 'sef92ffa038c78883': `Decision`,
 'sf755a4987e4c2af1': `Input/Output`,
@@ -24,7 +38,6 @@
 'sfbfc89b3a12052d6': `Check path`,
 's36480f2f59da17d3': `No tasks!`,
 's9df2887de87a2a6b': `No hints!`,
-'sdc673e73b5c13aea': `Delete`,
 's70d2c6a9a84180ba': `Type in the new text:`,
 's85e34dc8cc55f1a3': `Are you sure, that you want to delete everything?`,
 's5e8250fb85d64c23': `Close`,
@@ -39,5 +52,9 @@
 's8045f0622a167858': `Zoom:`,
 's42c95e7175a54564': `Allow editing:`,
 's496067bc27deb87a': `Allow moving:`,
+'s012e7772b1fac646': `Unfortunately, the selected path is wrong!`,
+'s5bffe94b60a5e7d5': `The selected path is correct!`,
+'s99f110d27e30b289': `Title`,
+'s03ee3cfb0919c62c': `Task`,
     };
   

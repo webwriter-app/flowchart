@@ -121,6 +121,74 @@
         <source>Font size:</source>
         <target>Veľkosť písma:</target>
       </trans-unit>
+      <trans-unit id="s012e7772b1fac646">
+        <source>Unfortunately, the selected path is wrong!</source>
+        <target>Bohužiaľ, zvolená trasa je nesprávna!</target>
+      </trans-unit>
+      <trans-unit id="s5bffe94b60a5e7d5">
+        <source>The selected path is correct!</source>
+        <target>Zvolená cesta je správna!</target>
+      </trans-unit>
+      <trans-unit id="s99f110d27e30b289">
+        <source>Title</source>
+        <target>Názov</target>
+      </trans-unit>
+      <trans-unit id="s03ee3cfb0919c62c">
+        <source>Task</source>
+        <target>Úloha</target>
+      </trans-unit>
+      <trans-unit id="s94d0e033f72fca89">
+        <source>Add task</source>
+        <target>Pridať úlohu</target>
+      </trans-unit>
+      <trans-unit id="s4f5fcf942bca6be5">
+        <source>Add hint</source>
+        <target>Pridať tip</target>
+      </trans-unit>
+      <trans-unit id="s99a474c8e41b56f0">
+        <source>Natural language</source>
+        <target>Prirodzený jazyk</target>
+      </trans-unit>
+      <trans-unit id="s44f386b424330b66">
+        <source>Pseudocode</source>
+        <target>Pseudokód</target>
+      </trans-unit>
+      <trans-unit id="s20b232c96ed539f0">
+        <source>Content...</source>
+        <target>Obsah...</target>
+      </trans-unit>
+      <trans-unit id="sbc401e67067321d8">
+        <source>Changes are saved automatically.</source>
+        <target>Zmeny sa ukladajú automaticky.</target>
+      </trans-unit>
+      <trans-unit id="s9dcffdd89c8e0f58">
+        <source>Hint</source>
+        <target>Tip</target>
+      </trans-unit>
+      <trans-unit id="s2f2044f2431a32d5">
+        <source>Heading</source>
+        <target>Nadpis</target>
+      </trans-unit>
+      <trans-unit id="s2ceb11be2290bb1b">
+        <source>Cancel</source>
+        <target>Zrušiť</target>
+      </trans-unit>
+      <trans-unit id="s6228ab313e3c8dcf">
+        <source>Save path</source>
+        <target>Uložiť cestu</target>
+      </trans-unit>
+      <trans-unit id="s930f77519fda90bb">
+        <source>Add path</source>
+        <target>Pridať cestu</target>
+      </trans-unit>
+      <trans-unit id="sed8da8a9b794e4a0">
+        <source>Select path</source>
+        <target>Vybrať trasu</target>
+      </trans-unit>
+      <trans-unit id="s5be397a47866f7de">
+        <source>Check solution</source>
+        <target>Skontrolovať riešenie</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

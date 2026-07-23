@@ -121,6 +121,74 @@
         <source>Font size:</source>
         <target>Taille de la police :</target>
       </trans-unit>
+      <trans-unit id="s012e7772b1fac646">
+        <source>Unfortunately, the selected path is wrong!</source>
+        <target>Malheureusement, le chemin sélectionné est incorrect !</target>
+      </trans-unit>
+      <trans-unit id="s5bffe94b60a5e7d5">
+        <source>The selected path is correct!</source>
+        <target>Le chemin sélectionné est correct !</target>
+      </trans-unit>
+      <trans-unit id="s99f110d27e30b289">
+        <source>Title</source>
+        <target>Titre</target>
+      </trans-unit>
+      <trans-unit id="s03ee3cfb0919c62c">
+        <source>Task</source>
+        <target>Tâche</target>
+      </trans-unit>
+      <trans-unit id="s94d0e033f72fca89">
+        <source>Add task</source>
+        <target>Ajouter une tâche</target>
+      </trans-unit>
+      <trans-unit id="s4f5fcf942bca6be5">
+        <source>Add hint</source>
+        <target>Ajouter un indice</target>
+      </trans-unit>
+      <trans-unit id="s99a474c8e41b56f0">
+        <source>Natural language</source>
+        <target>Langage naturel</target>
+      </trans-unit>
+      <trans-unit id="s44f386b424330b66">
+        <source>Pseudocode</source>
+        <target>Pseudocode</target>
+      </trans-unit>
+      <trans-unit id="s20b232c96ed539f0">
+        <source>Content...</source>
+        <target>Contenu...</target>
+      </trans-unit>
+      <trans-unit id="sbc401e67067321d8">
+        <source>Changes are saved automatically.</source>
+        <target>Les modifications sont enregistrées automatiquement.</target>
+      </trans-unit>
+      <trans-unit id="s9dcffdd89c8e0f58">
+        <source>Hint</source>
+        <target>Astuce</target>
+      </trans-unit>
+      <trans-unit id="s2f2044f2431a32d5">
+        <source>Heading</source>
+        <target>Titre</target>
+      </trans-unit>
+      <trans-unit id="s2ceb11be2290bb1b">
+        <source>Cancel</source>
+        <target>Annuler</target>
+      </trans-unit>
+      <trans-unit id="s6228ab313e3c8dcf">
+        <source>Save path</source>
+        <target>Enregistrer le chemin</target>
+      </trans-unit>
+      <trans-unit id="s930f77519fda90bb">
+        <source>Add path</source>
+        <target>Ajouter un chemin</target>
+      </trans-unit>
+      <trans-unit id="sed8da8a9b794e4a0">
+        <source>Select path</source>
+        <target>Sélectionner le chemin</target>
+      </trans-unit>
+      <trans-unit id="s5be397a47866f7de">
+        <source>Check solution</source>
+        <target>Vérifier la solution</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

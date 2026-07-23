@@ -121,6 +121,74 @@
         <source>Font size:</source>
         <target>글꼴 크기:</target>
       </trans-unit>
+      <trans-unit id="s012e7772b1fac646">
+        <source>Unfortunately, the selected path is wrong!</source>
+        <target>안타깝게도 선택한 경로가 잘못되었습니다!</target>
+      </trans-unit>
+      <trans-unit id="s5bffe94b60a5e7d5">
+        <source>The selected path is correct!</source>
+        <target>선택한 경로는 맞습니다!</target>
+      </trans-unit>
+      <trans-unit id="s99f110d27e30b289">
+        <source>Title</source>
+        <target>제목</target>
+      </trans-unit>
+      <trans-unit id="s03ee3cfb0919c62c">
+        <source>Task</source>
+        <target>작업</target>
+      </trans-unit>
+      <trans-unit id="s94d0e033f72fca89">
+        <source>Add task</source>
+        <target>작업 추가</target>
+      </trans-unit>
+      <trans-unit id="s4f5fcf942bca6be5">
+        <source>Add hint</source>
+        <target>힌트 추가</target>
+      </trans-unit>
+      <trans-unit id="s99a474c8e41b56f0">
+        <source>Natural language</source>
+        <target>자연어</target>
+      </trans-unit>
+      <trans-unit id="s44f386b424330b66">
+        <source>Pseudocode</source>
+        <target>의사 코드</target>
+      </trans-unit>
+      <trans-unit id="s20b232c96ed539f0">
+        <source>Content...</source>
+        <target>내용...</target>
+      </trans-unit>
+      <trans-unit id="sbc401e67067321d8">
+        <source>Changes are saved automatically.</source>
+        <target>변경 사항은 자동으로 저장됩니다.</target>
+      </trans-unit>
+      <trans-unit id="s9dcffdd89c8e0f58">
+        <source>Hint</source>
+        <target>힌트</target>
+      </trans-unit>
+      <trans-unit id="s2f2044f2431a32d5">
+        <source>Heading</source>
+        <target>제목</target>
+      </trans-unit>
+      <trans-unit id="s2ceb11be2290bb1b">
+        <source>Cancel</source>
+        <target>취소</target>
+      </trans-unit>
+      <trans-unit id="s6228ab313e3c8dcf">
+        <source>Save path</source>
+        <target>경로 저장</target>
+      </trans-unit>
+      <trans-unit id="s930f77519fda90bb">
+        <source>Add path</source>
+        <target>경로 추가</target>
+      </trans-unit>
+      <trans-unit id="sed8da8a9b794e4a0">
+        <source>Select path</source>
+        <target>경로 선택</target>
+      </trans-unit>
+      <trans-unit id="s5be397a47866f7de">
+        <source>Check solution</source>
+        <target>해답 확인</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -1,6 +1,7 @@
 import { html, render } from 'lit';
 import { FlowchartWidget } from '../../..';
 import { ItemList } from '../../definitions/ItemList';
+import { msg } from '@lit/localize';
 
 // Füge eine Hilfskarte hinzu
 export function addHelp(element: FlowchartWidget, helpList: ItemList[]) {
@@ -25,7 +26,7 @@ export function addHelp(element: FlowchartWidget, helpList: ItemList[]) {
 
     const helpContent = document.createElement('textarea');
     helpContent.className = 'help-content';
-    helpContent.placeholder = 'Inhalt... \nÄnderungen werden automatisch gespeichert.';
+    helpContent.placeholder = msg('Content...') + '\n' + msg('Changes are saved automatically.');
     helpContent.addEventListener('input', (event) => {
         const target = event.target as HTMLTextAreaElement;
         target.style.height = 'auto';
@@ -40,7 +41,7 @@ export function addHelp(element: FlowchartWidget, helpList: ItemList[]) {
 
     const deleteHelp = document.createElement('button');
     deleteHelp.className = 'delete-help-button editMode';
-    deleteHelp.textContent = 'Löschen';
+    deleteHelp.textContent = msg('Delete');
     deleteHelp.onclick = () => {
         const index = Array.from(helpContainer.children).indexOf(helpWrapper);
         helpList.splice(index, 1);
@@ -51,7 +52,7 @@ export function addHelp(element: FlowchartWidget, helpList: ItemList[]) {
 
     const showHelp = document.createElement('button');
     showHelp.className = 'show-help-button hidden';
-    showHelp.textContent = 'Tipp';
+    showHelp.textContent = msg('Hint');
     showHelp.onclick = () => {
         helpContent.classList.toggle('hidden');
     };
@@ -101,17 +102,17 @@ export function renderHelpList(this: FlowchartWidget, helpList: ItemList[]) {
                 type="text"
                 class="help-title"
                 value="${help.titel}"
-                placeholder="Überschrift"
+                placeholder="${msg('Heading')}"
                 @change=${onTitleChange}
             />
             <textarea
                 class="help-content"
                 @change=${onContentChange}
-                placeholder="Inhalt... Änderungen werden automatisch gespeichert."
+                placeholder="${msg('Content...')} ${msg('Changes are saved automatically.')}"
             >
 ${help.content}</textarea
             >
-            <button class="delete-help-button editMode" @click=${deleteHelp}>Löschen</button>
+            <button class="delete-help-button editMode" @click=${deleteHelp}>${msg('Delete')}</button>
         </div>`;
     };
 

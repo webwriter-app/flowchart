@@ -121,6 +121,74 @@
         <source>Font size:</source>
         <target>字体大小：</target>
       </trans-unit>
+      <trans-unit id="s012e7772b1fac646">
+        <source>Unfortunately, the selected path is wrong!</source>
+        <target>很遗憾，所选路径有误！</target>
+      </trans-unit>
+      <trans-unit id="s5bffe94b60a5e7d5">
+        <source>The selected path is correct!</source>
+        <target>所选路径正确！</target>
+      </trans-unit>
+      <trans-unit id="s99f110d27e30b289">
+        <source>Title</source>
+        <target>标题</target>
+      </trans-unit>
+      <trans-unit id="s03ee3cfb0919c62c">
+        <source>Task</source>
+        <target>任务</target>
+      </trans-unit>
+      <trans-unit id="s94d0e033f72fca89">
+        <source>Add task</source>
+        <target>添加任务</target>
+      </trans-unit>
+      <trans-unit id="s4f5fcf942bca6be5">
+        <source>Add hint</source>
+        <target>添加提示</target>
+      </trans-unit>
+      <trans-unit id="s99a474c8e41b56f0">
+        <source>Natural language</source>
+        <target>自然语言</target>
+      </trans-unit>
+      <trans-unit id="s44f386b424330b66">
+        <source>Pseudocode</source>
+        <target>伪代码</target>
+      </trans-unit>
+      <trans-unit id="s20b232c96ed539f0">
+        <source>Content...</source>
+        <target>内容...</target>
+      </trans-unit>
+      <trans-unit id="sbc401e67067321d8">
+        <source>Changes are saved automatically.</source>
+        <target>更改会自动保存。</target>
+      </trans-unit>
+      <trans-unit id="s9dcffdd89c8e0f58">
+        <source>Hint</source>
+        <target>提示</target>
+      </trans-unit>
+      <trans-unit id="s2f2044f2431a32d5">
+        <source>Heading</source>
+        <target>标题</target>
+      </trans-unit>
+      <trans-unit id="s2ceb11be2290bb1b">
+        <source>Cancel</source>
+        <target>取消</target>
+      </trans-unit>
+      <trans-unit id="s6228ab313e3c8dcf">
+        <source>Save path</source>
+        <target>保存路径</target>
+      </trans-unit>
+      <trans-unit id="s930f77519fda90bb">
+        <source>Add path</source>
+        <target>添加路径</target>
+      </trans-unit>
+      <trans-unit id="sed8da8a9b794e4a0">
+        <source>Select path</source>
+        <target>选择路径</target>
+      </trans-unit>
+      <trans-unit id="s5be397a47866f7de">
+        <source>Check solution</source>
+        <target>检查解法</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

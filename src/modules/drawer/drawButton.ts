@@ -1,8 +1,8 @@
 import { FlowchartWidget } from "../../..";
-import { localized, msg } from "@lit/localize"
+import { msg } from "@lit/localize"
 
 // Funktion zum Zeichnen von Schaltflächenelementen
-export function drawButton(element: string, menu: 'flow' | 'tool' | 'task' | 'help' | 'translate', msg1: (template: string) => string ) {
+export function drawButton(element: string, menu: 'flow' | 'tool' | 'task' | 'help' | 'translate') {
     // Funktion zum übersichtlichen setzen der Attribute der SVG Grafiken
     function setAttributeList(element: SVGElement, attributes: { [key: string]: string }): void {
         for (const key in attributes) {
@@ -70,7 +70,7 @@ export function drawButton(element: string, menu: 'flow' | 'tool' | 'task' | 'he
                 'stroke-width': '2',
             });
             svg.appendChild(terminal);
-            element === 'start' ? (text.textContent = msg(FlowchartWidget.labels["start"])) : (text.textContent = msg(FlowchartWidget.labels["end"]));
+            text.textContent = element === 'start' ? FlowchartWidget.label('start') : FlowchartWidget.label('end');
             break;
 
         case 'op':
@@ -85,7 +85,7 @@ export function drawButton(element: string, menu: 'flow' | 'tool' | 'task' | 'he
                 'stroke-width': '2',
             });
             svg.appendChild(operation);
-            text.textContent = msg(FlowchartWidget.labels["op"]);
+            text.textContent = FlowchartWidget.label('op');
             break;
 
         case 'decision':
@@ -97,7 +97,7 @@ export function drawButton(element: string, menu: 'flow' | 'tool' | 'task' | 'he
                 'stroke-width': '2',
             });
             svg.appendChild(decision);
-            text.textContent = msg(FlowchartWidget.labels["decision"]);
+            text.textContent = FlowchartWidget.label('decision');
             text.setAttribute('y', '32');
             break;
 
@@ -112,7 +112,7 @@ export function drawButton(element: string, menu: 'flow' | 'tool' | 'task' | 'he
                 'stroke-width': '2',
             });
             svg.appendChild(connector);
-            text.textContent = msg(FlowchartWidget.labels["connector"]);
+            text.textContent = FlowchartWidget.label('connector');
             text.setAttribute('y', '50');
             break;
 
@@ -142,7 +142,7 @@ export function drawButton(element: string, menu: 'flow' | 'tool' | 'task' | 'he
                 'stroke-width': '2',
             });
             svg.appendChild(io);
-            text.textContent = msg(FlowchartWidget.labels["i/o"]);
+            text.textContent = FlowchartWidget.label('i/o');
             break;
 
         case 'sub':
@@ -180,12 +180,12 @@ export function drawButton(element: string, menu: 'flow' | 'tool' | 'task' | 'he
             });
             svg.appendChild(lineR);
 
-            text.textContent = msg(FlowchartWidget.labels["sub"]);
+            text.textContent = FlowchartWidget.label('sub');
             text.setAttribute('x', '63');
             break;
 
         case 'text':
-            text.textContent = msg(FlowchartWidget.labels["text"]);
+            text.textContent = FlowchartWidget.label('text');
             break;
 
         // Tool Menü

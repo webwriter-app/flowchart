@@ -1,6 +1,8 @@
 import { LitElement, html, css, } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
+import { localized, msg } from '@lit/localize';
 
+@localized()
 @customElement('custom-prompt')
 export class CustomPrompt extends LitElement {
    @property({ type: String }) accessor label: string;
@@ -69,7 +71,7 @@ export class CustomPrompt extends LitElement {
             <label>${this.label}</label>
             <input type="text" @keyup="${this.handleKeyUp}" />
             <div class="button-container">
-               <button @click="${this.handleCancel}">Abbrechen</button>
+               <button @click="${this.handleCancel}">${msg('Cancel')}</button>
                <button @click="${this.handleSubmit}">OK</button>
             </div>
          </div>
