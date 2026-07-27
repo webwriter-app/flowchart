@@ -44,6 +44,15 @@ export function snapNodePosition(ctx: CanvasRenderingContext2D, draggedNode: Gra
 export const isWithinCircle = (x: number, y: number, circleX: number, circleY: number, radius: number):
    boolean => Math.sqrt(Math.pow(x - circleX, 2) + Math.pow(y - circleY, 2)) <= radius;
 
+// Setzt die eingestellte Schriftart auf dem Kontext. Muss vor jeder Messung gesetzt werden,
+// da sich die Knotengröße und damit auch die Ankerpunkte aus der Textbreite ergeben.
+export function applyGraphFont(ctx: CanvasRenderingContext2D, settings: { font: string; fontSize: number }) {
+   ctx.font =
+      settings.font === 'Courier New'
+         ? `bold ${settings.fontSize}px ${settings.font}`
+         : `${settings.fontSize}px ${settings.font}`;
+}
+
 // Bestimmt die Maße des Knotens anhand der Textgrößen
 export function measureTextSize(ctx: CanvasRenderingContext2D, text: string): { width: number; height: number } {
    const metrics = ctx.measureText(text);

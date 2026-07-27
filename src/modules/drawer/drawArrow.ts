@@ -2,6 +2,7 @@ import { GraphNode } from '../../definitions/GraphNode';
 import { Arrow } from '../../definitions/Arrow';
 import { getArrowInformation } from '../helper/arrowHelper';
 import { getAnchors } from '../helper/anchorHelper';
+import { applyGraphFont } from '../helper/utilities';
 
 export function drawArrow(
     ctx: CanvasRenderingContext2D,
@@ -420,11 +421,7 @@ function addArrowText(
     };
 
     ctx.save();
-    if (settings.font === 'Courier New') {
-        ctx.font = `bold ${settings.fontSize}px ${settings.font}`;
-    } else {
-        ctx.font = `${settings.fontSize}px ${settings.font}`;
-    }
+    applyGraphFont(ctx, settings);
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.translate(midPoint.x, midPoint.y);
@@ -481,11 +478,7 @@ export function drawArrowAnchor(
     // Resette Einstellungen.
     ctx.globalAlpha = 1;
 
-    if (settings.font === 'Courier New') {
-        ctx.font = `bold ${settings.fontSize}px ${settings.font}`;
-    } else {
-        ctx.font = `${settings.fontSize}px ${settings.font}`;
-    }
+    applyGraphFont(ctx, settings);
 }
 
 export function drawTempArrow(

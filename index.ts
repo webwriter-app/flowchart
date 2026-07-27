@@ -34,6 +34,7 @@ import {
 } from './src/modules/ui/generalUI';
 
 import {
+    applyGraphFont,
     snapNodePosition,
     removeOldConnection,
     isNodeInRectangle,
@@ -426,7 +427,7 @@ export class FlowchartWidget extends LitElementWw {
             <style>
                 ${papWidgetStyles}
             </style>
-            <div class="workspace" @scroll="${this.handleScroll}">
+            <div class="workspace" @scroll="${this.handleScroll}" @dragstart="${this.handleWorkspaceDragStart}">
                 <canvas
                     width="100%"
                     height="${this.currentHeight * (window.devicePixelRatio || 1)}"
@@ -972,6 +973,8 @@ export class FlowchartWidget extends LitElementWw {
         this.ctx.translate(this.canvasOffsetX, this.canvasOffsetY)
 
         // this.getUserSettings();
+
+        applyGraphFont(this.ctx, this.graphSettings);
 
         this.reconnectArrows();
 
@@ -1935,6 +1938,18 @@ export class FlowchartWidget extends LitElementWw {
      */
     private handleScroll(event: Event) {
         this.updateCanvasOffset();
+    }
+
+    /**
+     * Cancel native drags starting inside the workspace.
+     *
+     * @param {DragEvent} event
+     * @returns {void}
+     * @internal
+     */
+    private handleWorkspaceDragStart(event: DragEvent) {
+        event.preventDefault();
+        event.stopPropagation();
     }
 
     /**

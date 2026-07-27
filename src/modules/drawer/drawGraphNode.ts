@@ -1,5 +1,5 @@
 import { GraphNode } from "../../definitions/GraphNode";
-import { measureTextSize } from "../helper/utilities";
+import { applyGraphFont, measureTextSize } from "../helper/utilities";
 import { getAnchors } from "../helper/anchorHelper";
 import { ThemeManager } from "../styles/ThemeManager";
 
@@ -10,11 +10,7 @@ export function drawGraphNode(ctx: CanvasRenderingContext2D, element: GraphNode,
    const theme = themeManager.getTheme(settings.theme);
 
    // Setze die Schriftart des Textes, dies muss vorher gesetzt werden, damit die größe des Textes richtig berechnet werden kann.
-   if (settings.font === 'Courier New') {
-      ctx.font = `bold ${settings.fontSize}px ${settings.font}`;
-   } else {
-      ctx.font = `${settings.fontSize}px ${settings.font}`;
-   }
+   applyGraphFont(ctx, settings);
 
    const { node, text, x, y } = element;
    let { width, height } = measureTextSize(ctx, text);
