@@ -53,11 +53,9 @@ export const papWidgetStyles = css`
     /* Menus */
     .flowchart-menu,
     .task-menu,
-    .tool-menu,
     .help-menu,
     .preset-menu,
     .translate-menu,
-    .setting-menu,
     .solution-menu {
         display: flex;
         position: fixed;
@@ -118,66 +116,6 @@ export const papWidgetStyles = css`
         position: relative;
     }
 
-    .tool-menu {
-        position: relative;
-        flex-direction: row;
-        margin-bottom: 10px;
-        color: white;
-        flex-direction: column;
-        /* gap: 10px; */
-        /* top: 3%;
-        right: 1.5%; */
-    }
-
-    @media only screen and (max-width: 1071px) {
-        .tool-menu h2 {
-            display: none;
-        }
-
-        .tool-menu .preset-container label {
-            color: white;
-            font-family: var(--ui-font);
-            font-size: 14px;
-            flex: 1;
-            text-align: left;
-            margin-right: 10px;
-        }
-
-        .tool-menu .preset-container {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .tool-menu .preset-container > * {
-            margin-right: 10px;
-        }
-
-        .tool-menu .preset-container > *:last-child {
-            margin-right: 0;
-        }
-    }
-
-    @media only screen and (min-width: 1071px) {
-        .tool-menu .preset-container label {
-            display: none;
-        }
-
-        .tool-menu {
-            background-color: unset;
-            box-shadow: unset;
-            border-radius: unset;
-
-            color: black;
-        }
-
-        .tool-menu .setting-item label,
-        .tool-menu .zoom-text {
-            color: black;
-        }
-    }
-
     .solution-menu {
         flex-direction: column;
         gap: 10px;
@@ -196,7 +134,6 @@ export const papWidgetStyles = css`
 
     /* Buttons */
     .flowchart-menu button,
-    .tool-menu button,
     .add-task-button,
     .delete-task-button,
     .add-sequence-button,
@@ -209,7 +146,6 @@ export const papWidgetStyles = css`
     .translate-button,
     .solution-button,
     .prompt button,
-    .zoom-button,
     .check-solution-button,
     .action-menu button,
     .select-sequence-button,
@@ -226,7 +162,6 @@ export const papWidgetStyles = css`
     }
 
     .flowchart-menu button:hover,
-    .tool-menu button:hover,
     .add-task-button:hover,
     .delete-task-button:hover,
     .add-sequence-button:hover,
@@ -239,7 +174,6 @@ export const papWidgetStyles = css`
     .translate-button:hover,
     .solution-button:hover,
     .prompt button:hover,
-    .zoom-button:hover,
     .check-solution-button:hover,
     .action-menu button:hover,
     .select-sequence-button:hover,
@@ -249,7 +183,6 @@ export const papWidgetStyles = css`
 
     /* Add active state */
     .flowchart-menu button:active,
-    .tool-menu button:active,
     .add-task-button:active,
     .delete-task-button:active,
     .add-sequence-button:active,
@@ -262,7 +195,6 @@ export const papWidgetStyles = css`
     .translate-button:active,
     .solution-button:active,
     .prompt button:active,
-    .zoom-button:active,
     .check-solution-button:active,
     .action-menu button:active,
     .select-sequence-button:active,
@@ -289,7 +221,6 @@ export const papWidgetStyles = css`
         font-size: 16px;
     }
 
-    .tool-menu button.active,
     .action-menu button.active {
         background-color: #eec900;
     }
@@ -305,8 +236,7 @@ export const papWidgetStyles = css`
     .help-menu,
     .task-menu,
     .translate-menu,
-    .preset-menu,
-    .setting-menu {
+    .preset-menu {
         position: absolute;
         right: 0;
         top: 0;
@@ -590,78 +520,6 @@ export const papWidgetStyles = css`
         overflow: auto;
         margin-bottom: 5px;
         margin-top: 5px;
-    }
-
-    .setting-menu {
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-    }
-
-    .setting-menu-container {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        width: 100%;
-        margin-top: 5px;
-    }
-
-    .setting-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-    }
-
-    .setting-item label {
-        color: white;
-        font-family: var(--ui-font);
-        font-size: 14px;
-        flex: 1;
-        text-align: left;
-        margin-right: 10px;
-    }
-
-    .setting-item select {
-        background-color: var(--button-color);
-        color: white;
-        border: none;
-        border-radius: var(--border-r);
-        font-size: 12px;
-        padding: 5px;
-        transition: var(--hover-transition);
-        flex: 1;
-        text-align: left;
-        margin-left: 10px;
-		appearance: none;
-    }
-
-    .setting-item select:hover {
-        background-color: var(--hover-color);
-    }
-
-    .zoom-selector {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        width: 45%;
-    }
-    .zoom-text {
-        color: white;
-        font-family: var(--ui-font);
-        font-size: 14px;
-        flex: 1;
-        text-align: center;
-        margin-left: 5px;
-        margin-right: 5px;
-    }
-
-    .zoom-button {
-        display: flex;
-        width: 20px;
-        height: 20px;
-        align-items: center;
-        justify-content: center;
     }
 
     /* Context Menu */

@@ -1,4 +1,4 @@
-import { LitElementWw } from '@webwriter/lit';
+import { LitElementWw, option } from '@webwriter/lit';
 import { html, css, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { v4 as uuidv4 } from 'uuid';
@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { GraphNode } from './src/definitions/GraphNode';
 import { Arrow } from './src/definitions/Arrow';
 import { ItemList } from './src/definitions/ItemList';
+import { optionLabels } from './src/definitions/optionLabels';
 
 import { drawButton } from './src/modules/drawer/drawButton';
 import { drawGraphNode, drawNodeAnchors } from './src/modules/drawer/drawGraphNode';
@@ -64,9 +65,9 @@ import LOCALIZE from "./localization/generated"
  * @attr {number} zoom-level - Zoom percentage in the range [50, 200]. Default 100.
  * @attr {number} canvas-offset-x - Horizontal pan offset in world units.
  * @attr {number} canvas-offset-y - Vertical pan offset in world units.
- * @attr {boolean} allow-student-edit - Enables student editing (adding, dragging, deleting).
- * @attr {boolean} allow-student-pan - Enables student panning and zoom interaction.
- * @attr {string} font - Font family used for node labels. Default "Courier New".
+ * @attr {boolean} disable-student-edit - Disables student editing (adding, dragging, deleting).
+ * @attr {boolean} disable-student-pan - Disables student panning and zoom interaction.
+ * @attr {string} font - Font family used for node labels, spaces written as underscores. Default "Courier_New".
  * @attr {number} font-size - Font size used for node labels. Default 16.
  * @attr {string} theme - Color theme; one of "standard" | "pastel" | "mono" | "s/w". Default "standard".
  *
@@ -77,14 +78,12 @@ import LOCALIZE from "./localization/generated"
  * @prop {number} zoomLevel - Current zoom percentage (50–200).
  * @prop {number} canvasOffsetX - Horizontal pan offset (world units).
  * @prop {number} canvasOffsetY - Vertical pan offset (world units).
- * @prop {string} font - Font family used for labels.
+ * @prop {string} font - Font family used for labels, spaces written as underscores.
  * @prop {number} fontSize - Font size used for labels.
  * @prop {string} theme - Color theme name.
  * @prop {boolean} fullscreen - Whether the widget is currently in fullscreen mode.
  * @prop {string} solutionMessage - Message shown in the solution prompt.
  * @prop {boolean} showSolution - Whether the solution prompt is visible.
- *
- * @csspart options - Styles the settings sidebar (tool menu).
  *
  * @cssprop [--scaled-grid-size=50px] - Spacing between grid dots (derived from zoom).
  * @cssprop [--scaled-grid-dot-size=1.5px] - Dot radius for the background grid (derived from zoom).
@@ -136,11 +135,28 @@ export class FlowchartWidget extends LitElementWw {
     /** @internal Runtime canvas height; tracks drag-resize/fullscreen. */
     @property({ type: Number }) accessor currentHeight: number = this.height;
 
-    /** @internal Runtime graph rendering settings. */
-    @property({ type: Object }) accessor graphSettings = { font: 'Courier New', fontSize: 16, theme: 'standard' };
+    /** @internal Rendering settings handed to the drawers; derived from the options so that changing one takes effect on the next redraw. */
+    private get graphSettings(): { font: string; fontSize: number; theme: string } {
+        return { font: this.fontFamily, fontSize: Number(this.fontSize), theme: this.theme };
+    }
+
+    /**
+     * @internal CSS font family for the selected `font` option.
+     */
+    private get fontFamily(): string {
+        return this.font.replace(/_/g, ' ');
+    }
 
     /** Zoom level in percent [50–200]. */
-    @property({ type: Number, reflect: true, attribute: true }) accessor zoomLevel: number = 100;
+    @property({ type: Number, reflect: true, attribute: true })
+    @option({
+        type: Number,
+        label: optionLabels.zoom,
+        min: 50,
+        max: 200,
+        step: 10
+    })
+    accessor zoomLevel: number = 100;
 
     /** @internal Base grid spacing (world units). */
     private gridSize: number = 50;
@@ -156,20 +172,68 @@ export class FlowchartWidget extends LitElementWw {
 
     /** Disables interactive editing (adding/dragging/deleting). */
     @property({ type: Boolean, reflect: true, attribute: true }) accessor disableStudentEdit: boolean = false;
-    private get allowStudentEdit(): boolean { return !this.disableStudentEdit; }
+
+    /** Whether students may add, drag and delete elements. */
+    // @ts-ignore: `option` is typed for accessors, but works on a getter/setter pair as well
+    @option({ type: Boolean, label: optionLabels.allowEditing })
+    get allowStudentEdit(): boolean {
+        return !this.disableStudentEdit;
+    }
+    set allowStudentEdit(value: boolean) {
+        this.disableStudentEdit = !value;
+    }
 
     /** Disables panning/zooming interactions. */
     @property({ type: Boolean, reflect: true, attribute: true }) accessor disableStudentPan: boolean = false;
-    private get allowStudentPan(): boolean { return !this.disableStudentPan; }
 
-    /** Font family for node labels. */
-    @property({ type: String, reflect: true, attribute: true }) accessor font = 'Courier New';
+    /** Whether students may pan and zoom the canvas. */
+    // @ts-ignore: `option` is typed for accessors, but works on a getter/setter pair as well
+    @option({ type: Boolean, label: optionLabels.allowMoving })
+    get allowStudentPan(): boolean {
+        return !this.disableStudentPan;
+    }
+    set allowStudentPan(value: boolean) {
+        this.disableStudentPan = !value;
+    }
+
+    /** Font family for node labels, multi-word families are underscored (see `fontFamily`). */
+    @property({ type: String, reflect: true, attribute: true })
+    @option({
+        type: "select",
+        label: optionLabels.font,
+        options: [
+            { value: "Arial", label: { "en": "Arial" } },
+            { value: "Courier_New", label: { "en": "Courier New" } },
+            { value: "Times_New_Roman", label: { "en": "Times New Roman" } },
+            { value: "Verdana", label: { "en": "Verdana" } }
+        ]
+     })
+    accessor font = 'Courier_New';
 
     /** Font size for node labels. */
-    @property({ type: Number, reflect: true, attribute: true }) accessor fontSize = 16;
+    @property({ type: Number, reflect: true, attribute: true })
+    @option({
+        type: Number,
+        label: optionLabels.fontSize,
+        min: 8,
+        max: 40,
+        step: 1
+    })
+    accessor fontSize = 16;
 
     /** Color theme name. */
-    @property({ type: String, reflect: true, attribute: true }) accessor theme = 'standard';
+    @property({ type: String, reflect: true, attribute: true })
+    @option({
+        type: "select",
+        label: optionLabels.theme,
+        options: [
+            { value: "standard", label: optionLabels.themeStandard },
+            { value: "pastel", label: optionLabels.themePastel },
+            { value: "mono", label: optionLabels.themeMono },
+            { value: "s/w", label: optionLabels.themeBlackWhite }
+        ]
+    })
+    accessor theme = 'standard';
 
     /** Whether the widget is in fullscreen mode. */
     @property({ type: Boolean }) accessor fullscreen = false;
@@ -362,7 +426,6 @@ export class FlowchartWidget extends LitElementWw {
             <style>
                 ${papWidgetStyles}
             </style>
-            ${this.isEditable() ? this.renderToolMenu() : ''}
             <div class="workspace" @scroll="${this.handleScroll}">
                 <canvas
                     width="100%"
@@ -550,115 +613,6 @@ export class FlowchartWidget extends LitElementWw {
         `;
     }
 
-    /**
-     * Render the settings sidebar (tool menu).
-     * Provides controls for:
-     * - Font family and size (updates `font`, `fontSize`, and `graphSettings`)
-     * - Theme (updates `theme` and `graphSettings`)
-     * - Zoom (updates `zoomLevel` and applies zoom)
-     * - Edit/pan toggles (`allowStudentEdit`, `allowStudentPan`)
-     *
-     * The aside uses `part="options"` to expose a CSS part for styling.
-     * Visibility of the sidebar is controlled by the caller in `render()` (shown only in edit mode).
-     *
-     * @returns {import('lit').TemplateResult} Lit template for the settings sidebar.
-     * @internal
-     */
-    private renderToolMenu() {
-        return html`<aside class="tool-menu" part="options">
-        <h2>${msg('Settings')}</h2>
-
-        <div class="setting-menu-container">
-            <div class="setting-item">
-                <label>${msg('Font:')}</label>
-                <select id="font-selector"
-                    @change="${(e) => {
-                        this.font = e.target.value;
-                        this.graphSettings.font = e.target.value;
-                        this.redrawCanvas();
-                    }}"
-                >
-                    <option value="Arial">Arial</option>
-                    <option value="Verdana">Verdana</option>
-                    <option value="Times New Roman">Times New Roman</option>
-                    <option value="Courier New" selected>Courier New</option>
-                </select>
-            </div>
-            <div class="setting-item">
-                <label>${msg('Font size:')}</label>
-                <select id="font-size-selector"
-                    @change="${(e) => {
-                        this.fontSize = e.target.value;
-                        this.graphSettings.fontSize = parseInt(e.target.value);
-                        this.redrawCanvas();
-                    }}"
-                >
-                    <option value="12">12</option>
-                    <option value="14">14</option>
-                    <option value="16" selected>16</option>
-                    <option value="18">18</option>
-                    <option value="20">20</option>
-                    <option value="22">22</option>
-                </select>
-            </div>
-            <div class="setting-item">
-                <label>${msg('Theme:')}</label>
-                <select id="color-theme-selector"
-                    @change="${(e) => {
-                        this.theme = e.target.value;
-                        this.graphSettings.theme = e.target.value;
-                        this.redrawCanvas();
-                    }}"
-                >
-                    <option value="standard" selected>${msg('Standard')}</option>
-                    <option value="pastel">${msg('Pastel')}</option>
-                    <option value="mono">${msg('Mono')}</option>
-                    <option value="s/w">${msg('Black/White')}</option>
-                </select>
-            </div>
-            <div class="setting-item">
-                <label>${msg('Zoom:')}</label>
-                <div class="zoom-selector">
-                    <button id="zoom-out-button" class="zoom-button"
-                        @click="${(e) => {
-                            this.zoomLevel = Math.max(this.zoomLevel - 10, 50); // Begrenze den Zoom auf 50%
-                            this.applyZoom();
-                        }}"
-                    >-</button>
-                    <span id="zoom-percentage" class="zoom-text">${this.zoomLevel}%</span>
-                    <button id="zoom-in-button" class="zoom-button"
-                        @click="${(e) => {
-                            this.zoomLevel = Math.min(this.zoomLevel + 10, 200); // Begrenze den Zoom auf 200%
-                            this.applyZoom();
-                        }}"
-                    >+</button>
-                </div>
-            </div>
-            <div class="setting-item">
-                <label>${msg('Allow editing:')}</label>
-                <input
-                    type="checkbox"
-                    id="editable-checkbox"
-                    @change="${(e) => {
-                        this.disableStudentEdit = !e.target.checked;
-                    }}"
-                    ?checked="${this.allowStudentEdit}"
-                />
-            </div>
-            <div class="setting-item">
-                <label>${msg('Allow moving:')}</label>
-                <input
-                    type="checkbox"
-                    id="panable-checkbox"
-                    @change="${(e) => {
-                        this.disableStudentPan = !e.target.checked;
-                    }}"
-                    ?checked="${this.allowStudentPan}"
-                />
-        </div>
-    </aside>`;
-    }
-
     // ------------------------ User interface Functionality ------------------------
 
     /**
@@ -816,11 +770,11 @@ export class FlowchartWidget extends LitElementWw {
         /**
      * Show or hide one of the widget's overlay menus and move focus to the host.
      *
-     * @param {'task'|'flow'|'context'|'preset'|'help'|'translate'|'setting'} menu - Menu identifier to toggle.
+     * @param {'task'|'flow'|'context'|'preset'|'help'|'translate'} menu - Menu identifier to toggle.
      * @returns {void}
      * @internal
      */
-    private toggleMenu(menu: 'task' | 'flow' | 'context' | 'preset' | 'help' | 'translate' | 'setting') {
+    private toggleMenu(menu: 'task' | 'flow' | 'context' | 'preset' | 'help' | 'translate') {
         toggleMenu(this, menu);
         this.focus();
     }
@@ -1724,10 +1678,6 @@ export class FlowchartWidget extends LitElementWw {
 
         this.arrows = createArrowsFromGraphNodes(this.arrows, this.graphNodes);
 
-        this.graphSettings.font = this.font;
-        this.graphSettings.fontSize = this.fontSize;
-        this.graphSettings.theme = this.theme;
-
         this.applyZoom();
         this.redrawCanvas();
         this.updateTouchAction();
@@ -1785,6 +1735,25 @@ export class FlowchartWidget extends LitElementWw {
         }
         updateDisabledState(this, this.isEditable());
         this.updateTouchAction();
+        this.applyOptionChanges(changedProperties);
+    }
+
+    /** @internal Apply changed options to the running canvas. */
+    private applyOptionChanges(changedProperties: Map<string, any>) {
+        if (!this.canvas || !this.ctx) {
+            return;
+        }
+
+        if (changedProperties.has('zoomLevel')) {
+            // Also triggers redraw
+            this.applyZoom();
+        } else if (
+            changedProperties.has('font') ||
+            changedProperties.has('fontSize') ||
+            changedProperties.has('theme')
+        ) {
+            this.redrawCanvas();
+        }
     }
 
     /**
