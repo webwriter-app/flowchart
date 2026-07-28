@@ -458,8 +458,9 @@ export class FlowchartWidget extends LitElementWw {
      * `label` and `text` stay functions so `msg()` is evaluated at render time and
      * follows a locale switch. `label` is what the button shows, `text` is the default
      * caption of the node placed on the canvas — they differ for `decision`, whose
-     * caption is padded so the diamond has room, and for `connector`, which carries no
-     * caption at all.
+     * caption is padded so the diamond has room, for `connector`, which carries no
+     * caption at all, and for `i/o`, whose button is abbreviated to keep the palette
+     * narrow while the node itself keeps the spelled-out caption.
      */
     static nodePalette: {
         node: 'start' | 'end' | 'op' | 'decision' | 'connector' | 'i/o' | 'sub' | 'text';
@@ -470,7 +471,7 @@ export class FlowchartWidget extends LitElementWw {
         { node: 'start', icon: nodeTerminalIcon, label: () => FlowchartWidget.label('start'), text: () => FlowchartWidget.label('start') },
         { node: 'op', icon: nodeProcessIcon, label: () => FlowchartWidget.label('op'), text: () => FlowchartWidget.label('op') },
         { node: 'decision', icon: nodeDecisionIcon, label: () => FlowchartWidget.label('decision'), text: () => '  ' + FlowchartWidget.label('decision') + '  ' },
-        { node: 'i/o', icon: nodeIoIcon, label: () => FlowchartWidget.label('i/o'), text: () => FlowchartWidget.label('i/o') },
+        { node: 'i/o', icon: nodeIoIcon, label: () => msg('I/O'), text: () => FlowchartWidget.label('i/o') },
         { node: 'sub', icon: nodeSubprogramIcon, label: () => FlowchartWidget.label('sub'), text: () => FlowchartWidget.label('sub') },
         { node: 'connector', icon: nodeConnectorIcon, label: () => FlowchartWidget.label('connector'), text: () => '' },
         { node: 'end', icon: nodeTerminalIcon, label: () => FlowchartWidget.label('end'), text: () => FlowchartWidget.label('end') },
@@ -595,7 +596,10 @@ export class FlowchartWidget extends LitElementWw {
                         >
                             ${FlowchartWidget.nodePalette.map(
                                 (entry) => html`
-                                    <sl-button @click="${() => this.addGraphNode(entry.node, entry.text())}">
+                                    <sl-button
+                                        @click="${() => this.addGraphNode(entry.node, entry.text())}"
+                                        size=${this.fullscreen ? 'medium' : 'small'}
+                                    >
                                         <sl-icon slot="prefix" src=${entry.icon}></sl-icon>
                                         ${entry.label()}
                                     </sl-button>

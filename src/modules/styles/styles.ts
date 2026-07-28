@@ -19,7 +19,7 @@ export const papWidgetStyles = css`
 
         --widget-height: 400px;
 
-        border-width: 2px;
+        border-width: 1px;
         border-style: solid;
         border-radius: var(--sl-border-radius-medium);
         border-color: var(--sl-color-neutral-300);
