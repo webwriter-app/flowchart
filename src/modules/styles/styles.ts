@@ -25,6 +25,11 @@ export const papWidgetStyles = css`
         border-color: var(--sl-color-neutral-300);
     }
 
+    :host(:fullscreen), :host(.ww-fullscreen) {
+        border: none;
+        border-radius: 0;
+    }
+
     :host(:not([contenteditable='true']):not([contenteditable=''])) .editMode {
         display: none;
     }
