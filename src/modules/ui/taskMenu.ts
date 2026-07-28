@@ -3,7 +3,7 @@ import { GraphNode } from '../../definitions/GraphNode';
 import { Arrow } from '../../definitions/Arrow';
 import { FlowchartWidget } from '../../..';
 import { html } from 'lit';
-import { drawButton } from '../drawer/drawButton';
+import selectIcon from '../../assets/pointer.svg';
 import { createTooltip, removeTooltip } from './generalUI';
 import { msg } from '@lit/localize';
 
@@ -218,7 +218,7 @@ export function renderTasks(this: FlowchartWidget, taskList: ItemList[]) {
 
             // Aktiviere den aktuellen Button und setze ihn als den aktiven Button
             const selectButton = this.shadowRoot.getElementById('select-button');
-            if (selectButton.classList.contains('active')) {
+            if (selectButton?.classList.contains('active')) {
                 this.setActiveSequenceButton(event.target as HTMLButtonElement);
                 setSelectionState(true);
             } else {
@@ -247,56 +247,55 @@ export function renderTasks(this: FlowchartWidget, taskList: ItemList[]) {
         };
 
         const setSelectionState = (state: boolean) => {
-            const taskContainer = this.shadowRoot.querySelector('.task-container');
-            const taskWrapper = taskContainer.children[index] as HTMLElement;
-            const cancelButton = taskWrapper.querySelector('.cancel-sequence-button') as HTMLButtonElement;
-            const saveButton = cancelButton.nextElementSibling as HTMLButtonElement;
-            const addSequenceButton = saveButton.nextElementSibling as HTMLButtonElement;
-
-            cancelButton.style.display = state ? 'block' : 'none';
-            saveButton.style.display = state ? 'block' : 'none';
-            addSequenceButton.classList.toggle('active', state);
+            this.sequenceEditIndex = state ? index : null;
         };
 
+        const isRecording = this.sequenceEditIndex === index;
+
         return html`
-            <div class="task-wrapper" style="position:relative">
-                <input
-                    type="text"
-                    class="task-title"
+            <div class="task-wrapper">
+                <sl-input
                     placeholder="${msg('Heading')}"
-                    value="${task.titel}"
-                    @change=${onTitleChange}
-                />
-                <textarea
-                    class="task-content"
+                    .value=${task.titel ?? ''}
+                    ?disabled=${!this.isEditable()}
+                    @sl-change=${onTitleChange}
+                ></sl-input>
+                <sl-textarea
+                    resize="auto"
                     placeholder="${msg('Content...')} ${msg('Changes are saved automatically.')}"
-                    @change=${onContentChange}
-                >
-${task.content}</textarea
-                >
+                    .value=${task.content ?? ''}
+                    ?disabled=${!this.isEditable()}
+                    @sl-change=${onContentChange}
+                ></sl-textarea>
                 <div class="task-button-container editMode">
-                    <button class="add-sequence-button editMode" @click=${addSequence}>${msg('Add path')}</button>
-                    <button class="cancel-sequence-button editMode" style="display:none" @click=${cancelSequence}>
-                        ${msg('Cancel')}
-                    </button>
-                    <button class="save-sequence-button editMode" style="display:none" @click=${saveSequence}>
-                        ${msg('Save path')}
-                    </button>
-                    <button class="delete-task-button editMode" @click=${deleteTask}>${msg('Delete')}</button>
+                    <sl-button variant=${isRecording ? 'primary' : 'default'} @click=${addSequence}>
+                        ${msg('Add path')}
+                    </sl-button>
+                    ${isRecording
+                        ? html`
+                              <sl-button @click=${cancelSequence}>${msg('Cancel')}</sl-button>
+                              <sl-button variant="primary" @click=${saveSequence}>${msg('Save path')}</sl-button>
+                          `
+                        : ''}
+                    <sl-button variant="danger" @click=${deleteTask}>${msg('Delete')}</sl-button>
                 </div>
-                <div class="task-button-container" style=${this.isEditable() || !task.sequence ? 'display:none' : ''}>
-                    <button id="select-button" @click="${this.selectSequence}" class="select-sequence-button">
-                        ${drawButton('select', 'tool')} ${msg('Select path')}
-                    </button>
-                    <button
-                        class="check-solution-button"
-                        style=${task.sequence ? 'block' : 'none'}
-                        @click=${() => this.checkSolution(task)}
-                        ?disabled=${!this.isSelectingSequence}
-                    >
-                        ${msg('Check solution')}
-                    </button>
-                </div>
+                ${!this.isEditable() && task.sequence
+                    ? html`
+                          <div class="task-button-container">
+                              <sl-button
+                                  id="select-button"
+                                  variant=${this.isSelectingSequence ? 'primary' : 'default'}
+                                  @click="${this.selectSequence}"
+                              >
+                                  <sl-icon slot="prefix" src=${selectIcon}></sl-icon>
+                                  ${msg('Select path')}
+                              </sl-button>
+                              <sl-button @click=${() => this.checkSolution(task)} ?disabled=${!this.isSelectingSequence}>
+                                  ${msg('Check solution')}
+                              </sl-button>
+                          </div>
+                      `
+                    : ''}
             </div>
         `;
     };

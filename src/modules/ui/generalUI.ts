@@ -58,13 +58,6 @@ export function updateDisabledState(element: HTMLElement, editable: boolean | un
     });
 }
 
-// Erlaubt das draggen von Canvas
-export function grabCanvas(element: HTMLElement, isGrabbing: boolean): boolean {
-    const grabButton = element.shadowRoot.getElementById('grab-button');
-    !isGrabbing ? grabButton?.classList.add('active') : grabButton?.classList.remove('active');
-    return !isGrabbing;
-}
-
 export function autoDeleteEmptyItems(
     element: HTMLElement,
     itemList: any[],

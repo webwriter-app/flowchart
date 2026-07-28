@@ -1,6 +1,7 @@
 import { LitElementWw, option } from '@webwriter/lit';
 import { html, css, LitElement } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
+import { classMap } from 'lit/directives/class-map.js';
 import { v4 as uuidv4 } from 'uuid';
 
 import { GraphNode } from './src/definitions/GraphNode';
@@ -8,7 +9,6 @@ import { Arrow } from './src/definitions/Arrow';
 import { ItemList } from './src/definitions/ItemList';
 import { optionLabels } from './src/definitions/optionLabels';
 
-import { drawButton } from './src/modules/drawer/drawButton';
 import { drawGraphNode, drawNodeAnchors } from './src/modules/drawer/drawGraphNode';
 import { drawArrow, drawTempArrow, generateArrowPoints, drawArrowAnchor } from './src/modules/drawer/drawArrow';
 import { drawSelectionField } from './src/modules/drawer/drawSelectionField';
@@ -22,16 +22,8 @@ import { handleGrabRelease, handleNodeDragStop, handleArrowCreation } from './sr
 import { handleSequenceSelection } from './src/modules/handler/handleSequenceSelection';
 import { handleGraphNodeDoubleClick, handleArrowDoubleClick } from './src/modules/handler/doubleClickHandler';
 
-import { toggleMenu } from './src/modules/ui/toggleMenu';
-import { addHelp, renderHelpList } from './src/modules/ui/helpMenu';
-import { addTask, renderTasks } from './src/modules/ui/taskMenu';
-import {
-    createTooltip,
-    removeTooltip,
-    updateDisabledState,
-    grabCanvas,
-    autoDeleteEmptyItems,
-} from './src/modules/ui/generalUI';
+import { renderHelpList } from './src/modules/ui/helpMenu';
+import { renderTasks } from './src/modules/ui/taskMenu';
 
 import {
     applyGraphFont,
@@ -47,10 +39,32 @@ import { createArrowsFromGraphNodes, updatePresetIds } from './src/modules/helpe
 
 import { papWidgetStyles } from './src/modules/styles/styles';
 
-import { CustomPrompt } from './src/components/custom-prompt';
-import './src/components/custom-prompt';
-import { ConfirmPrompt } from './src/components/confirm-prompt';
-import './src/components/confirm-prompt';
+// @ts-ignore
+import "@shoelace-style/shoelace/dist/themes/light.css";
+
+import SlAlert from "@shoelace-style/shoelace/dist/components/alert/alert.component.js";
+import SlButton from "@shoelace-style/shoelace/dist/components/button/button.component.js";
+import SlDetails from "@shoelace-style/shoelace/dist/components/details/details.component.js";
+import SlDialog from "@shoelace-style/shoelace/dist/components/dialog/dialog.component.js";
+import SlIcon from "@shoelace-style/shoelace/dist/components/icon/icon.component.js";
+import SlIconButton from "@shoelace-style/shoelace/dist/components/icon-button/icon-button.component.js";
+import SlInput from "@shoelace-style/shoelace/dist/components/input/input.component.js";
+import SlMenu from "@shoelace-style/shoelace/dist/components/menu/menu.component.js";
+import SlMenuItem from "@shoelace-style/shoelace/dist/components/menu-item/menu-item.component.js";
+import SlTextarea from "@shoelace-style/shoelace/dist/components/textarea/textarea.component.js";
+import SlTooltip from "@shoelace-style/shoelace/dist/components/tooltip/tooltip.component.js";
+
+import grabIcon from "./src/assets/grab.svg";
+import fullscreenIcon from "./src/assets/fullscreen.svg";
+import plusIcon from "./src/assets/plus.svg";
+import nodeTerminalIcon from "./src/assets/node-terminal.svg";
+import nodeProcessIcon from "./src/assets/node-process.svg";
+import nodeDecisionIcon from "./src/assets/node-decision.svg";
+import nodeIoIcon from "./src/assets/node-io.svg";
+import nodeSubprogramIcon from "./src/assets/node-subprogram.svg";
+import nodeConnectorIcon from "./src/assets/node-connector.svg";
+import nodeCommentIcon from "./src/assets/node-comment.svg";
+import closeIcon from "./src/assets/close.svg";
 
 import { localized, msg } from "@lit/localize"
 import LOCALIZE from "./localization/generated"
@@ -316,7 +330,7 @@ export class FlowchartWidget extends LitElementWw {
     private suppressNativeDoubleClick = false;
 
     /** @internal Canvas panning (grab) state. */
-    private isGrabbing = false;
+    @state() accessor isGrabbing = false;
     /** @internal Start pointer position for grab. */
     private grabStartPosition?: { x: number; y: number };
     /** @internal Start offset for grab. */
@@ -366,8 +380,39 @@ export class FlowchartWidget extends LitElementWw {
         this._isSelectingSequence = value;
         if (oldValue !== value) {
             //this.showSolutionMenu();
+            this.requestUpdate();
         }
     }
+
+    /** @internal Which of the mutually exclusive side panels is open. */
+    @state() accessor openMenu: 'task' | 'help' | 'translate' | null = null;
+
+    /** @internal Whether the node palette at the bottom is expanded. */
+    @state() accessor flowMenuOpen = true;
+
+    /** @internal Widget-relative position of the context menu, or null when closed. */
+    @state() accessor contextMenuAt: { x: number; y: number } | null = null;
+
+    /** @internal Translation currently in flight, drives the button's loading state. */
+    @state() accessor translating: 'natural' | 'pseudo' | null = null;
+
+    /** @internal Latest translation results, keyed by target format. */
+    @state() accessor translations: { natural?: string; pseudo?: string } = {};
+
+    /**
+     * @internal Index of the task whose path is currently being recorded, or null.
+     * Drives the "Cancel"/"Save path" buttons that used to be toggled via `style.display`.
+     */
+    @state() accessor sequenceEditIndex: number | null = null;
+
+    /** @internal Node/arrow whose caption is being edited, or null when the dialog is closed. */
+    @state() accessor textPrompt: { type: 'node' | 'arrow'; index: number; value: string } | null = null;
+
+    /** @internal Whether the "delete everything" confirmation is open. */
+    @state() accessor confirmOpen = false;
+
+    /** @internal Whether the last checked path was correct; picks the solution alert's variant. */
+    @state() accessor solutionCorrect = false;
 
     /** @internal prompt type and index for edit dialogs. */
     private promptType: 'node' | 'arrow' | null;
@@ -390,7 +435,7 @@ export class FlowchartWidget extends LitElementWw {
     private checkOffset = true;
 
     /** @internal Component style (provided by papWidgetStyles). */
-    static style = papWidgetStyles;
+    static styles = papWidgetStyles;
 
     /** @internal Localized default labels per node type. */
     static label(node: string): string {
@@ -400,17 +445,51 @@ export class FlowchartWidget extends LitElementWw {
             case 'decision': return msg('Decision');
             case 'i/o': return msg('Input/Output');
             case 'sub': return msg('Subprogram');
-            case 'connector': return '';
+            case 'connector': return msg('Connector');
             case 'end': return msg('End');
             case 'text': return msg('Comment');
             default: return '';
         }
     }
 
+    /**
+     * @internal Node types offered by the palette, in display order.
+     *
+     * `label` and `text` stay functions so `msg()` is evaluated at render time and
+     * follows a locale switch. `label` is what the button shows, `text` is the default
+     * caption of the node placed on the canvas — they differ for `decision`, whose
+     * caption is padded so the diamond has room, and for `connector`, which carries no
+     * caption at all.
+     */
+    static nodePalette: {
+        node: 'start' | 'end' | 'op' | 'decision' | 'connector' | 'i/o' | 'sub' | 'text';
+        icon: string;
+        label: () => string;
+        text: () => string;
+    }[] = [
+        { node: 'start', icon: nodeTerminalIcon, label: () => FlowchartWidget.label('start'), text: () => FlowchartWidget.label('start') },
+        { node: 'op', icon: nodeProcessIcon, label: () => FlowchartWidget.label('op'), text: () => FlowchartWidget.label('op') },
+        { node: 'decision', icon: nodeDecisionIcon, label: () => FlowchartWidget.label('decision'), text: () => '  ' + FlowchartWidget.label('decision') + '  ' },
+        { node: 'i/o', icon: nodeIoIcon, label: () => FlowchartWidget.label('i/o'), text: () => FlowchartWidget.label('i/o') },
+        { node: 'sub', icon: nodeSubprogramIcon, label: () => FlowchartWidget.label('sub'), text: () => FlowchartWidget.label('sub') },
+        { node: 'connector', icon: nodeConnectorIcon, label: () => FlowchartWidget.label('connector'), text: () => '' },
+        { node: 'end', icon: nodeTerminalIcon, label: () => FlowchartWidget.label('end'), text: () => FlowchartWidget.label('end') },
+        { node: 'text', icon: nodeCommentIcon, label: () => FlowchartWidget.label('text'), text: () => FlowchartWidget.label('text') }
+    ];
+
     /** @internal Scoped child elements used by the widget. */
     static scopedElements = {
-        'custom-prompt': CustomPrompt,
-        'confirm-prompt': ConfirmPrompt
+        'sl-alert': SlAlert,
+        'sl-button': SlButton,
+        'sl-details': SlDetails,
+        'sl-dialog': SlDialog,
+        'sl-icon': SlIcon,
+        'sl-icon-button': SlIconButton,
+        'sl-input': SlInput,
+        'sl-menu': SlMenu,
+        'sl-menu-item': SlMenuItem,
+        'sl-textarea': SlTextarea,
+        'sl-tooltip': SlTooltip
     };
 
     /**
@@ -424,9 +503,6 @@ export class FlowchartWidget extends LitElementWw {
 
     render() {
         return html`
-            <style>
-                ${papWidgetStyles}
-            </style>
             <div class="workspace" @scroll="${this.handleScroll}" @dragstart="${this.handleWorkspaceDragStart}">
                 <canvas
                     width="100%"
@@ -458,159 +534,198 @@ export class FlowchartWidget extends LitElementWw {
                 ></canvas>
 
                 <div class="action-menu" style=${this.fullscreen ? 'top:10px;left:10px;' : ''}>
-                    <button
-                        id="grab-button"
-                        @mouseenter="${(e) => createTooltip(e, msg('Move the canvas'))}"
-                        @mouseleave="${removeTooltip}"
-                        @click="${this.grabCanvas}"
-                        class="${this.isGrabbing ? 'active' : ''}"
-                        style=${(!this.allowStudentPan && !this.hasAttribute("contenteditable")) || (this.allowStudentPan && !this.allowStudentEdit && !this.hasAttribute("contenteditable")) ? 'display:none' : ''}
-                    >
-                        ${drawButton('grab', 'tool')}
-                    </button>
-                    <!-- <button
-                        @mouseenter="${(e) => createTooltip(e, msg('Tasks'))}"
-                        @mouseleave="${removeTooltip}"
-                        @click="${() => this.toggleMenu('task')}"
-                        style=${!this.isEditable() && this.taskList?.length == 0 ? 'display:none' : ''}
-                    >
-                        ${drawButton('task', 'tool')}
-                    </button>
-                    <button
-                        @mouseenter="${(e) => createTooltip(e, msg('Hints'))}"
-                        @mouseleave="${removeTooltip}"
-                        @click="${() => this.toggleMenu('help')}"
-                        style=${!this.isEditable() && this.helpList?.length == 0 ? 'display:none' : ''}
-                    >
-                        ${drawButton('help', 'tool')}
-                    </button>
-                    <button
-                        @mouseenter="${(e) => createTooltip(e, msg('Delete all'))}"
-                        @mouseleave="${removeTooltip}"
-                        @click="${this.showConfirmPrompt}"
-                        style=${!this.allowStudentEdit ? 'display:none' : ''}
-                    >
-                        ${drawButton('delete', 'tool')}
-                    </button> -->
-                    <button
-                        @mouseenter="${(e) => createTooltip(e, msg('Fullscreen'))}"
-                        @mouseleave="${removeTooltip}"
-                        @click="${this.toggleFullscreen}"
-                        class="fullscreen-button"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" height="16" width="14" viewBox="0 0 448 512">
-                            <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
-                            <path
-                                d="M32 32C14.3 32 0 46.3 0 64v96c0 17.7 14.3 32 32 32s32-14.3 32-32V96h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H32zM64 352c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7 14.3 32 32 32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H64V352zM320 32c-17.7 0-32 14.3-32 32s14.3 32 32 32h64v64c0 17.7 14.3 32 32 32s32-14.3 32-32V64c0-17.7-14.3-32-32-32H320zM448 352c0-17.7-14.3-32-32-32s-32 14.3-32 32v64H320c-17.7 0-32 14.3-32 32s14.3 32 32 32h96c17.7 0 32-14.3 32-32V352z"
-                            />
-                        </svg>
-                    </button>
+                    ${this.isEditable() || (this.allowStudentEdit && this.allowStudentPan) ? html`
+                        <sl-tooltip content="${msg('Move the canvas')}" placement="bottom">
+                            <sl-button
+                                id="grab-button"
+                                variant=${this.isGrabbing ? 'primary' : 'default'}
+                                @click="${this.grabCanvas}"
+                            >
+                                <sl-icon slot="prefix" src=${grabIcon} label="${msg('Move the canvas')}"></sl-icon>
+                            </sl-button>
+                        </sl-tooltip>
+                    ` : html``}
+                    <!-- <sl-tooltip content="Tasks" placement="bottom">
+                        <sl-button @click="() => this.toggleMenu('task')">
+                            <sl-icon slot="prefix" src="taskIcon"></sl-icon>
+                        </sl-button>
+                    </sl-tooltip>
+                    <sl-tooltip content="Hints" placement="bottom">
+                        <sl-button @click="() => this.toggleMenu('help')">
+                            <sl-icon slot="prefix" src="helpIcon"></sl-icon>
+                        </sl-button>
+                    </sl-tooltip>
+                    <sl-tooltip content="Delete all" placement="bottom">
+                        <sl-button variant="danger" @click="this.showConfirmPrompt">
+                            <sl-icon slot="prefix" src="deleteIcon"></sl-icon>
+                        </sl-button>
+                    </sl-tooltip>
+                    -->
+                    <sl-tooltip content="${msg('Fullscreen')}" placement="bottom">
+                        <sl-button @click="${this.toggleFullscreen}">
+                            <sl-icon slot="prefix" src=${fullscreenIcon} label="${msg('Fullscreen')}"></sl-icon>
+                        </sl-button>
+                    </sl-tooltip>
                 </div>
 
-                <div class="flowchart-menu" style=${(!this.allowStudentEdit && !this.hasAttribute("contenteditable")) ? 'display:none' : ''}>
-                    <button class="close-button" @click="${() => this.toggleMenu('flow')}">×</button>
-                    <button @click="${() => this.addGraphNode('start', FlowchartWidget.label('start'))}">
-                        ${drawButton('start', 'flow')}
-                    </button>
-                    <button @click="${() => this.addGraphNode('op', FlowchartWidget.label('op'))}">${drawButton('op', 'flow')}</button>
-                    <button @click="${() => this.addGraphNode('decision', '  ' + FlowchartWidget.label('decision') + '  ')}">
-                        ${drawButton('decision', 'flow')}
-                    </button>
-                    <button @click="${() => this.addGraphNode('i/o', FlowchartWidget.label('i/o'))}">
-                        ${drawButton('i/o', 'flow')}
-                    </button>
-                    <button @click="${() => this.addGraphNode('sub', FlowchartWidget.label('sub'))}">
-                        ${drawButton('sub', 'flow')}
-                    </button>
-                    <button @click="${() => this.addGraphNode('connector', '')}">
-                        ${drawButton('connector', 'flow')}
-                    </button>
-                    <button @click="${() => this.addGraphNode('end', FlowchartWidget.label('end'))}">${drawButton('end', 'flow')}</button>
-                    <button @click="${() => this.addGraphNode('text', FlowchartWidget.label('text'))}">
-                        ${drawButton('text', 'flow')}
-                    </button>
-                </div>
-
-                <button class="show-flowchart-button hidden" @click="${() => this.toggleMenu('flow')}">+</button>
-
-                <div class="solution-menu hidden">
-                    <div class="solution-titel">${msg('Check path')}</div>
-                    ${this.taskList?.map((task) =>
-                        task.sequence
-                            ? html`<button class="solution-button" @click="${() => this.checkSolution(task)}">
-                                  ${task.titel}
-                              </button>`
-                            : ''
-                    )}
-                </div>
-
-                <div class="task-menu hidden" style=${this.fullscreen ? 'top:10px;right:10px;' : ''}>
-                    <button class="close-button" @click="${() => this.toggleMenu('task')}">×</button>
-                    <div class="task-menu-wrapper">
-                        ${this.taskList?.length === 0
-                            ? html`<p class="no-tasks-message">${msg('No tasks!')}</p>`
-                            : renderTasks.bind(this)(this.taskList)}
-                        <button class="add-task-button editMode" @click="${this.addTask}">
-                            ${drawButton('addTask', 'task')}
-                        </button>
+                ${this.allowStudentEdit || this.isEditable() ? html`
+                    <div
+                        class=${classMap({ 'flowchart-menu': true, fullscreen: this.fullscreen, hidden: !this.flowMenuOpen })}
+                    >
+                        <sl-icon-button
+                            class="close-button"
+                            src=${closeIcon}
+                            label="${msg('Close')}"
+                            @click="${() => this.toggleMenu('flow')}"
+                        ></sl-icon-button>
+                        ${FlowchartWidget.nodePalette.map(
+                            (entry) => html`
+                                <sl-button @click="${() => this.addGraphNode(entry.node, entry.text())}">
+                                    <sl-icon slot="prefix" src=${entry.icon}></sl-icon>
+                                    ${entry.label()}
+                                </sl-button>
+                            `
+                        )}
                     </div>
-                </div>
+                ` : html``}
 
-                <div class="help-menu hidden" style=${this.fullscreen ? 'top:10px;right:10px;' : ''}>
-                    <button class="close-button" @click="${() => this.toggleMenu('help')}">×</button>
+                <sl-button
+                    class=${classMap({ 'show-flowchart-button': true, hidden: this.flowMenuOpen })}
+                    circle
+                    size="large"
+                    @click="${() => this.toggleMenu('flow')}"
+                >
+                    <sl-icon src=${plusIcon} label="${msg('Show elements')}"></sl-icon>
+                </sl-button>
+
+                <sl-dialog
+                    label="${msg('Tasks')}"
+                    ?open=${this.openMenu === 'task'}
+                    @sl-after-hide=${this.handleMenuHide}
+                >
+                    ${this.taskList?.length === 0
+                        ? html`<p class="no-tasks-message">${msg('No tasks!')}</p>`
+                        : renderTasks.bind(this)(this.taskList)}
+                    ${this.showSolutionMenu
+                        ? html`
+                              <div class="solution-menu">
+                                  <div class="solution-titel">${msg('Check path')}</div>
+                                  ${this.taskList?.map((task) =>
+                                      task.sequence
+                                          ? html`<sl-button @click="${() => this.checkSolution(task)}">
+                                                ${task.titel}
+                                            </sl-button>`
+                                          : ''
+                                  )}
+                              </div>
+                          `
+                        : ''}
+                    <sl-button slot="footer" class="editMode" @click="${this.addTask}">
+                        <sl-icon slot="prefix" src=${plusIcon}></sl-icon>
+                        ${msg('Add task')}
+                    </sl-button>
+                </sl-dialog>
+
+                <sl-dialog
+                    label="${msg('Hints')}"
+                    ?open=${this.openMenu === 'help'}
+                    @sl-after-hide=${this.handleMenuHide}
+                >
                     ${this.helpList?.length === 0
                         ? html`<p class="no-help-message">${msg('No hints!')}</p>`
                         : renderHelpList.bind(this)(this.helpList)}
-                    <button class="add-help-button editMode" @click="${this.addHelp}">
-                        ${drawButton('addHelp', 'help')}
-                    </button>
-                </div>
+                    <sl-button slot="footer" class="editMode" @click="${this.addHelp}">
+                        <sl-icon slot="prefix" src=${plusIcon}></sl-icon>
+                        ${msg('Add hint')}
+                    </sl-button>
+                </sl-dialog>
 
-                <div class="translate-menu hidden">
-                    <button class="close-button" @click="${() => this.toggleMenu('translate')}">×</button>
+                <sl-dialog
+                    label="${msg('Natural language')}"
+                    ?open=${this.openMenu === 'translate'}
+                    @sl-after-hide=${this.handleMenuHide}
+                >
                     <div class="translate-menu-container">
-                        <button class="translate-button" @click="${() => this.translateFlowchart('natural')}">
-                            ${drawButton('naturalLanguage', 'translate')}
-                        </button>
-                        <textarea id="naturalLanguageOutput" class="output-textarea hidden" disabled></textarea>
+                        <sl-button
+                            ?loading=${this.translating === 'natural'}
+                            @click="${() => this.translateFlowchart('natural')}"
+                        >
+                            ${msg('Natural language')}
+                        </sl-button>
+                        ${this.translations.natural
+                            ? html`<sl-textarea readonly rows="6" .value=${this.translations.natural}></sl-textarea>`
+                            : ''}
                     </div>
                     <div class="translate-menu-container">
-                        <button class="translate-button" @click="${() => this.translateFlowchart('pseudo')}">
-                            ${drawButton('pseudoCode', 'translate')}
-                        </button>
-                        <textarea id="pseudoCodeOutput" class="output-textarea hidden" disabled></textarea>
+                        <sl-button
+                            ?loading=${this.translating === 'pseudo'}
+                            @click="${() => this.translateFlowchart('pseudo')}"
+                        >
+                            ${msg('Pseudocode')}
+                        </sl-button>
+                        ${this.translations.pseudo
+                            ? html`<sl-textarea readonly rows="6" .value=${this.translations.pseudo}></sl-textarea>`
+                            : ''}
                     </div>
-                </div>
+                </sl-dialog>
 
-                <div id="context-menu" class="context-menu">
-                    <div class="context-menu-item" @click="${() => this.deleteSelectedObject()}">${msg('Delete')}</div>
-                </div>
+                ${this.contextMenuAt
+                    ? html`
+                          <sl-menu
+                              class="context-menu"
+                              style="left:${this.contextMenuAt.x}px; top:${this.contextMenuAt.y}px"
+                          >
+                              <sl-menu-item @click="${() => this.deleteSelectedObject()}">
+                                  ${msg('Delete')}
+                              </sl-menu-item>
+                          </sl-menu>
+                      `
+                    : ''}
 
-                <custom-prompt
+                <sl-dialog
                     label="${msg('Type in the new text:')}"
-                    @submit="${(event: CustomEvent) => this.handlePromptSubmit(event)}"
-                    @cancel="${this.hidePrompt}"
-                    class="hidden"
-                ></custom-prompt>
+                    ?open=${this.textPrompt !== null}
+                    @sl-request-close=${this.hidePrompt}
+                    @sl-after-hide=${this.hidePrompt}
+                    @sl-initial-focus=${this.focusPromptInput}
+                >
+                    <sl-input
+                        id="text-prompt-input"
+                        .value=${this.textPrompt?.value ?? ''}
+                        @keyup=${this.handlePromptKeyUp}
+                    ></sl-input>
+                    <sl-button slot="footer" @click="${this.hidePrompt}">${msg('Cancel')}</sl-button>
+                    <sl-button slot="footer" variant="primary" @click="${this.submitTextPrompt}">OK</sl-button>
+                </sl-dialog>
 
-                <confirm-prompt
+                <sl-dialog
                     label="${msg('Are you sure, that you want to delete everything?')}"
-                    .onConfirm="${this.clearAll}"
-                    .onCancel="${this.hidePrompt}"
-                    class="hidden"
-                ></confirm-prompt>
+                    ?open=${this.confirmOpen}
+                    @sl-after-hide=${() => (this.confirmOpen = false)}
+                >
+                    <sl-button slot="footer" @click="${() => (this.confirmOpen = false)}">${msg('Cancel')}</sl-button>
+                    <sl-button
+                        slot="footer"
+                        variant="danger"
+                        @click="${() => {
+                            this.clearAll();
+                            this.confirmOpen = false;
+                        }}"
+                    >
+                        OK
+                    </sl-button>
+                </sl-dialog>
 
-                <div class="prompt ${this.showSolution ? '' : 'hidden'}">
-                    <p>${this.solutionMessage}</p>
-                    <button @click="${this.closeSolution}">${msg('Close')}</button>
-                </div>
+                <sl-dialog ?open=${this.showSolution} @sl-after-hide=${this.closeSolution} no-header>
+                    <sl-alert variant=${this.solutionCorrect ? 'success' : 'danger'} open>
+                        ${this.solutionMessage}
+                    </sl-alert>
+                    <sl-button slot="footer" @click="${this.closeSolution}">${msg('Close')}</sl-button>
+                </sl-dialog>
             </div>
-            <div
-                class="y-rezise"
-                @dragend="${this.handleYResizeEnd}"
-                draggable="true"
-                style=${(!this.allowStudentEdit && !this.hasAttribute("contenteditable")) || this.fullscreen ? 'display:none' : ''}
-            ></div>
+            ${(this.allowStudentEdit || this.isEditable()) && !this.fullscreen
+                ? html`<div class="y-rezise" @dragend="${this.handleYResizeEnd}" draggable="true"></div>`
+                : ''}
         `;
     }
 
@@ -627,9 +742,7 @@ export class FlowchartWidget extends LitElementWw {
      */
     private translateFlowchart(language: 'natural' | 'pseudo') {
         const messages = this.generateMessages(language);
-        const translateButtons = this.shadowRoot.querySelectorAll('.translate-button');
-        translateButtons.forEach((button: HTMLElement) => (button.style.cursor = 'wait'));
-        document.body.style.cursor = 'wait';
+        this.translating = language;
         fetch('/.netlify/functions/translateFlowchart', {
             method: 'POST',
             headers: {
@@ -642,22 +755,10 @@ export class FlowchartWidget extends LitElementWw {
         })
             .then((response) => response.json())
             .then((data) => {
-                console.log(data);
-                if (language === 'natural') {
-                    let textAreaElement = this.shadowRoot.getElementById(
-                        'naturalLanguageOutput'
-                    ) as HTMLTextAreaElement;
-                    textAreaElement.value = data.translation;
-                    textAreaElement.classList.remove('hidden');
-                } else {
-                    let textAreaElement = this.shadowRoot.getElementById('pseudoCodeOutput') as HTMLTextAreaElement;
-                    textAreaElement.value = data.translation;
-                    textAreaElement.classList.remove('hidden');
-                }
+                this.translations = { ...this.translations, [language]: data.translation };
             })
             .finally(() => {
-                translateButtons.forEach((button: HTMLElement) => (button.style.cursor = 'pointer'));
-                document.body.style.cursor = 'auto';
+                this.translating = null;
             });
     }
 
@@ -723,10 +824,6 @@ export class FlowchartWidget extends LitElementWw {
      * @returns {void}
      */
     selectSequence() {
-        // Setze css style von Icon auf aktiv
-        const selectButton = this.shadowRoot.getElementById('select-button');
-        !this.isSelectingSequence ? selectButton?.classList.add('active') : selectButton?.classList.remove('active');
-
         this.isSelectingSequence = !this.isSelectingSequence;
 
         if (!this.isSelectingSequence) {
@@ -762,7 +859,7 @@ export class FlowchartWidget extends LitElementWw {
                     return;
                 }
             }
-            this.showSolutionWithMessage(msg('The selected path is correct!'));
+            this.showSolutionWithMessage(msg('The selected path is correct!'), true);
         } else {
             this.showSolutionWithMessage(msg('Unfortunately, the selected path is wrong!'));
         }
@@ -776,7 +873,23 @@ export class FlowchartWidget extends LitElementWw {
      * @internal
      */
     private toggleMenu(menu: 'task' | 'flow' | 'context' | 'preset' | 'help' | 'translate') {
-        toggleMenu(this, menu);
+        switch (menu) {
+            case 'flow':
+                this.flowMenuOpen = !this.flowMenuOpen;
+                break;
+            case 'context':
+                this.contextMenuAt = null;
+                break;
+            case 'task':
+            case 'help':
+            case 'translate':
+                // The three side panels are mutually exclusive, so opening one closes the others.
+                this.openMenu = this.openMenu === menu ? null : menu;
+                break;
+            case 'preset':
+                // Preset menu is not built yet; nothing to toggle.
+                break;
+        }
         this.focus();
     }
 
@@ -800,7 +913,7 @@ export class FlowchartWidget extends LitElementWw {
      * @internal
      */
     private openContextMenuAt(clientX: number, clientY: number): boolean {
-        if ((!this.allowStudentEdit && !this.hasAttribute("contenteditable"))) {
+        if ((!this.allowStudentEdit && !this.isEditable())) {
             return false;
         }
 
@@ -815,22 +928,17 @@ export class FlowchartWidget extends LitElementWw {
 
         // Falls ein Element angeklickt wurde, wird das Kontextmenü angezeigt
         if (clickedNode || clickedArrowIndex !== -1) {
-            const contextMenu = this.shadowRoot.getElementById('context-menu');
-            if (contextMenu) {
-                contextMenu.style.display = 'block';
-                contextMenu.style.left = clientX - rect.left +"px";
-                contextMenu.style.top = clientY - rect.top +"px";
+            this.contextMenuAt = { x: clientX - rect.left, y: clientY - rect.top };
 
-                if (clickedNode) {
-                    this.selectedNode = clickedNode;
-                    this.selectedArrow = undefined;
-                } else {
-                    this.selectedArrow = this.arrows[clickedArrowIndex];
-                    this.selectedNode = undefined;
-                }
-                this.redrawCanvas();
-                return true;
+            if (clickedNode) {
+                this.selectedNode = clickedNode;
+                this.selectedArrow = undefined;
+            } else {
+                this.selectedArrow = this.arrows[clickedArrowIndex];
+                this.selectedNode = undefined;
             }
+            this.redrawCanvas();
+            return true;
         }
         return false;
     }
@@ -881,20 +989,10 @@ export class FlowchartWidget extends LitElementWw {
      *
      * @returns {void}
      */
-    private showSolutionMenu() {
-        const solutionMenuElement = this.shadowRoot?.querySelector('.solution-menu');
-
-        if (!solutionMenuElement) {
-            return;
-        }
-
+    private get showSolutionMenu(): boolean {
         // Prüfen, ob es eine Aufgabe mit einer Sequence gibt
         const taskWithSequenceExists = this.taskList.some((task) => task.sequence?.length);
-        if (this.isSelectingSequence && taskWithSequenceExists && !this.isEditable()) {
-            solutionMenuElement.classList.remove('hidden');
-        } else {
-            solutionMenuElement.classList.add('hidden');
-        }
+        return this.isSelectingSequence && taskWithSequenceExists && !this.isEditable();
     }
 
     /**
@@ -904,7 +1002,7 @@ export class FlowchartWidget extends LitElementWw {
      * @returns {void}
      */
     private grabCanvas() {
-        this.isGrabbing = grabCanvas(this, this.isGrabbing);
+        this.isGrabbing = !this.isGrabbing;
         this.selectedNode = undefined;
     }
 
@@ -1223,7 +1321,7 @@ export class FlowchartWidget extends LitElementWw {
 
     /** @internal Initialise a two-finger pinch gesture. Requires pan/edit permission. */
     private beginPinch() {
-        if (!(this.allowStudentPan || this.hasAttribute('contenteditable'))) {
+        if (!(this.allowStudentPan || this.isEditable())) {
             return;
         }
         const mid = this.pinchMidpoint();
@@ -1364,7 +1462,7 @@ export class FlowchartWidget extends LitElementWw {
 
         // Handhabung wenn Knoten gezogen wird
         if (!this.isGrabbing) {
-            if ((!this.allowStudentEdit && !this.hasAttribute("contenteditable"))) {
+            if ((!this.allowStudentEdit && !this.isEditable())) {
                 return;
             }
 
@@ -1418,7 +1516,7 @@ export class FlowchartWidget extends LitElementWw {
         }
 
         if (!nodeUnderCursor && !this.isGrabbing && !this.selectedNode) {
-            if ((!this.allowStudentEdit && !this.hasAttribute("contenteditable"))) {
+            if ((!this.allowStudentEdit && !this.isEditable())) {
                 return;
             }
 
@@ -1565,7 +1663,7 @@ export class FlowchartWidget extends LitElementWw {
             this.redrawCanvas();
         } else {
             if (!this.isGrabbing) {
-                if ((!this.allowStudentEdit && !this.hasAttribute("contenteditable"))) {
+                if ((!this.allowStudentEdit && !this.isEditable())) {
                     return;
                 }
 
@@ -1603,7 +1701,7 @@ export class FlowchartWidget extends LitElementWw {
 
     /** @internal Handles double clicks (open edit prompts). */
     private handleDoubleClick(event: MouseEvent) {
-        if ((!this.allowStudentEdit && !this.hasAttribute("contenteditable"))) {
+        if ((!this.allowStudentEdit && !this.isEditable())) {
             return;
         }
 
@@ -1685,7 +1783,7 @@ export class FlowchartWidget extends LitElementWw {
         this.redrawCanvas();
         this.updateTouchAction();
 
-        if(this.allowStudentPan && !this.allowStudentEdit && !this.hasAttribute("contenteditable")){
+        if(this.allowStudentPan && !this.allowStudentEdit && !this.isEditable()){
             this.isGrabbing = true
         }
     }
@@ -1719,24 +1817,9 @@ export class FlowchartWidget extends LitElementWw {
     /** @internal Lit lifecycle: re-render after contentEditable changes; auto-delete empty items. */
     updated(changedProperties: Map<string, any>) {
         if (changedProperties.has('contentEditable') && this.isEditable()) {
-            autoDeleteEmptyItems(
-                this,
-                this.taskList,
-                '.task-container',
-                '.task-wrapper',
-                '.task-title',
-                '.task-content'
-            );
-            autoDeleteEmptyItems(
-                this,
-                this.helpList,
-                '.help-container',
-                '.help-wrapper',
-                '.help-title',
-                '.help-content'
-            );
+            this.taskList = this.taskList.filter((task) => task.titel?.trim() || task.content?.trim());
+            this.helpList = this.helpList.filter((help) => help.titel?.trim() || help.content?.trim());
         }
-        updateDisabledState(this, this.isEditable());
         this.updateTouchAction();
         this.applyOptionChanges(changedProperties);
     }
@@ -1788,7 +1871,7 @@ export class FlowchartWidget extends LitElementWw {
     private updateTouchAction() {
         if (!this.canvas) return;
         const interactive =
-            this.allowStudentEdit || this.allowStudentPan || this.hasAttribute('contenteditable');
+            this.allowStudentEdit || this.allowStudentPan || this.isEditable();
         this.canvas.style.touchAction = interactive ? 'none' : 'auto';
     }
 
@@ -1963,7 +2046,7 @@ export class FlowchartWidget extends LitElementWw {
      * @returns {void}
      */
     private handleWheel(event: WheelEvent) {
-        if ((this.allowStudentPan || this.hasAttribute("contenteditable")) && this.matches(':focus-within')) {
+        if ((this.allowStudentPan || this.isEditable()) && this.matches(':focus-within')) {
             event.preventDefault();
     
             // Get pointer position relative to canvas (screen space)
@@ -2012,14 +2095,7 @@ export class FlowchartWidget extends LitElementWw {
 
     /** @internal Key bindings (delete/backspace to remove selected item). */
     private handleKeyDown = (event: KeyboardEvent) => {
-        const customPrompt = this.shadowRoot?.querySelector('custom-prompt');
-        const confirmPrompt = this.shadowRoot?.querySelector('confirm-prompt');
-
-        if (
-            (event.key === 'Backspace' || event.key === 'Delete') &&
-            customPrompt?.classList.contains('hidden') &&
-            confirmPrompt?.classList.contains('hidden')
-        ) {
+        if ((event.key === 'Backspace' || event.key === 'Delete') && !this.textPrompt && !this.confirmOpen) {
             this.deleteSelectedObject();
         }
     };
@@ -2055,7 +2131,6 @@ export class FlowchartWidget extends LitElementWw {
         const fullscreen = this.isFullscreen;
 
         if (fullscreen !== this.fullscreen) {
-            this.shadowRoot.querySelector('.flowchart-menu').classList.toggle('fullscreen', fullscreen);
             this.fullscreen = fullscreen;
         }
 
@@ -2096,77 +2171,64 @@ export class FlowchartWidget extends LitElementWw {
 
     /** @internal Open input prompt for node/arrow text editing. */
     private showCustomPrompt(type: 'node' | 'arrow', index: number) {
-        const promptElement = this.shadowRoot.querySelector('custom-prompt') as CustomPrompt;
-        // console.log(promptElement)
         const currentText = (type === 'node' ? this.graphNodes[index].text : this.arrows[index].text || '').trim();
-
-        promptElement.classList.remove('hidden');
-        this.shadowRoot.querySelector('custom-prompt').classList.remove('hidden');
-
-        promptElement.setInputValue(currentText);
-        promptElement.focusInput();
-
-        const onSubmit = (rawValue: string) => {
-        
-            const value = (rawValue || '').trim();
-
-            if (type === 'node') {
-                const node = this.graphNodes[index];
-                const text = value || FlowchartWidget.label(node.node);
-                node.text = node.node === 'decision' ? '  ' + text + '  ' : text;
-            } else {
-                this.persistArrowText(this.arrows[index], value);
-            }
-
-            // Beide Fälle ändern graphNodes nur in-place; erst das macht sie im Attribut sichtbar
-            this.commitGraphNodes();
-            this.redrawCanvas();
-            this.shadowRoot.querySelector('custom-prompt').classList.add('hidden');
-        };
-
-        const onCancel = () => {
-            this.shadowRoot.querySelector('custom-prompt').classList.add('hidden');
-        };
-
-        promptElement.onSubmit = onSubmit;
-        promptElement.onCancel = onCancel;
+        this.textPrompt = { type, index, value: currentText };
     }
+
+    /** @internal Move focus into the text prompt once the dialog is ready for it. */
+    private focusPromptInput = (event: Event) => {
+        event.preventDefault();
+        (this.shadowRoot?.getElementById('text-prompt-input') as SlInput | null)?.focus();
+    };
+
+    /** @internal Enter submits the text prompt; Escape is handled by `sl-dialog` itself. */
+    private handlePromptKeyUp = (event: KeyboardEvent) => {
+        if (event.key === 'Enter') {
+            this.submitTextPrompt();
+        }
+    };
+
+    /** @internal Apply the text prompt to the node or arrow it was opened for. */
+    private submitTextPrompt = () => {
+        const prompt = this.textPrompt;
+        if (!prompt) {
+            return;
+        }
+
+        const input = this.shadowRoot?.getElementById('text-prompt-input') as SlInput | null;
+        const value = (input?.value ?? '').trim();
+
+        if (prompt.type === 'node') {
+            const node = this.graphNodes[prompt.index];
+            const text = value || FlowchartWidget.label(node.node);
+            node.text = node.node === 'decision' ? '  ' + text + '  ' : text;
+        } else {
+            this.persistArrowText(this.arrows[prompt.index], value);
+        }
+
+        // Beide Fälle ändern graphNodes nur in-place; erst das macht sie im Attribut sichtbar
+        this.commitGraphNodes();
+        this.redrawCanvas();
+        this.textPrompt = null;
+    };
 
     /** @internal Open confirm prompt to clear all content. */
     private showConfirmPrompt() {
-        const confirmPrompt = this.shadowRoot.querySelector('confirm-prompt') as ConfirmPrompt;
-        confirmPrompt.classList.remove('hidden');
-        confirmPrompt.enableKeyListener();
-
-        const onSubmit = () => {
-            confirmPrompt.disableKeyListener();
-            this.clearAll();
-            confirmPrompt.classList.add('hidden');
-        };
-
-        const onCancel = () => {
-            confirmPrompt.classList.add('hidden');
-            confirmPrompt.disableKeyListener();
-        };
-
-        (this.shadowRoot.querySelector('confirm-prompt') as ConfirmPrompt).onConfirm = onSubmit;
-        (this.shadowRoot.querySelector('confirm-prompt') as ConfirmPrompt).onCancel = onCancel;
+        this.confirmOpen = true;
     }
 
-    /** @internal Hide any open prompts and disable related key listeners. */
-    private hidePrompt() {
-        const customPrompt = this.shadowRoot.querySelector('custom-prompt');
-        const confirmPrompt = this.shadowRoot.querySelector('confirm-prompt') as ConfirmPrompt;
-
-        if (customPrompt) {
-            customPrompt.classList.add('hidden');
+    /** @internal Keep `openMenu` in sync when a panel is dismissed via Escape or the overlay. */
+    private handleMenuHide = (event: Event) => {
+        if (event.target === event.currentTarget) {
+            this.openMenu = null;
         }
+    };
 
-        if (confirmPrompt) {
-            confirmPrompt.classList.add('hidden');
-            confirmPrompt.disableKeyListener();
-        }
-    }
+    /** @internal Close any open prompt. Escape and overlay clicks are handled by `sl-dialog`. */
+    private hidePrompt = () => {
+        this.textPrompt = null;
+        this.confirmOpen = false;
+    };
 
     /** @internal Handle prompt submissions, update text, reorder arrows for z-index. */
     private handlePromptSubmit(event: CustomEvent) {
@@ -2186,13 +2248,14 @@ export class FlowchartWidget extends LitElementWw {
     }
 
     /** @internal Show solution overlay with a message. */
-    private showSolutionWithMessage(message: string) {
+    private showSolutionWithMessage(message: string, correct = false) {
         this.solutionMessage = message;
+        this.solutionCorrect = correct;
         this.showSolution = true;
     }
 
     /** @internal Close the solution overlay. */
-    private closeSolution() {
+    private closeSolution = () => {
         this.showSolution = false;
-    }
+    };
 }

@@ -90,29 +90,27 @@ export function renderHelpList(this: FlowchartWidget, helpList: ItemList[]) {
             this.helpList = [...helpList];
         };
 
-        const showHelp = () => {
-            const helpContainer = this.shadowRoot.querySelector('.help-container');
-            const helpContent = helpContainer.children[id].querySelector('.help-content');
-            helpContent.classList.toggle('hidden');
-        };
+        if (!this.isEditable()) {
+            return html`<div class="help-wrapper">
+                <sl-details summary=${help.titel || msg('Hint')}>${help.content}</sl-details>
+            </div>`;
+        }
 
-        return html`<div class="help-wrapper" style="position:relative">
-            <button class="show-help-button hidden" @click=${showHelp}>${help.titel}</button>
-            <input
-                type="text"
-                class="help-title"
-                value="${help.titel}"
+        return html`<div class="help-wrapper">
+            <sl-input
+                .value=${help.titel ?? ''}
                 placeholder="${msg('Heading')}"
-                @change=${onTitleChange}
-            />
-            <textarea
-                class="help-content"
-                @change=${onContentChange}
+                @sl-change=${onTitleChange}
+            ></sl-input>
+            <sl-textarea
+                resize="auto"
+                .value=${help.content ?? ''}
+                @sl-change=${onContentChange}
                 placeholder="${msg('Content...')} ${msg('Changes are saved automatically.')}"
-            >
-${help.content}</textarea
-            >
-            <button class="delete-help-button editMode" @click=${deleteHelp}>${msg('Delete')}</button>
+            ></sl-textarea>
+            <sl-button class="delete-help-button editMode" variant="danger" @click=${deleteHelp}>
+                ${msg('Delete')}
+            </sl-button>
         </div>`;
     };
 
