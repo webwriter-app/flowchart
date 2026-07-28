@@ -41,10 +41,6 @@
         <source>Hints</source>
         <target>提示</target>
       </trans-unit>
-      <trans-unit id="sf29271158220eded">
-        <source>Delete all</source>
-        <target>全部删除</target>
-      </trans-unit>
       <trans-unit id="s4b10acae683d2978">
         <source>Fullscreen</source>
         <target>全屏</target>
@@ -76,50 +72,6 @@
       <trans-unit id="s5e8250fb85d64c23">
         <source>Close</source>
         <target>关闭</target>
-      </trans-unit>
-      <trans-unit id="s9d8b8aa2b404c2c8">
-        <source>Settings</source>
-        <target>设置</target>
-      </trans-unit>
-      <trans-unit id="s82e06116110c9c3e">
-        <source>Font:</source>
-        <target>字体</target>
-      </trans-unit>
-      <trans-unit id="se75767691e45c8f8">
-        <source>Theme:</source>
-        <target>主题</target>
-      </trans-unit>
-      <trans-unit id="s53a526d5c80c3e28">
-        <source>Standard</source>
-        <target>标准</target>
-      </trans-unit>
-      <trans-unit id="s30f853f2943ac1ec">
-        <source>Pastel</source>
-        <target>粉彩</target>
-      </trans-unit>
-      <trans-unit id="s37edf2aec5ab122a">
-        <source>Mono</source>
-        <target>单声道</target>
-      </trans-unit>
-      <trans-unit id="sf6586f55cebdc732">
-        <source>Black/White</source>
-        <target>黑色/白色</target>
-      </trans-unit>
-      <trans-unit id="s8045f0622a167858">
-        <source>Zoom:</source>
-        <target>放大：</target>
-      </trans-unit>
-      <trans-unit id="s42c95e7175a54564">
-        <source>Allow editing:</source>
-        <target>允许编辑：</target>
-      </trans-unit>
-      <trans-unit id="s496067bc27deb87a">
-        <source>Allow moving:</source>
-        <target>允许移动：</target>
-      </trans-unit>
-      <trans-unit id="s2f7cd2e117fd0d01">
-        <source>Font size:</source>
-        <target>字体大小：</target>
       </trans-unit>
       <trans-unit id="s012e7772b1fac646">
         <source>Unfortunately, the selected path is wrong!</source>
@@ -188,6 +140,22 @@
       <trans-unit id="s5be397a47866f7de">
         <source>Check solution</source>
         <target>检查解法</target>
+      </trans-unit>
+      <trans-unit id="s8290d08ab5a49ed0">
+        <source>Connector</source>
+        <target>连接器</target>
+      </trans-unit>
+      <trans-unit id="s40d30619c8d7ef3a">
+        <source>I/O</source>
+        <target>I/O</target>
+      </trans-unit>
+      <trans-unit id="s69e040d57d5bcc5e">
+        <source>Hide elements</source>
+        <target>隐藏元素</target>
+      </trans-unit>
+      <trans-unit id="sf01f6e2cc5900cbd">
+        <source>Show elements</source>
+        <target>显示元素</target>
       </trans-unit>
     </body>
   </file>

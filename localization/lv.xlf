@@ -41,10 +41,6 @@
         <source>Hints</source>
         <target>Padomi</target>
       </trans-unit>
-      <trans-unit id="sf29271158220eded">
-        <source>Delete all</source>
-        <target>Dzēst visus</target>
-      </trans-unit>
       <trans-unit id="s4b10acae683d2978">
         <source>Fullscreen</source>
         <target>Pilnekrāna</target>
@@ -76,50 +72,6 @@
       <trans-unit id="s5e8250fb85d64c23">
         <source>Close</source>
         <target>Aizvērt</target>
-      </trans-unit>
-      <trans-unit id="s9d8b8aa2b404c2c8">
-        <source>Settings</source>
-        <target>Iestatījumi</target>
-      </trans-unit>
-      <trans-unit id="s82e06116110c9c3e">
-        <source>Font:</source>
-        <target>Fonts:</target>
-      </trans-unit>
-      <trans-unit id="se75767691e45c8f8">
-        <source>Theme:</source>
-        <target>Tēma:</target>
-      </trans-unit>
-      <trans-unit id="s53a526d5c80c3e28">
-        <source>Standard</source>
-        <target>Standarta</target>
-      </trans-unit>
-      <trans-unit id="s30f853f2943ac1ec">
-        <source>Pastel</source>
-        <target>Pastelis</target>
-      </trans-unit>
-      <trans-unit id="s37edf2aec5ab122a">
-        <source>Mono</source>
-        <target>Mono</target>
-      </trans-unit>
-      <trans-unit id="sf6586f55cebdc732">
-        <source>Black/White</source>
-        <target>Melns/balts</target>
-      </trans-unit>
-      <trans-unit id="s8045f0622a167858">
-        <source>Zoom:</source>
-        <target>Palielināt:</target>
-      </trans-unit>
-      <trans-unit id="s42c95e7175a54564">
-        <source>Allow editing:</source>
-        <target>Atļaut rediģēšanu:</target>
-      </trans-unit>
-      <trans-unit id="s496067bc27deb87a">
-        <source>Allow moving:</source>
-        <target>Ļaujiet pārvietoties:</target>
-      </trans-unit>
-      <trans-unit id="s2f7cd2e117fd0d01">
-        <source>Font size:</source>
-        <target>Fonta lielums:</target>
       </trans-unit>
       <trans-unit id="s012e7772b1fac646">
         <source>Unfortunately, the selected path is wrong!</source>
@@ -188,6 +140,22 @@
       <trans-unit id="s5be397a47866f7de">
         <source>Check solution</source>
         <target>Pārbaudīt risinājumu</target>
+      </trans-unit>
+      <trans-unit id="s8290d08ab5a49ed0">
+        <source>Connector</source>
+        <target>Savienotājs</target>
+      </trans-unit>
+      <trans-unit id="s40d30619c8d7ef3a">
+        <source>I/O</source>
+        <target>I/O</target>
+      </trans-unit>
+      <trans-unit id="s69e040d57d5bcc5e">
+        <source>Hide elements</source>
+        <target>Paslēpt elementus</target>
+      </trans-unit>
+      <trans-unit id="sf01f6e2cc5900cbd">
+        <source>Show elements</source>
+        <target>Rādīt elementus</target>
       </trans-unit>
     </body>
   </file>

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:2.0" version="2.1" srcLang="en" trgLang="fi">
 <file id="." original=".">
 <unit id="description"><segment><source>Create programming flowcharts with interactive tasks. Use standardized Elements such as loops and Branchings.</source><target>Luo ohjelmoinnin vuokaavioita, joissa on interaktiivisia tehtäviä. Käytä vakiintuneita elementtejä, kuten silmukoita ja haaroituksia.</target></segment></unit>
