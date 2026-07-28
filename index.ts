@@ -64,7 +64,7 @@ import nodeIoIcon from "./src/assets/node-io.svg";
 import nodeSubprogramIcon from "./src/assets/node-subprogram.svg";
 import nodeConnectorIcon from "./src/assets/node-connector.svg";
 import nodeCommentIcon from "./src/assets/node-comment.svg";
-import closeIcon from "./src/assets/close.svg";
+import chevronUpIcon from "./src/assets/chevron-up.svg";
 
 import { localized, msg } from "@lit/localize"
 import LOCALIZE from "./localization/generated"
@@ -569,34 +569,41 @@ export class FlowchartWidget extends LitElementWw {
                 </div>
 
                 ${this.allowStudentEdit || this.isEditable() ? html`
-                    <div
-                        class=${classMap({ 'flowchart-menu': true, fullscreen: this.fullscreen, hidden: !this.flowMenuOpen })}
-                    >
-                        <sl-icon-button
-                            class="close-button"
-                            src=${closeIcon}
-                            label="${msg('Close')}"
-                            @click="${() => this.toggleMenu('flow')}"
-                        ></sl-icon-button>
-                        ${FlowchartWidget.nodePalette.map(
-                            (entry) => html`
-                                <sl-button @click="${() => this.addGraphNode(entry.node, entry.text())}">
-                                    <sl-icon slot="prefix" src=${entry.icon}></sl-icon>
-                                    ${entry.label()}
-                                </sl-button>
-                            `
-                        )}
+                    <div class=${classMap({ 'flowchart-menu': true, collapsed: !this.flowMenuOpen })}>
+                        <sl-tooltip
+                            content="${this.flowMenuOpen ? msg('Hide elements') : msg('Show elements')}"
+                            placement="top"
+                        >
+                            <button
+                                class="flowchart-menu-handle"
+                                type="button"
+                                aria-expanded=${this.flowMenuOpen ? 'true' : 'false'}
+                                aria-controls="flowchart-menu-content"
+                                @click="${() => this.toggleMenu('flow')}"
+                            >
+                                <sl-icon
+                                    class="flowchart-menu-chevron"
+                                    src=${chevronUpIcon}
+                                    label=${this.flowMenuOpen ? msg('Hide elements') : msg('Show elements')}
+                                ></sl-icon>
+                            </button>
+                        </sl-tooltip>
+                        <div
+                            class="flowchart-menu-content"
+                            id="flowchart-menu-content"
+                            ?inert=${!this.flowMenuOpen}
+                        >
+                            ${FlowchartWidget.nodePalette.map(
+                                (entry) => html`
+                                    <sl-button @click="${() => this.addGraphNode(entry.node, entry.text())}">
+                                        <sl-icon slot="prefix" src=${entry.icon}></sl-icon>
+                                        ${entry.label()}
+                                    </sl-button>
+                                `
+                            )}
+                        </div>
                     </div>
                 ` : html``}
-
-                <sl-button
-                    class=${classMap({ 'show-flowchart-button': true, hidden: this.flowMenuOpen })}
-                    circle
-                    size="large"
-                    @click="${() => this.toggleMenu('flow')}"
-                >
-                    <sl-icon src=${plusIcon} label="${msg('Show elements')}"></sl-icon>
-                </sl-button>
 
                 <sl-dialog
                     label="${msg('Tasks')}"

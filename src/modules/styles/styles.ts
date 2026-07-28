@@ -35,6 +35,9 @@ export const papWidgetStyles = css`
         position: relative;
         width: 100%;
         height: var(--widget-height);
+
+        /* Clips the flowchart menu while it slides out below the bottom edge. */
+        overflow: hidden;
     }
 
     canvas {
@@ -79,50 +82,106 @@ export const papWidgetStyles = css`
 
     .flowchart-menu {
         position: absolute;
-        left: 5px;
-        right: 5px;
-        bottom: 5px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+
+        display: flex;
+        flex-direction: column;
+
+        background-color: var(--sl-panel-background-color);
+        border-top: solid var(--sl-panel-border-width) var(--sl-panel-border-color);
+        box-shadow: var(--sl-shadow-large);
+
+        transition:
+            var(--sl-transition-medium) translate,
+            var(--sl-transition-medium) border-top-color,
+            var(--sl-transition-medium) box-shadow;
+    }
+
+    .flowchart-menu.collapsed {
+        translate: 0 100%;
+        border-top-color: transparent;
+        box-shadow: 0 0 0 rgb(0 0 0 / 0);
+    }
+
+    .flowchart-menu-handle {
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        translate: -50%;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 3.5rem;
+        height: 1.5rem;
+        padding: 0;
+
+        appearance: none;
+        border: none;
+        background: none;
+        color: var(--sl-color-neutral-600);
+        font: inherit;
+        cursor: pointer;
+
+        transition: var(--sl-transition-fast) color;
+    }
+
+    .flowchart-menu-handle::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+
+        background-color: var(--sl-panel-background-color);
+        border: solid var(--sl-panel-border-width) var(--sl-panel-border-color);
+        border-bottom: none;
+        border-radius: var(--sl-border-radius-medium) var(--sl-border-radius-medium) 0 0;
+
+        transition: var(--sl-transition-fast) background-color;
+    }
+
+    .flowchart-menu-handle:hover {
+        color: var(--sl-color-neutral-900);
+    }
+
+    .flowchart-menu-handle:hover::before {
+        background-color: var(--sl-color-neutral-100);
+    }
+
+    .flowchart-menu-handle:focus-visible {
+        outline: var(--sl-focus-ring);
+        outline-offset: var(--sl-focus-ring-offset);
+        border-radius: var(--sl-border-radius-medium);
+    }
+
+    .flowchart-menu-chevron {
+        position: relative;
+        font-size: var(--sl-font-size-medium);
+        transition: var(--sl-transition-medium) rotate;
+    }
+
+    .flowchart-menu:not(.collapsed) .flowchart-menu-chevron {
+        rotate: 180deg;
+    }
+
+    .flowchart-menu-content {
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
         gap: var(--sl-spacing-2x-small);
-        padding: 25px 5px 5px 5px;
-        background-color: var(--sl-panel-background-color);
-        border: solid var(--sl-panel-border-width) var(--sl-panel-border-color);
-        border-radius: var(--sl-border-radius-medium);
-        box-shadow: var(--sl-shadow-large);
+        padding: var(--sl-spacing-x-small);
     }
 
-    .flowchart-menu.fullscreen {
-        top: 60px;
-        left: 10px;
-        right: unset;
-        bottom: unset;
-
-        width: 200px;
-        height: auto;
-
-        flex-direction: column;
+    .flowchart-menu-content sl-button {
+        flex: 1;
     }
 
-    .flowchart-menu sl-button {
-        flex-grow: 1;
-    }
-
-    .flowchart-menu.fullscreen sl-button {
-        flex-grow: 0;
-    }
-
-    .close-button {
-        position: absolute;
-        top: 5px;
-        right: 5px;
-    }
-
-    .show-flowchart-button {
-        position: absolute;
-        right: 40px;
-        bottom: 40px;
+    @media (prefers-reduced-motion: reduce) {
+        .flowchart-menu,
+        .flowchart-menu-chevron {
+            transition: none;
+        }
     }
 
     .context-menu {
