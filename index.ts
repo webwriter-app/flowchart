@@ -506,8 +506,6 @@ export class FlowchartWidget extends LitElementWw {
         return html`
             <div class="workspace" @scroll="${this.handleScroll}" @dragstart="${this.handleWorkspaceDragStart}">
                 <canvas
-                    width="100%"
-                    height="${this.currentHeight * (window.devicePixelRatio || 1)}"
                     @pointerdown="${this.handlePointerDown}"
                     @pointerup="${this.handlePointerUp}"
                     @pointermove="${this.handlePointerMove}"
