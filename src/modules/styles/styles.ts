@@ -225,12 +225,32 @@ export const papWidgetStyles = css`
         display: none;
     }
 
-    /* Drag handle for the widget height */
     .y-rezise {
-        cursor: ns-resize;
-
-        background-color: var(--sl-color-neutral-300);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
         width: 100%;
-        height: 5px;
+        height: 30px;
+
+        cursor: row-resize;
+
+        /* The drag is driven by pointer events, so touch must not scroll or select. */
+        touch-action: none;
+        -webkit-user-select: none;
+        user-select: none;
+
+        background-color: var(--sl-panel-background-color);
+        border-top: solid var(--sl-panel-border-width) var(--sl-panel-border-color);
+        color: var(--sl-color-neutral-600);
+    }
+
+    .y-rezise.resizing {
+        color: var(--sl-color-primary-600);
+    }
+
+    /* Keep the drag events (and their offsetY) on the handle itself. */
+    .y-rezise sl-icon {
+        pointer-events: none;
     }
 `;

@@ -65,6 +65,7 @@ import nodeSubprogramIcon from "./src/assets/node-subprogram.svg";
 import nodeConnectorIcon from "./src/assets/node-connector.svg";
 import nodeCommentIcon from "./src/assets/node-comment.svg";
 import chevronUpIcon from "./src/assets/chevron-up.svg";
+import gripHorizontalIcon from "./src/assets/grip-horizontal.svg";
 
 import { localized, msg } from "@lit/localize"
 import LOCALIZE from "./localization/generated"
@@ -389,6 +390,9 @@ export class FlowchartWidget extends LitElementWw {
 
     /** @internal Whether the node palette at the bottom is expanded. */
     @state() accessor flowMenuOpen = true;
+
+    /** @internal Whether the height handle is being dragged, drives its highlight. */
+    @state() accessor resizing = false;
 
     /** @internal Widget-relative position of the context menu, or null when closed. */
     @state() accessor contextMenuAt: { x: number; y: number } | null = null;
@@ -733,7 +737,15 @@ export class FlowchartWidget extends LitElementWw {
                 </sl-dialog>
             </div>
             ${(this.allowStudentEdit || this.isEditable()) && !this.fullscreen
-                ? html`<div class="y-rezise" @dragend="${this.handleYResizeEnd}" draggable="true"></div>`
+                ? html`<div
+                          class=${classMap({ 'y-rezise': true, resizing: this.resizing })}
+                          @pointerdown="${this.handleYResizeStart}"
+                          @pointermove="${this.handleYResizeMove}"
+                          @pointerup="${this.handleYResizeEnd}"
+                          @pointercancel="${this.handleYResizeEnd}"
+                      >
+                          <sl-icon src=${gripHorizontalIcon}></sl-icon>
+                      </div>`
                 : ''}
         `;
     }
@@ -2109,14 +2121,58 @@ export class FlowchartWidget extends LitElementWw {
         }
     };
 
-    /** @internal Drag-resize handle for widget height. */
-    private handleYResizeEnd(event: MouseEvent) {
-        this.currentHeight = Math.max(400, this.currentHeight + event.offsetY);
-        this.height = this.currentHeight;
-        //update css var
+    /** @internal Smallest height the resize handle can drag the widget down to. */
+    private static readonly MIN_HEIGHT = 400;
 
+    /** @internal Pointer position and widget height when the resize drag started. */
+    private resizeStartY = 0;
+    private resizeStartHeight = 0;
+
+    /**
+     * @internal Begin a height drag. The pointer is captured so the drag keeps tracking
+     * once it leaves the handle, and `preventDefault` keeps the surrounding editor from
+     * turning the press into a text selection.
+     */
+    private handleYResizeStart(event: PointerEvent) {
+        if (event.button !== 0) return;
+
+        (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+        event.preventDefault();
+
+        this.resizing = true;
+        this.resizeStartY = event.clientY;
+        this.resizeStartHeight = this.currentHeight;
+    }
+
+    /** @internal Resize live while dragging. */
+    private handleYResizeMove(event: PointerEvent) {
+        if (!this.resizing) return;
+
+        const height = Math.max(
+            FlowchartWidget.MIN_HEIGHT,
+            this.resizeStartHeight + (event.clientY - this.resizeStartY)
+        );
+
+        if (height === this.currentHeight) return;
+
+        this.currentHeight = height;
         this.updateCanvasSize();
-        this.redrawCanvas();
+    }
+
+    /**
+     * @internal Finish a height drag. `height` is only written here, not on every move:
+     * it is a reflected property, so each write lands in the document the widget sits in.
+     */
+    private handleYResizeEnd(event: PointerEvent) {
+        if (!this.resizing) return;
+
+        const handle = event.currentTarget as HTMLElement;
+        if (handle.hasPointerCapture(event.pointerId)) {
+            handle.releasePointerCapture(event.pointerId);
+        }
+
+        this.resizing = false;
+        this.height = this.currentHeight;
     }
 
     /** @internal Toggle fullscreen. The resulting layout change is picked up by `syncLayout`. */
@@ -2143,7 +2199,13 @@ export class FlowchartWidget extends LitElementWw {
             this.fullscreen = fullscreen;
         }
 
-        this.currentHeight = fullscreen ? this.clientHeight : this.height;
+        // While the handle is being dragged, `currentHeight` is the live value and
+        // `height` still holds the last persisted one — adopting it here would snap the
+        // widget back on the first pointermove, since resizing makes this observer fire.
+        if (!this.resizing) {
+            this.currentHeight = fullscreen ? this.clientHeight : this.height;
+        }
+
         this.canvas.style.width = '100%';
         this.canvas.style.height = '';
         this.updateCanvasSize();
