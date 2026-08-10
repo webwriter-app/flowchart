@@ -187,29 +187,23 @@ export class FlowchartWidget extends LitElementWw {
     @property({ type: Number, reflect: true, attribute: true }) accessor canvasOffsetY: number = 0;
 
     /** Disables interactive editing (adding/dragging/deleting). */
-    @property({ type: Boolean, reflect: true, attribute: true }) accessor disableStudentEdit: boolean = false;
+    @property({ type: Boolean, reflect: true, attribute: true })
+    @option({ type: Boolean, label: optionLabels.disableStudentEditing })
+    accessor disableStudentEdit: boolean = false;
 
     /** Whether students may add, drag and delete elements. */
-    // @ts-ignore: `option` is typed for accessors, but works on a getter/setter pair as well
-    @option({ type: Boolean, label: optionLabels.allowEditing })
     get allowStudentEdit(): boolean {
         return !this.disableStudentEdit;
     }
-    set allowStudentEdit(value: boolean) {
-        this.disableStudentEdit = !value;
-    }
 
     /** Disables panning/zooming interactions. */
-    @property({ type: Boolean, reflect: true, attribute: true }) accessor disableStudentPan: boolean = false;
+    @property({ type: Boolean, reflect: true, attribute: true })
+    @option({ type: Boolean, label: optionLabels.disableStudentPanning })
+    accessor disableStudentPan: boolean = false;
 
     /** Whether students may pan and zoom the canvas. */
-    // @ts-ignore: `option` is typed for accessors, but works on a getter/setter pair as well
-    @option({ type: Boolean, label: optionLabels.allowMoving })
     get allowStudentPan(): boolean {
         return !this.disableStudentPan;
-    }
-    set allowStudentPan(value: boolean) {
-        this.disableStudentPan = !value;
     }
 
     /** Font family for node labels, multi-word families are underscored (see `fontFamily`). */
