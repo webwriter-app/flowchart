@@ -9,13 +9,6 @@ export const papWidgetStyles = css`
 
         --offset-x: 0;
         --offset-y: 0;
-        --grid-background-color: white;
-        --grid-color: #104e8b;
-        --grid-size: 50px;
-        --grid-dot-size: 1.5px;
-
-        --scaled-grid-size: var(--grid-size);
-        --scaled-grid-dot-size: var(--grid-dot-size);
 
         --widget-height: 400px;
 
@@ -224,10 +217,6 @@ export const papWidgetStyles = css`
     .solution-titel {
         text-align: center;
         color: var(--sl-color-neutral-700);
-    }
-
-    .hidden {
-        display: none;
     }
 
     .y-rezise {

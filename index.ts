@@ -35,7 +35,7 @@ import {
 } from './src/modules/helper/utilities';
 import { isArrowClicked } from './src/modules/helper/arrowHelper';
 import { getAnchors, highlightAnchor } from './src/modules/helper/anchorHelper';
-import { createArrowsFromGraphNodes, updatePresetIds } from './src/modules/helper/presetHelper';
+import { createArrowsFromGraphNodes } from './src/modules/helper/presetHelper';
 
 import { papWidgetStyles } from './src/modules/styles/styles';
 
@@ -101,8 +101,6 @@ import LOCALIZE from "./localization/generated"
  * @prop {string} solutionMessage - Message shown in the solution prompt.
  * @prop {boolean} showSolution - Whether the solution prompt is visible.
  *
- * @cssprop [--scaled-grid-size=50px] - Spacing between grid dots (derived from zoom).
- * @cssprop [--scaled-grid-dot-size=1.5px] - Dot radius for the background grid (derived from zoom).
  * @cssprop --offset-x - Internal canvas left offset (managed by the widget).
  * @cssprop --offset-y - Internal canvas top offset (managed by the widget).
  * @cssprop --widget-height - Workspace height in pixels.
@@ -349,19 +347,6 @@ export class FlowchartWidget extends LitElementWw {
      */
     getSelectedSequence = () => this.selectedSequence;
 
-    /** @internal Sequence button reference. */
-    private activeSequenceButton: HTMLButtonElement | null = null;
-
-    /** Get the active sequence button.
-     * @returns {HTMLButtonElement|null} */
-    getActiveSequenceButton = () => this.activeSequenceButton;
-
-    /** Set the active sequence button.
-     * @param {HTMLButtonElement|null} btn */
-    setActiveSequenceButton = (btn: HTMLButtonElement | null) => {
-        this.activeSequenceButton = btn;
-    };
-
     /** Whether path-selection mode is active.
      * @returns {boolean} */
     get isSelectingSequence() {
@@ -374,7 +359,6 @@ export class FlowchartWidget extends LitElementWw {
         const oldValue = this._isSelectingSequence;
         this._isSelectingSequence = value;
         if (oldValue !== value) {
-            //this.showSolutionMenu();
             this.requestUpdate();
         }
     }
@@ -411,11 +395,6 @@ export class FlowchartWidget extends LitElementWw {
 
     /** @internal Whether the last checked path was correct; picks the solution alert's variant. */
     @state() accessor solutionCorrect = false;
-
-    /** @internal prompt type and index for edit dialogs. */
-    private promptType: 'node' | 'arrow' | null;
-    /** @internal prompt index for edit dialogs. */
-    private promptIndex: number | null;
 
     /** Message to show in the solution prompt. */
     @property({ type: String }) accessor solutionMessage: string = '';
@@ -832,9 +811,8 @@ export class FlowchartWidget extends LitElementWw {
 
     /**
      * Toggle path-selection mode for solution checking.
-     * When turning off the mode, clears the current selected sequence and any selected
-     * node/arrow/rectangle, then triggers a redraw. Also toggles the `active` class on
-     * the `#select-button` element (if present).
+     * When turning off the mode, clears the current selected sequence, ends a running
+     * task recording and drops any selected node/arrow/rectangle, then triggers a redraw.
      *
      * @returns {void}
      */
@@ -843,6 +821,8 @@ export class FlowchartWidget extends LitElementWw {
 
         if (!this.isSelectingSequence) {
             this.selectedSequence = [];
+            // Ohne Auswahlmodus kann kein Task mehr aufzeichnen.
+            this.sequenceEditIndex = null;
         }
 
         // Deaktive alles ausgewählten Graphelemente
@@ -1085,8 +1065,6 @@ export class FlowchartWidget extends LitElementWw {
 
         this.ctx.translate(this.canvasOffsetX, this.canvasOffsetY)
 
-        // this.getUserSettings();
-
         applyGraphFont(this.ctx, this.graphSettings);
 
         this.reconnectArrows();
@@ -1124,11 +1102,6 @@ export class FlowchartWidget extends LitElementWw {
         if (this.selectionRectangle) {
             drawSelectionField(this.ctx, this.selectionRectangle);
         }
-
-        // Speichere die aktuellen Knoten und Verbindungen als Attribute
-        // this.setAttribute('graph-nodes', JSON.stringify(this.graphNodes));
-        // this.setAttribute('task-list', JSON.stringify(this.taskList));
-        // this.setAttribute('help-list', JSON.stringify(this.helpList));
     }
 
     /** @internal Cyclic index used by `addGraphNode()` to stagger the placement of quickly inserted nodes, preventing complete overlap. Values rotate through 0 → 1 → 2 → 0 ... */
@@ -1778,10 +1751,6 @@ export class FlowchartWidget extends LitElementWw {
 
     /** @internal Lit lifecycle: canvas setup, zoom/apply, initial redraw. */
     firstUpdated() {
-        // console.log('firstUpdated');
-
-        // console.log('this', this.taskList.length);
-
         this.canvas = this.shadowRoot?.querySelector('canvas') as HTMLCanvasElement;
 		const dpi = window.devicePixelRatio || 1;
         this.canvas.width = this.clientWidth * dpi;
@@ -1806,11 +1775,7 @@ export class FlowchartWidget extends LitElementWw {
     /** @internal Lifecycle: wire global listeners and custom events. */
     connectedCallback() {
         super.connectedCallback();
-        // window.addEventListener('resize', this.updateCanvasSize);
         window.addEventListener('keydown', this.handleKeyDown);
-
-        // Konvertiert das Array in einen String und setzt es als Attribut
-        //this.setAttribute('graph-nodes', JSON.stringify(this.graphNodes));
 
         this.resizeObserver.observe(this);
         this.addEventListener('fullscreenchange', this.syncLayout);
@@ -1819,7 +1784,6 @@ export class FlowchartWidget extends LitElementWw {
 
     /** @internal Lifecycle: teardown listeners. */
     disconnectedCallback() {
-        // window.removeEventListener('resize', this.updateCanvasSize);
         window.removeEventListener('keydown', this.handleKeyDown);
 
         this.cancelLongPress();
@@ -1908,8 +1872,6 @@ export class FlowchartWidget extends LitElementWw {
         const scaleFactor = this.zoomLevel / 100;
         this.ctx.resetTransform();
         this.ctx.scale(scaleFactor * dpi, scaleFactor * dpi);
-        this.canvas.style.setProperty('--scaled-grid-size', `${scaleFactor * this.gridSize}px`);
-        this.canvas.style.setProperty('--scaled-grid-dot-size', `${scaleFactor * this.dotSize}px`);
         this.redrawCanvas();
     }
 
@@ -1932,7 +1894,6 @@ export class FlowchartWidget extends LitElementWw {
             this.selectedNodes.forEach((node) => {
                 // Entferne ausgewählten Knoten
                 this.graphNodes = this.graphNodes.filter((n) => n !== node);
-                // console.log('nach dem löschen', this.graphNodes);
                 // Entferne die Verbindungsinformationen für alle betroffenen Knoten
                 this.arrows.forEach((arrow) => {
                     if (arrow.from === node || arrow.to === node) {
@@ -2294,23 +2255,6 @@ export class FlowchartWidget extends LitElementWw {
         this.textPrompt = null;
         this.confirmOpen = false;
     };
-
-    /** @internal Handle prompt submissions, update text, reorder arrows for z-index. */
-    private handlePromptSubmit(event: CustomEvent) {
-        const newText = event.detail.value;
-
-        if (this.promptType === 'node') {
-            this.graphNodes[this.promptIndex].text = newText;
-        } else if (this.promptType === 'arrow') {
-            const selectedArrow = this.arrows[this.promptIndex];
-            this.persistArrowText(selectedArrow, newText);
-            this.arrows.splice(this.promptIndex, 1);
-            this.arrows.push(selectedArrow);
-        }
-        this.commitGraphNodes();
-        this.redrawCanvas();
-        this.hidePrompt();
-    }
 
     /** @internal Show solution overlay with a message. */
     private showSolutionWithMessage(message: string, correct = false) {

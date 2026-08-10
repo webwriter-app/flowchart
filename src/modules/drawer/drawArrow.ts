@@ -440,7 +440,6 @@ export function drawArrowAnchor(
     settings: { font: string; fontSize: number; theme: string }
 ) {
     const arrowInfo = getArrowInformation(ctx, arrow.to, arrow.from, 'from');
-    const anchor = arrowInfo.anchor;
     const x = arrowInfo.x;
     const y = arrowInfo.y;
 
@@ -459,22 +458,8 @@ export function drawArrowAnchor(
     // Falls ein Ankerpunkt gehovert wird, wird die Transparenz auf 1 gesetzt.
     ishovered ? (ctx.globalAlpha = 1) : (ctx.globalAlpha = 0.6);
 
-    const offSetAnchor = 0;
+    drawAnchor(x, y, 5);
 
-    switch (anchor) {
-        case 0:
-            drawAnchor(x, y - offSetAnchor, 5);
-            break;
-        case 1:
-            drawAnchor(x + offSetAnchor, y, 5);
-            break;
-        case 2:
-            drawAnchor(x, y + offSetAnchor, 5);
-            break;
-        case 3:
-            drawAnchor(x - offSetAnchor, y, 5);
-            break;
-    }
     // Resette Einstellungen.
     ctx.globalAlpha = 1;
 
