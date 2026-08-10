@@ -12,16 +12,6 @@
           "name": "FlowchartWidget",
           "cssProperties": [
             {
-              "description": "Spacing between grid dots (derived from zoom).",
-              "name": "--scaled-grid-size",
-              "default": "50px"
-            },
-            {
-              "description": "Dot radius for the background grid (derived from zoom).",
-              "name": "--scaled-grid-dot-size",
-              "default": "1.5px"
-            },
-            {
               "description": "Internal canvas left offset (managed by the widget).",
               "name": "--offset-x"
             },
@@ -32,12 +22,6 @@
             {
               "description": "Workspace height in pixels.",
               "name": "--widget-height"
-            }
-          ],
-          "cssParts": [
-            {
-              "description": "Styles the settings sidebar (tool menu).",
-              "name": "options"
             }
           ],
           "members": [
@@ -171,7 +155,7 @@
               "type": {
                 "text": "boolean"
               },
-              "privacy": "private",
+              "description": "Whether students may add, drag and delete elements.",
               "readonly": true
             },
             {
@@ -191,7 +175,7 @@
               "type": {
                 "text": "boolean"
               },
-              "privacy": "private",
+              "description": "Whether students may pan and zoom the canvas.",
               "readonly": true
             },
             {
@@ -200,8 +184,8 @@
               "type": {
                 "text": "string"
               },
-              "default": "'Courier New'",
-              "description": "Font family used for labels.",
+              "default": "'Courier_New'",
+              "description": "Font family used for labels, spaces written as underscores.",
               "attribute": "font",
               "reflects": true
             },
@@ -246,29 +230,6 @@
                   "text": "Array<{ id: string; order: number; type: string }>"
                 }
               }
-            },
-            {
-              "kind": "field",
-              "name": "getActiveSequenceButton",
-              "description": "Get the active sequence button.",
-              "return": {
-                "type": {
-                  "text": "HTMLButtonElement|null"
-                }
-              }
-            },
-            {
-              "kind": "field",
-              "name": "setActiveSequenceButton",
-              "description": "Set the active sequence button.",
-              "parameters": [
-                {
-                  "name": "btn",
-                  "type": {
-                    "text": "HTMLButtonElement|null"
-                  }
-                }
-              ]
             },
             {
               "kind": "field",
@@ -362,7 +323,7 @@
             {
               "kind": "method",
               "name": "selectSequence",
-              "description": "Toggle path-selection mode for solution checking.\r\nWhen turning off the mode, clears the current selected sequence and any selected\r\nnode/arrow/rectangle, then triggers a redraw. Also toggles the `active` class on\r\nthe `#select-button` element (if present).",
+              "description": "Toggle path-selection mode for solution checking.\r\nWhen turning off the mode, clears the current selected sequence, ends a running\r\ntask recording and drops any selected node/arrow/rectangle, then triggers a redraw.",
               "return": {
                 "type": {
                   "text": "void"
@@ -430,15 +391,19 @@
               }
             },
             {
-              "kind": "method",
+              "kind": "field",
               "name": "showSolutionMenu",
+              "type": {
+                "text": "boolean"
+              },
               "privacy": "private",
               "description": "Show or hide the solution menu depending on:\r\n- Whether path-selection mode is active,\r\n- Whether at least one task contains a non-empty `sequence`,\r\n- And whether the widget is not in editable mode.\r\n\r\nAdds/removes the `hidden` class on `.solution-menu`.",
               "return": {
                 "type": {
                   "text": "void"
                 }
-              }
+              },
+              "readonly": true
             },
             {
               "kind": "method",
@@ -575,6 +540,15 @@
                   "text": "void"
                 }
               }
+            },
+            {
+              "kind": "field",
+              "name": "resizeStartHeight",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "0"
             }
           ],
           "attributes": [
@@ -619,23 +593,23 @@
               "type": {
                 "text": "boolean"
               },
-              "description": "Enables student editing (adding, dragging, deleting).",
-              "name": "allow-student-edit"
+              "description": "Disables student editing (adding, dragging, deleting).",
+              "name": "disable-student-edit"
             },
             {
               "type": {
                 "text": "boolean"
               },
-              "description": "Enables student panning and zoom interaction.",
-              "name": "allow-student-pan"
+              "description": "Disables student panning and zoom interaction.",
+              "name": "disable-student-pan"
             },
             {
               "type": {
                 "text": "string"
               },
-              "description": "Font family used for labels.",
+              "description": "Font family used for labels, spaces written as underscores.",
               "name": "font",
-              "default": "'Courier New'",
+              "default": "'Courier_New'",
               "fieldName": "font"
             },
             {

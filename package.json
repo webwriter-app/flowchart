@@ -1,7 +1,8 @@
 {
   "name": "@webwriter/flowchart",
-  "version": "2.0.9",
+  "version": "2.1.0",
   "description": "Create programming flowcharts with interactive tasks. Use standardized Elements such as loops and Branchings.",
+  "repository": "github:webwriter-app/flowchart",
   "keywords": [
     "webwriter-widget",
     "widget-presentational",
@@ -95,5 +96,6 @@
   },
   "editingConfig": {
     ".": {}
-  }
+  },
+  "customElements": "custom-elements.json"
 }

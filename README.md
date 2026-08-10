@@ -1,5 +1,5 @@
-# Flowchart (`@webwriter/flowchart@2.0.9`)
-[License: MIT](LICENSE) | Version: 2.0.9
+# Flowchart (`@webwriter/flowchart@2.1.0`)
+[License: MIT](LICENSE) | Version: 2.1.0
 
 Create programming flowcharts with interactive tasks. Use standardized Elements such as loops and Branchings.
 
@@ -56,13 +56,11 @@ npm install @webwriter/flowchart
 | `canvasOffsetY` (`canvasOffsetY`) | `number` | Vertical pan offset (world units). | `0` | ✓ |
 | `disableStudentEdit` (`disableStudentEdit`) | `boolean` | Disables interactive editing (adding/dragging/deleting). | `false` | ✓ |
 | `disableStudentPan` (`disableStudentPan`) | `boolean` | Disables panning/zooming interactions. | `false` | ✓ |
-| `font` (`font`) | `string` | Font family used for labels. | `'Courier New'` | ✓ |
+| `font` (`font`) | `string` | Font family used for labels, spaces written as underscores. | `'Courier_New'` | ✓ |
 | `fontSize` (`fontSize`) | `number` | Font size used for labels. | `16` | ✓ |
 | `theme` (`theme`) | `string` | Color theme name. | `'standard'` | ✓ |
 | `fullscreen` (`fullscreen`) | `boolean` | Whether the widget is currently in fullscreen mode. | `false` | ✗ |
 | `getSelectedSequence` | - | Get the currently selected path sequence. | - | ✗ |
-| `getActiveSequenceButton` | - | Get the active sequence button. | - | ✗ |
-| `setActiveSequenceButton` | - | Set the active sequence button. | - | ✗ |
 | `isSelectingSequence` | - | Set path-selection mode. | - | ✗ |
 | `solutionMessage` (`solutionMessage`) | `string` | Message shown in the solution prompt. | `''` | ✗ |
 | `showSolution` (`showSolution`) | `boolean` | Whether the solution prompt is visible. | `false` | ✗ |
@@ -74,7 +72,7 @@ npm install @webwriter/flowchart
 | Name | Description | Parameters |
 | :--: | :---------: | :-------: |
 | `isEditable` | Returns whether the widget is currently in an editable state<br>based on the `contenteditable` attribute. | -
-| `selectSequence` | Toggle path-selection mode for solution checking.<br>When turning off the mode, clears the current selected sequence and any selected<br>node/arrow/rectangle, then triggers a redraw. Also toggles the `active` class on<br>the `#select-button` element (if present). | -
+| `selectSequence` | Toggle path-selection mode for solution checking.<br>When turning off the mode, clears the current selected sequence, ends a running<br>task recording and drops any selected node/arrow/rectangle, then triggers a redraw. | -
 | `checkSolution` | Compare the currently selected path sequence with a task's expected sequence.<br>If length and element-wise id/type match, shows a success message; otherwise<br>shows a failure message. Uses `showSolutionWithMessage()` to display the result. | `task: ItemList`
 
 *[Methods](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Method_definitions) allow programmatic access to the widget.*
@@ -82,20 +80,11 @@ npm install @webwriter/flowchart
 ## Custom CSS properties
 | Name | Description |
 | :--: | :---------: |
-| --scaled-grid-size | Spacing between grid dots (derived from zoom). |
-| --scaled-grid-dot-size | Dot radius for the background grid (derived from zoom). |
 | --offset-x | Internal canvas left offset (managed by the widget). |
 | --offset-y | Internal canvas top offset (managed by the widget). |
 | --widget-height | Workspace height in pixels. |
 
 *[Custom CSS properties](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_cascading_variables/Using_CSS_custom_properties) offer defined customization of the widget's style.*
-
-## CSS parts
-| Name | Description |
-| :--: | :---------: |
-| options | Styles the settings sidebar (tool menu). |
-
-*[CSS parts](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_shadow_parts) allow freely styling internals of the widget with CSS.*
 
 ## Editing config
 | Name | Value |
@@ -104,7 +93,7 @@ npm install @webwriter/flowchart
 
 *The [editing config](https://webwriter.app/docs/packages/configuring/#editingconfig) defines how explorable authoring tools such as [WebWriter](https://webwriter.app) treat the widget.*
 
-*No public slots, or events.*
+*No public slots, events, or CSS parts.*
 
 
 ---
