@@ -42,13 +42,19 @@ export class ThemeManager {
       });
    }
 
-   getTheme(name: string) {
+   // Gibt das Theme mit dem Namen zurück, oder undefined wenn es keines gibt
+   findTheme(name: string) {
       return this.themes.find(theme => theme.name === name);
+   }
+
+   // Gibt das Theme mit dem Namen zurück, bei einem unbekannten Namen das Standard-Theme
+   getTheme(name: string): GraphTheme {
+      return this.findTheme(name) ?? this.themes[0];
    }
 
    addTheme(theme: GraphTheme) {
       // Überprüfen, ob das Theme bereits existiert
-      if (this.getTheme(theme.name)) {
+      if (this.findTheme(theme.name)) {
          throw new Error('Theme mit diesem Namen existiert bereits');
       }
       this.themes.push(theme);

@@ -18,25 +18,25 @@ export function handleSequenceSelection(
 ) {
     const clickedNode = findLastGraphNode(ctx, graphNodes, x, y);
     const clickedArrow = findArrow(arrows, x, y);
-    let clickedItem: GraphNode | Arrow;
-    let sequenceType: string;
+    const clicked = clickedNode ?? clickedArrow;
+    const sequenceType = clickedNode ? 'node' : 'arrow';
 
-    if (clickedNode) {
-        clickedItem = clickedNode;
-        sequenceType = 'node';
-    } else if (clickedArrow) {
-        clickedItem = clickedArrow;
-        sequenceType = 'arrow';
+    if (!clicked) {
+        return;
     }
 
-    if (clickedItem) {
-        selectedSequence.push({
-            id: clickedItem.id,
-            order: selectedSequence.length + 1,
-            type: sequenceType,
-        });
+    const clickedItem: GraphNode | Arrow = clicked;
 
-        return;
+    selectedSequence.push({
+        id: clickedItem.id,
+        order: selectedSequence.length + 1,
+        type: sequenceType,
+    });
+
+    return;
+
+    // Aufgehoben für eine spätere Verwendung.
+    {
 
         const existingIndex = findLastIndex(
             selectedSequence,
@@ -56,7 +56,7 @@ export function handleSequenceSelection(
         } else if (existingIndex === lastIndex) {
             selectedSequence.pop();
         } else {
-            let lastItem: GraphNode | Arrow;
+            let lastItem: GraphNode | Arrow | undefined;
             if (lastItemType === 'node') {
                 lastItem = graphNodes.find((node) => node.id === lastItemId);
             } else {
@@ -65,7 +65,7 @@ export function handleSequenceSelection(
 
             if (sequenceType === 'node' && isArrow(lastItem)) {
                 const clickedNode = clickedItem as GraphNode;
-                const connectedNode = findConnectedNode(lastItem, clickedNode, graphNodes);
+                const connectedNode = findConnectedNode(lastItem as Arrow, clickedNode, graphNodes);
                 if (connectedNode || existingIndex !== -1) {
                     selectedSequence.push({
                         id: clickedItem.id,
@@ -75,7 +75,7 @@ export function handleSequenceSelection(
                 }
             } else if (sequenceType === 'arrow' && isGraphNode(lastItem)) {
                 const clickedArrow = clickedItem as Arrow;
-                const connectedArrow = findConnectedArrow(lastItem, clickedArrow, arrows);
+                const connectedArrow = findConnectedArrow(lastItem as GraphNode, clickedArrow, arrows);
                 if (connectedArrow || existingIndex !== -1) {
                     selectedSequence.push({
                         id: clickedItem.id,
@@ -106,10 +106,10 @@ function findConnectedNode(arrow: Arrow, clickedNode: GraphNode, graphNodes: Gra
     return null;
 }
 
-function isGraphNode(obj: GraphNode | Arrow): obj is GraphNode {
-    return (obj as GraphNode).node !== undefined;
+function isGraphNode(obj: GraphNode | Arrow | undefined): obj is GraphNode {
+    return (obj as GraphNode)?.node !== undefined;
 }
 
-function isArrow(obj: GraphNode | Arrow): obj is Arrow {
-    return (obj as Arrow).from !== undefined;
+function isArrow(obj: GraphNode | Arrow | undefined): obj is Arrow {
+    return (obj as Arrow)?.from !== undefined;
 }

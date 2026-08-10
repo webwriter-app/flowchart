@@ -42,7 +42,7 @@ export function handleArrowCreation(
     const nearestCircleIndex = getNearestCircle(ctx, { x, y }, targetElement);
     targetElement.connections.push({ anchor: nearestCircleIndex, direction: 'from', connectedToId: arrowStart.node.id,  arrowID: newArrowID });
 
-    const newArrow = { id: newArrowID, from: arrowStart.node, to: targetElement, points: [] };
+    const newArrow: Arrow = { id: newArrowID, from: arrowStart.node, to: targetElement, points: [] };
     const points = generateArrowPoints(ctx, newArrow);
     newArrow.points = points;
     arrows.push(newArrow);

@@ -4,6 +4,6 @@ export interface Arrow {
    id: string;
    from: GraphNode;
    to: GraphNode;
-   points?: { x: number; y: number }[];
+   points: { x: number; y: number }[];
    text?: string;
 }

@@ -469,7 +469,7 @@ export function drawArrowAnchor(
 export function drawTempArrow(
     ctx: CanvasRenderingContext2D,
     arrowStart: { node: GraphNode; anchor: number },
-    tempArrowEnd?: { x: number; y: number }
+    tempArrowEnd: { x: number; y: number }
 ) {
     const arrowAnchors = getAnchors(ctx, arrowStart.node);
     const startPoint = arrowAnchors[arrowStart.anchor];

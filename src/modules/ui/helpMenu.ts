@@ -5,19 +5,19 @@ import { msg } from '@lit/localize';
 
 // render die Hilfskarten
 export function renderHelpList(this: FlowchartWidget, helpList: ItemList[]) {
-    const renderHelp = (help, id) => {
+    const renderHelp = (help: ItemList, id: number) => {
         const deleteHelp = () => {
             helpList.splice(id, 1);
             this.helpList = [...helpList];
         };
 
-        const onTitleChange = (event) => {
-            help.titel = event.target.value;
+        const onTitleChange = (event: Event) => {
+            help.titel = (event.target as HTMLInputElement).value;
             this.helpList = [...helpList];
         };
 
-        const onContentChange = (event) => {
-            help.content = event.target.value;
+        const onContentChange = (event: Event) => {
+            help.content = (event.target as HTMLTextAreaElement).value;
             this.helpList = [...helpList];
         };
 

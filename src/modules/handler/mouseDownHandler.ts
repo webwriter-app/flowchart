@@ -34,34 +34,37 @@ export function handleMultipleNodesDragStart( ctx: CanvasRenderingContext2D, x: 
    return { draggedNodes, isDragging, dragOffset };
 }
 
-export function handleArrowDragStart( ctx: CanvasRenderingContext2D, x: number, y: number, graphNodes: GraphNode[], selectedArrow: Arrow, handleAnchorClick: ( tempElement: GraphNode, tempAnchor: number) => void) {
-   let arrowToMove: Arrow;
-   let arrowStart: { node: GraphNode; anchor: number };
+export function handleArrowDragStart( ctx: CanvasRenderingContext2D, x: number, y: number, graphNodes: GraphNode[], selectedArrow: Arrow | undefined, handleAnchorClick: ( tempElement: GraphNode, tempAnchor: number) => void) {
+   let arrowToMove: Arrow | undefined;
+   let arrowStart: { node: GraphNode; anchor: number } | undefined;
 
    if (selectedArrow) {
       const { points } = selectedArrow;
 
       // Überprüfe ob einer der Ankerpunkte berührt wurde, wenn ja setze die Variablen zum ziehen.
       if (isWithinCircle(x, y, points[points.length - 1].x, points[points.length - 1].y, 5)) {
-         let tempElement: GraphNode;
-         let tempAnchor: number;
+         let tempAnchor: number | undefined;
          const nearestElement = findLastGraphNode(ctx, graphNodes, x, y);
 
          // Bestimme das Startelement von dem der temporäre Pfeil gesetzt werden soll
          if (nearestElement) {
-            tempElement = selectedArrow.from;
-            for (let i = 0; i < tempElement.connections.length; i++) {
-               if (tempElement.connections[i].connectedToId === nearestElement.id) { tempAnchor = tempElement.connections[i].anchor }
+            const tempElement = selectedArrow.from;
+            const connections = tempElement.connections ?? [];
+            for (let i = 0; i < connections.length; i++) {
+               if (connections[i].connectedToId === nearestElement.id) { tempAnchor = connections[i].anchor }
             }
 
-            // Rufe handleAnchorClick auf um einen temporären Pfeil zu zeichnen.
-            handleAnchorClick( tempElement, tempAnchor);
+            // Ohne bekannten Ankerpunkt lässt sich der Pfeil nicht neu ansetzen.
+            if (tempAnchor !== undefined) {
+               // Rufe handleAnchorClick auf um einen temporären Pfeil zu zeichnen.
+               handleAnchorClick( tempElement, tempAnchor);
 
-            // Lösche die alten Verbindungsinformationen innerhalb der Knoten und die Verbindung
-            removeOldConnection(selectedArrow.from, selectedArrow.to);
-            // Entferne den alte Verbindung 
-            arrowToMove = selectedArrow;
-            arrowStart = { node: tempElement, anchor: tempAnchor };
+               // Lösche die alten Verbindungsinformationen innerhalb der Knoten und die Verbindung
+               removeOldConnection(selectedArrow.from, selectedArrow.to);
+               // Entferne den alte Verbindung 
+               arrowToMove = selectedArrow;
+               arrowStart = { node: tempElement, anchor: tempAnchor };
+            }
          }
       }
    }

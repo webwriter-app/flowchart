@@ -1,5 +1,5 @@
 import { LitElementWw, option } from '@webwriter/lit';
-import { html, css, LitElement } from 'lit';
+import { html, LitElement } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { v4 as uuidv4 } from 'uuid';
@@ -117,13 +117,13 @@ export class FlowchartWidget extends LitElementWw {
     @property({ type: Array, reflect: true, attribute: true }) accessor graphNodes: GraphNode[] = [];
 
     /** @internal Currently selected/focused node. */
-    @property({ type: Object }) accessor selectedNode: GraphNode;
+    @property({ type: Object }) accessor selectedNode: GraphNode | undefined = undefined;
 
     /** List of arrows connecting nodes. */
     @property({ type: Array }) accessor arrows: Arrow[] = [];
 
     /** @internal Currently selected/focused arrow. */
-    @property({ type: Object }) accessor selectedArrow: Arrow;
+    @property({ type: Object }) accessor selectedArrow: Arrow | undefined = undefined;
 
     /**
      * Get the current nodes.
@@ -253,15 +253,15 @@ export class FlowchartWidget extends LitElementWw {
     private resizeObserver = new ResizeObserver(() => this.syncLayout());
 
     /** @internal Canvas element reference. */
-    private canvas: HTMLCanvasElement;
+    private canvas!: HTMLCanvasElement;
 
     /** @internal 2D drawing context for the canvas. */
-    private ctx: CanvasRenderingContext2D;
+    private ctx!: CanvasRenderingContext2D;
 
     /** @internal Drag state. */
     private isDragging = false;
     /** @internal Node currently being dragged. */
-    private draggedNode: GraphNode;
+    private draggedNode?: GraphNode;
     /** @internal Drag offset from the pointer to node origin. */
     private dragOffset = { x: 0, y: 0 };
     /** @internal Group drag: the set of nodes being dragged. */
@@ -332,7 +332,7 @@ export class FlowchartWidget extends LitElementWw {
     /** @internal Currently hovered anchor on a node. */
     private hoveredAnchor?: { element: GraphNode; anchor: number };
     /** @internal Whether an arrow anchor is hovered. */
-    private isArrowAnchorHovered: boolean;
+    private isArrowAnchorHovered = false;
 
     /** @internal Path selection mode (for solution checking). */
     private _isSelectingSequence = false;
@@ -1464,7 +1464,7 @@ export class FlowchartWidget extends LitElementWw {
                 );
                 this.draggedNodes = draggedNodes;
                 this.isDragging = isDragging;
-                this.dragOffset = dragOffset;
+                this.dragOffset = dragOffset ?? { x: 0, y: 0 };
             } else {
                 const { draggedNode, isDragging, dragOffset } = handleNodeDragStart(
                     this.ctx,
@@ -1475,7 +1475,7 @@ export class FlowchartWidget extends LitElementWw {
                 );
                 this.draggedNode = draggedNode;
                 this.isDragging = isDragging;
-                this.dragOffset = dragOffset;
+                this.dragOffset = dragOffset ?? { x: 0, y: 0 };
             }
         }
 
@@ -1524,7 +1524,7 @@ export class FlowchartWidget extends LitElementWw {
         } else {
             if (this.isDragging) {
                 // Füge diese Zeile hinzu, um die Knotenposition basierend auf dem Schwellenwert zu aktualisieren
-                if (this.selectedNodes.length === 0) {
+                if (this.selectedNodes.length === 0 && this.draggedNode) {
                     snapNodePosition(this.ctx, this.draggedNode, this.graphNodes, 8);
                 }
 
@@ -1562,10 +1562,11 @@ export class FlowchartWidget extends LitElementWw {
     private handleMouseMove(event: MouseEvent) {
         const { x, y } = this.getMouseCoordinates(event);
         if (this.selectionRectangle) {
-            this.selectionRectangle.width = x - this.selectionRectangle.x;
-            this.selectionRectangle.height = y - this.selectionRectangle.y;
+            const selectionRectangle = this.selectionRectangle;
+            selectionRectangle.width = x - selectionRectangle.x;
+            selectionRectangle.height = y - selectionRectangle.y;
             this.selectedNodes = this.graphNodes.filter((node) =>
-                isNodeInRectangle(this.ctx, node, this.selectionRectangle)
+                isNodeInRectangle(this.ctx, node, selectionRectangle)
             );
             this.redrawCanvas();
         } else if (this.isGrabbing && this.grabStartPosition && this.grabStartOffset) {
@@ -1598,10 +1599,12 @@ export class FlowchartWidget extends LitElementWw {
                     deltaY = this.dragOffset.y;
 
                     const nodeUnderCursor = findLastGraphNode(this.ctx, this.graphNodes, x, y);
-                    this.draggedNodes.forEach((node) => {
-                        node.x = node.x + deltaX + (nodeUnderCursor.x - x);
-                        node.y = node.y + deltaY + (nodeUnderCursor.y - y);
-                    });
+                    if (nodeUnderCursor) {
+                        this.draggedNodes.forEach((node) => {
+                            node.x = node.x + deltaX + (nodeUnderCursor.x - x);
+                            node.y = node.y + deltaY + (nodeUnderCursor.y - y);
+                        });
+                    }
 
                     this.checkOffset = false;
                 } else {
@@ -1657,12 +1660,13 @@ export class FlowchartWidget extends LitElementWw {
 
                 if (this.draggedNodes.length === 0) {
                     // Setze das angeklickte Element, oder entferne die Auswahl, wenn kein Element angeklickt wurde
-                    this.selectedNode = findLastGraphNode(this.ctx, this.graphNodes, x, y);
-                    const selectedNodeIndex = this.graphNodes.lastIndexOf(this.selectedNode);
+                    const clickedNode = findLastGraphNode(this.ctx, this.graphNodes, x, y);
+                    this.selectedNode = clickedNode;
                     // Packe das ausgewählte Element ans Ende des Arrays, damit es über den anderen Elementen erscheint
-                    if (this.selectedNode && !this.isDragging) {
+                    if (clickedNode && !this.isDragging) {
+                        const selectedNodeIndex = this.graphNodes.lastIndexOf(clickedNode);
                         this.graphNodes.splice(selectedNodeIndex, 1);
-                        this.graphNodes.push(this.selectedNode);
+                        this.graphNodes.push(clickedNode);
                     }
 
                     this.updateAnchorListeners();
@@ -1718,8 +1722,9 @@ export class FlowchartWidget extends LitElementWw {
 
     /** @internal Update anchor pointer listeners based on the selected node. */
     private updateAnchorListeners() {
-        if (this.selectedNode && this.selectedNode.node !== 'text') {
-            const anchors = getAnchors(this.ctx, this.selectedNode, 15);
+        const selectedNode = this.selectedNode;
+        if (selectedNode && selectedNode.node !== 'text') {
+            const anchors = getAnchors(this.ctx, selectedNode, 15);
 
             // Entferne zuerst den bestehenden pointerdown-EventListener, falls vorhanden
             if (this.anchorMouseDownEvent && this.canvas) {
@@ -1735,7 +1740,7 @@ export class FlowchartWidget extends LitElementWw {
                 anchors.forEach((position, index) => {
                     const distance = Math.sqrt((position.x - x) ** 2 + (position.y - y) ** 2);
                     if (distance <= hitRadius) {
-                        this.handleAnchorClick(this.selectedNode, index);
+                        this.handleAnchorClick(selectedNode, index);
                     }
                 });
             };
@@ -1755,7 +1760,7 @@ export class FlowchartWidget extends LitElementWw {
 		const dpi = window.devicePixelRatio || 1;
         this.canvas.width = this.clientWidth * dpi;
         this.canvas.height = this.currentHeight * dpi;
-        const workspace = this.shadowRoot.querySelector('.workspace') as HTMLElement;
+        const workspace = this.shadowRoot?.querySelector('.workspace') as HTMLElement;
         workspace.style.setProperty('--widget-height', `${this.currentHeight}px`);
 
         this.ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D;
@@ -1860,7 +1865,7 @@ export class FlowchartWidget extends LitElementWw {
         this.canvas.width = this.clientWidth * dpi;
         this.canvas.height = this.currentHeight * dpi;
 
-        const workspace = this.shadowRoot.querySelector('.workspace') as HTMLElement;
+        const workspace = this.shadowRoot?.querySelector('.workspace') as HTMLElement;
         workspace.style.setProperty('--widget-height', `${this.currentHeight}px`);
 
         this.redrawCanvas();
@@ -1923,25 +1928,26 @@ export class FlowchartWidget extends LitElementWw {
 
             this.selectedNode = undefined;
         } else if (this.selectedArrow) {
-            const fromNode = this.selectedArrow.from
-            const toNode = this.selectedArrow.to
+            const selectedArrow = this.selectedArrow;
+            const fromNode = selectedArrow.from
+            const toNode = selectedArrow.to
 
             // Entferne die Verbindungsinformation vom Startknoten 
             if (fromNode.connections) {
                 fromNode.connections = fromNode.connections.filter(
-                    (connection) => connection.arrowID !== this.selectedArrow.id
+                    (connection) => connection.arrowID !== selectedArrow.id
                 );
             }
 
             // Entferne die Verbindungsinformation vom Endknoten 
             if (toNode.connections) {
                 toNode.connections = toNode.connections.filter(
-                    (connection) => connection.arrowID !== this.selectedArrow.id
+                    (connection) => connection.arrowID !== selectedArrow.id
                 );
             }
 
             // Entferne den ausgewählten Pfeil
-            this.arrows = this.arrows.filter((arrow) => arrow !== this.selectedArrow);
+            this.arrows = this.arrows.filter((arrow) => arrow !== selectedArrow);
             this.selectedArrow = undefined;
         }
 
