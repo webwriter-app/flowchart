@@ -54,6 +54,10 @@ export const papWidgetStyles = css`
         -webkit-touch-callout: none;
     }
 
+    canvas:focus-visible {
+        outline: none;
+    }
+
     /*
      * Keep dialogs inside the widget instead of covering the whole editor.
      * Shoelace only ships a "contained" mode for sl-drawer, so sl-dialog is pinned
