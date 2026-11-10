@@ -68,8 +68,8 @@ import nodeCommentIcon from "./src/assets/node-comment.svg";
 import chevronUpIcon from "./src/assets/chevron-up.svg";
 import gripHorizontalIcon from "./src/assets/grip-horizontal.svg";
 
-import { localized, msg } from "@lit/localize"
-import LOCALIZE from "./localization/generated"
+import type { MsgFn } from "@lit/localize";
+import { createLocalizer, effectiveLanguage, drawerLabel, sourceMsg } from "./localization/localizer";
 
 /**
  * @summary Create programming flowcharts with interactive tasks. Use standardized Elements such as loops and Branchings.
@@ -107,28 +107,38 @@ import LOCALIZE from "./localization/generated"
  * @cssprop --widget-height - Workspace height in pixels.
  */
 @customElement('webwriter-flowchart')
-@localized()
 export class FlowchartWidget extends LitElementWw {
-    static options: Record<string, OptionDeclaration> = {
-        zoomLevel: { type: "number", label: optionLabels.zoom, min: 50, max: 200, step: 10 },
-        disableStudentEdit: { type: "boolean", label: optionLabels.disableStudentEditing },
-        disableStudentPan: { type: "boolean", label: optionLabels.disableStudentPanning },
-        font: { type: "select", label: optionLabels.font, options: [
-            { value: "Arial", label: { en: "Arial" } },
-            { value: "Courier_New", label: { en: "Courier New" } },
-            { value: "Times_New_Roman", label: { en: "Times New Roman" } },
-            { value: "Verdana", label: { en: "Verdana" } },
-        ] },
-        fontSize: { type: "number", label: optionLabels.fontSize, min: 8, max: 40, step: 1 },
-        theme: { type: "select", label: optionLabels.theme, options: [
-            { value: "standard", label: optionLabels.themeStandard },
-            { value: "pastel", label: optionLabels.themePastel },
-            { value: "mono", label: optionLabels.themeMono },
-            { value: "s/w", label: optionLabels.themeBlackWhite },
-        ] },
-    };
-    readonly options = FlowchartWidget.options;
-    public localize = LOCALIZE;
+    // Inherited language must not be reflected as an authored attribute.
+    static override properties = { lang: { attribute: false, noAccessor: true } };
+    override get lang(): string { return effectiveLanguage(this); }
+    override set lang(value: string) { this.setAttribute("lang", value); }
+
+    private static makeOptions(msg: MsgFn, locale = "en"): Record<string, OptionDeclaration> {
+        return {
+            zoomLevel: { type: "number", label: drawerLabel(msg("Zoom"), optionLabels.zoom, locale), min: 50, max: 200, step: 10 },
+            disableStudentEdit: { type: "boolean", label: drawerLabel(msg("Disable student editing"), optionLabels.disableStudentEditing, locale) },
+            disableStudentPan: { type: "boolean", label: drawerLabel(msg("Disable student panning"), optionLabels.disableStudentPanning, locale) },
+            font: { type: "select", label: drawerLabel(msg("Font"), optionLabels.font, locale), options: [
+                { value: "Arial", label: { _: msg("Arial") } },
+                { value: "Courier_New", label: { _: msg("Courier New") } },
+                { value: "Times_New_Roman", label: { _: msg("Times New Roman") } },
+                { value: "Verdana", label: { _: msg("Verdana") } },
+            ] },
+            fontSize: { type: "number", label: drawerLabel(msg("Font size"), optionLabels.fontSize, locale), min: 8, max: 40, step: 1 },
+            theme: { type: "select", label: drawerLabel(msg("Theme"), optionLabels.theme, locale), options: [
+                { value: "standard", label: drawerLabel(msg("Standard"), optionLabels.themeStandard, locale) },
+                { value: "pastel", label: drawerLabel(msg("Pastel"), optionLabels.themePastel, locale) },
+                { value: "mono", label: drawerLabel(msg("Mono"), optionLabels.themeMono, locale) },
+                { value: "s/w", label: drawerLabel(msg("Black/White"), optionLabels.themeBlackWhite, locale) },
+            ] },
+        };
+    }
+    static options = FlowchartWidget.makeOptions(sourceMsg);
+    readonly options = FlowchartWidget.makeOptions(sourceMsg);
+    public localize = createLocalizer(this, () => {
+        Object.assign(this.options, FlowchartWidget.makeOptions(this.msg, this.localize.getLocale()));
+    });
+    readonly msg = this.localize.msg;
 
     /**
      * List of graph nodes comprising the flowchart.
@@ -423,16 +433,16 @@ export class FlowchartWidget extends LitElementWw {
     static styles = papWidgetStyles;
 
     /** @internal Localized default labels per node type. */
-    static label(node: string): string {
+    private label(node: string): string {
         switch (node) {
-            case 'start': return msg('Start');
-            case 'op': return msg('Process');
-            case 'decision': return msg('Decision');
-            case 'i/o': return msg('Input/Output');
-            case 'sub': return msg('Subprogram');
-            case 'connector': return msg('Connector');
-            case 'end': return msg('End');
-            case 'text': return msg('Comment');
+            case 'start': return this.msg('Start');
+            case 'op': return this.msg('Process');
+            case 'decision': return this.msg('Decision');
+            case 'i/o': return this.msg('Input/Output');
+            case 'sub': return this.msg('Subprogram');
+            case 'connector': return this.msg('Connector');
+            case 'end': return this.msg('End');
+            case 'text': return this.msg('Comment');
             default: return '';
         }
     }
@@ -440,27 +450,27 @@ export class FlowchartWidget extends LitElementWw {
     /**
      * @internal Node types offered by the palette, in display order.
      *
-     * `label` and `text` stay functions so `msg()` is evaluated at render time and
+     * `label` and `text` stay functions so `this.msg()` is evaluated at render time and
      * follows a locale switch. `label` is what the button shows, `text` is the default
      * caption of the node placed on the canvas — they differ for `decision`, whose
      * caption is padded so the diamond has room, for `connector`, which carries no
      * caption at all, and for `i/o`, whose button is abbreviated to keep the palette
      * narrow while the node itself keeps the spelled-out caption.
      */
-    static nodePalette: {
+    private nodePalette: {
         node: 'start' | 'end' | 'op' | 'decision' | 'connector' | 'i/o' | 'sub' | 'text';
         icon: string;
         label: () => string;
         text: () => string;
     }[] = [
-        { node: 'start', icon: nodeTerminalIcon, label: () => FlowchartWidget.label('start'), text: () => FlowchartWidget.label('start') },
-        { node: 'op', icon: nodeProcessIcon, label: () => FlowchartWidget.label('op'), text: () => FlowchartWidget.label('op') },
-        { node: 'decision', icon: nodeDecisionIcon, label: () => FlowchartWidget.label('decision'), text: () => '  ' + FlowchartWidget.label('decision') + '  ' },
-        { node: 'i/o', icon: nodeIoIcon, label: () => msg('I/O'), text: () => FlowchartWidget.label('i/o') },
-        { node: 'sub', icon: nodeSubprogramIcon, label: () => FlowchartWidget.label('sub'), text: () => FlowchartWidget.label('sub') },
-        { node: 'connector', icon: nodeConnectorIcon, label: () => FlowchartWidget.label('connector'), text: () => '' },
-        { node: 'end', icon: nodeTerminalIcon, label: () => FlowchartWidget.label('end'), text: () => FlowchartWidget.label('end') },
-        { node: 'text', icon: nodeCommentIcon, label: () => FlowchartWidget.label('text'), text: () => FlowchartWidget.label('text') }
+        { node: 'start', icon: nodeTerminalIcon, label: () => this.label('start'), text: () => this.label('start') },
+        { node: 'op', icon: nodeProcessIcon, label: () => this.label('op'), text: () => this.label('op') },
+        { node: 'decision', icon: nodeDecisionIcon, label: () => this.label('decision'), text: () => '  ' + this.label('decision') + '  ' },
+        { node: 'i/o', icon: nodeIoIcon, label: () => this.msg('I/O'), text: () => this.label('i/o') },
+        { node: 'sub', icon: nodeSubprogramIcon, label: () => this.label('sub'), text: () => this.label('sub') },
+        { node: 'connector', icon: nodeConnectorIcon, label: () => this.label('connector'), text: () => '' },
+        { node: 'end', icon: nodeTerminalIcon, label: () => this.label('end'), text: () => this.label('end') },
+        { node: 'text', icon: nodeCommentIcon, label: () => this.label('text'), text: () => this.label('text') }
     ];
 
     /** @internal Scoped child elements used by the widget. */
@@ -520,13 +530,13 @@ export class FlowchartWidget extends LitElementWw {
 
                 <div class="action-menu" style=${this.fullscreen ? 'top:10px;left:10px;' : ''}>
                     ${this.isEditable() || (this.allowStudentEdit && this.allowStudentPan) ? html`
-                        <sl-tooltip content="${msg('Move the canvas')}" placement="bottom">
+                        <sl-tooltip content="${this.msg('Move the canvas')}" placement="bottom">
                             <sl-button
                                 id="grab-button"
                                 variant=${this.isGrabbing ? 'primary' : 'default'}
                                 @click="${this.grabCanvas}"
                             >
-                                <sl-icon slot="prefix" src=${grabIcon} label="${msg('Move the canvas')}"></sl-icon>
+                                <sl-icon slot="prefix" src=${grabIcon} label="${this.msg('Move the canvas')}"></sl-icon>
                             </sl-button>
                         </sl-tooltip>
                     ` : html``}
@@ -546,9 +556,9 @@ export class FlowchartWidget extends LitElementWw {
                         </sl-button>
                     </sl-tooltip>
                     -->
-                    <sl-tooltip content="${msg('Fullscreen')}" placement="bottom">
+                    <sl-tooltip content="${this.msg('Fullscreen')}" placement="bottom">
                         <sl-button @click="${this.toggleFullscreen}">
-                            <sl-icon slot="prefix" src=${fullscreenIcon} label="${msg('Fullscreen')}"></sl-icon>
+                            <sl-icon slot="prefix" src=${fullscreenIcon} label="${this.msg('Fullscreen')}"></sl-icon>
                         </sl-button>
                     </sl-tooltip>
                 </div>
@@ -556,7 +566,7 @@ export class FlowchartWidget extends LitElementWw {
                 ${this.allowStudentEdit || this.isEditable() ? html`
                     <div class=${classMap({ 'flowchart-menu': true, collapsed: !this.flowMenuOpen })}>
                         <sl-tooltip
-                            content="${this.flowMenuOpen ? msg('Hide elements') : msg('Show elements')}"
+                            content="${this.flowMenuOpen ? this.msg('Hide elements') : this.msg('Show elements')}"
                             placement="top"
                         >
                             <button
@@ -569,7 +579,7 @@ export class FlowchartWidget extends LitElementWw {
                                 <sl-icon
                                     class="flowchart-menu-chevron"
                                     src=${chevronUpIcon}
-                                    label=${this.flowMenuOpen ? msg('Hide elements') : msg('Show elements')}
+                                    label=${this.flowMenuOpen ? this.msg('Hide elements') : this.msg('Show elements')}
                                 ></sl-icon>
                             </button>
                         </sl-tooltip>
@@ -578,7 +588,7 @@ export class FlowchartWidget extends LitElementWw {
                             id="flowchart-menu-content"
                             ?inert=${!this.flowMenuOpen}
                         >
-                            ${FlowchartWidget.nodePalette.map(
+                            ${this.nodePalette.map(
                                 (entry) => html`
                                     <sl-button
                                         @click="${() => this.addGraphNode(entry.node, entry.text())}"
@@ -594,17 +604,17 @@ export class FlowchartWidget extends LitElementWw {
                 ` : html``}
 
                 <sl-dialog
-                    label="${msg('Tasks')}"
+                    label="${this.msg('Tasks')}"
                     ?open=${this.openMenu === 'task'}
                     @sl-after-hide=${this.handleMenuHide}
                 >
                     ${this.taskList?.length === 0
-                        ? html`<p class="no-tasks-message">${msg('No tasks!')}</p>`
+                        ? html`<p class="no-tasks-message">${this.msg('No tasks!')}</p>`
                         : renderTasks.bind(this)(this.taskList)}
                     ${this.showSolutionMenu
                         ? html`
                               <div class="solution-menu">
-                                  <div class="solution-titel">${msg('Check path')}</div>
+                                  <div class="solution-titel">${this.msg('Check path')}</div>
                                   ${this.taskList?.map((task) =>
                                       task.sequence
                                           ? html`<sl-button @click="${() => this.checkSolution(task)}">
@@ -617,26 +627,26 @@ export class FlowchartWidget extends LitElementWw {
                         : ''}
                     <sl-button slot="footer" class="editMode" @click="${this.addTask}">
                         <sl-icon slot="prefix" src=${plusIcon}></sl-icon>
-                        ${msg('Add task')}
+                        ${this.msg('Add task')}
                     </sl-button>
                 </sl-dialog>
 
                 <sl-dialog
-                    label="${msg('Hints')}"
+                    label="${this.msg('Hints')}"
                     ?open=${this.openMenu === 'help'}
                     @sl-after-hide=${this.handleMenuHide}
                 >
                     ${this.helpList?.length === 0
-                        ? html`<p class="no-help-message">${msg('No hints!')}</p>`
+                        ? html`<p class="no-help-message">${this.msg('No hints!')}</p>`
                         : renderHelpList.bind(this)(this.helpList)}
                     <sl-button slot="footer" class="editMode" @click="${this.addHelp}">
                         <sl-icon slot="prefix" src=${plusIcon}></sl-icon>
-                        ${msg('Add hint')}
+                        ${this.msg('Add hint')}
                     </sl-button>
                 </sl-dialog>
 
                 <sl-dialog
-                    label="${msg('Natural language')}"
+                    label="${this.msg('Natural language')}"
                     ?open=${this.openMenu === 'translate'}
                     @sl-after-hide=${this.handleMenuHide}
                 >
@@ -645,7 +655,7 @@ export class FlowchartWidget extends LitElementWw {
                             ?loading=${this.translating === 'natural'}
                             @click="${() => this.translateFlowchart('natural')}"
                         >
-                            ${msg('Natural language')}
+                            ${this.msg('Natural language')}
                         </sl-button>
                         ${this.translations.natural
                             ? html`<sl-textarea readonly rows="6" .value=${this.translations.natural}></sl-textarea>`
@@ -656,7 +666,7 @@ export class FlowchartWidget extends LitElementWw {
                             ?loading=${this.translating === 'pseudo'}
                             @click="${() => this.translateFlowchart('pseudo')}"
                         >
-                            ${msg('Pseudocode')}
+                            ${this.msg('Pseudocode')}
                         </sl-button>
                         ${this.translations.pseudo
                             ? html`<sl-textarea readonly rows="6" .value=${this.translations.pseudo}></sl-textarea>`
@@ -671,14 +681,14 @@ export class FlowchartWidget extends LitElementWw {
                               style="left:${this.contextMenuAt.x}px; top:${this.contextMenuAt.y}px"
                           >
                               <sl-menu-item @click="${() => this.deleteSelectedObject()}">
-                                  ${msg('Delete')}
+                                  ${this.msg('Delete')}
                               </sl-menu-item>
                           </sl-menu>
                       `
                     : ''}
 
                 <sl-dialog
-                    label="${msg('Type in the new text:')}"
+                    label="${this.msg('Type in the new text:')}"
                     ?open=${this.textPrompt !== null}
                     @sl-request-close=${this.hidePrompt}
                     @sl-after-hide=${this.hidePrompt}
@@ -689,16 +699,16 @@ export class FlowchartWidget extends LitElementWw {
                         .value=${this.textPrompt?.value ?? ''}
                         @keyup=${this.handlePromptKeyUp}
                     ></sl-input>
-                    <sl-button slot="footer" @click="${this.hidePrompt}">${msg('Cancel')}</sl-button>
+                    <sl-button slot="footer" @click="${this.hidePrompt}">${this.msg('Cancel')}</sl-button>
                     <sl-button slot="footer" variant="primary" @click="${this.submitTextPrompt}">OK</sl-button>
                 </sl-dialog>
 
                 <sl-dialog
-                    label="${msg('Are you sure, that you want to delete everything?')}"
+                    label="${this.msg('Are you sure, that you want to delete everything?')}"
                     ?open=${this.confirmOpen}
                     @sl-after-hide=${() => (this.confirmOpen = false)}
                 >
-                    <sl-button slot="footer" @click="${() => (this.confirmOpen = false)}">${msg('Cancel')}</sl-button>
+                    <sl-button slot="footer" @click="${() => (this.confirmOpen = false)}">${this.msg('Cancel')}</sl-button>
                     <sl-button
                         slot="footer"
                         variant="danger"
@@ -715,7 +725,7 @@ export class FlowchartWidget extends LitElementWw {
                     <sl-alert variant=${this.solutionCorrect ? 'success' : 'danger'} open>
                         ${this.solutionMessage}
                     </sl-alert>
-                    <sl-button slot="footer" @click="${this.closeSolution}">${msg('Close')}</sl-button>
+                    <sl-button slot="footer" @click="${this.closeSolution}">${this.msg('Close')}</sl-button>
                 </sl-dialog>
             </div>
             ${(this.allowStudentEdit || this.isEditable()) && !this.fullscreen
@@ -859,13 +869,13 @@ export class FlowchartWidget extends LitElementWw {
                     this.selectedSequence[i].id !== task.sequence[i].id ||
                     this.selectedSequence[i].type !== task.sequence[i].type
                 ) {
-                    this.showSolutionWithMessage(msg('Unfortunately, the selected path is wrong!'));
+                    this.showSolutionWithMessage(this.msg('Unfortunately, the selected path is wrong!'));
                     return;
                 }
             }
-            this.showSolutionWithMessage(msg('The selected path is correct!'), true);
+            this.showSolutionWithMessage(this.msg('The selected path is correct!'), true);
         } else {
-            this.showSolutionWithMessage(msg('Unfortunately, the selected path is wrong!'));
+            this.showSolutionWithMessage(this.msg('Unfortunately, the selected path is wrong!'));
         }
     }
 
@@ -970,7 +980,7 @@ export class FlowchartWidget extends LitElementWw {
      * @returns {void}
      */
     private addTask() {
-        this.taskList = [...this.taskList, { titel: msg('Title'), content: msg('Task') }];
+        this.taskList = [...this.taskList, { titel: this.msg('Title'), content: this.msg('Task') }];
     }
 
     /**
@@ -980,7 +990,7 @@ export class FlowchartWidget extends LitElementWw {
      * @returns {void}
      */
     private addHelp() {
-        this.helpList = [...this.helpList, { titel: msg('Title'), content: msg('Hint') }];
+        this.helpList = [...this.helpList, { titel: this.msg('Title'), content: this.msg('Hint') }];
     }
 
     /**
@@ -2226,7 +2236,7 @@ export class FlowchartWidget extends LitElementWw {
 
         if (prompt.type === 'node') {
             const node = this.graphNodes[prompt.index];
-            const text = value || FlowchartWidget.label(node.node);
+            const text = value || this.label(node.node);
             node.text = node.node === 'decision' ? '  ' + text + '  ' : text;
         } else {
             this.persistArrowText(this.arrows[prompt.index], value);
