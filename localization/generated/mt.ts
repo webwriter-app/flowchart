@@ -1,0 +1,65 @@
+
+    // Do not modify this file by hand!
+    // Re-generate this file by running lit-localize
+
+
+
+
+    /* eslint-disable no-irregular-whitespace */
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+
+    export const templates = {
+      's012e7772b1fac646': `Sfortunatament, il-mogħdija magħżula hija żbaljata!`,
+'s03ee3cfb0919c62c': `Kompitu`,
+'s079cf7850d9327f0': `Font`,
+'s166bd56d19670a72': `Zoom`,
+'s20b232c96ed539f0': `Kontenut...`,
+'s275e8941632a9afa': `Proċess`,
+'s2ceb11be2290bb1b': `Ikkanċella`,
+'s2f2044f2431a32d5': `Intestatura`,
+'s30f853f2943ac1ec': `Pastell`,
+'s36480f2f59da17d3': `M'hemmx kompiti!`,
+'s37c3fbc8adb256ec': `Verdana`,
+'s37edf2aec5ab122a': `Mono`,
+'s40d30619c8d7ef3a': `I/O`,
+'s44f386b424330b66': `Pseudokodiċi`,
+'s4b10acae683d2978': `Skrin sħiħ`,
+'s4f1565979d2815d9': `Mexxi l-kanvas`,
+'s4f5fcf942bca6be5': `Żid ħjiel`,
+'s53a526d5c80c3e28': `Standard`,
+'s5be397a47866f7de': `Iċċekkja s-soluzzjoni`,
+'s5bffe94b60a5e7d5': `Il-mogħdija magħżula hija korretta!`,
+'s5e8250fb85d64c23': `Agħlaq`,
+'s6228ab313e3c8dcf': `Issejvja l-mogħdija`,
+'s69e040d57d5bcc5e': `Aħbi l-elementi`,
+'s70d2c6a9a84180ba': `Daħħal it-test il-ġdid:`,
+'s8290d08ab5a49ed0': `Konnettur`,
+'s85e34dc8cc55f1a3': `Żgur li trid tħassar kollox?`,
+'s914cc7fb419008a8': `Iddiżattiva l-editjar mill-istudenti`,
+'s930f77519fda90bb': `Żid mogħdija`,
+'s94d0e033f72fca89': `Żid kompitu`,
+'s99a474c8e41b56f0': `Lingwa naturali`,
+'s99f110d27e30b289': `Titlu`,
+'s9dcffdd89c8e0f58': `Ħjiel`,
+'s9df2887de87a2a6b': `M'hemmx ħjiel!`,
+'sa30f1981fd1cd441': `Daqs tal-font`,
+'saab875d8cfcfe712': `Tema`,
+'sae1c7f13b7c0c47f': `Bidu`,
+'saf84ec86139d349e': `Kumment`,
+'sb67b82120563c611': `Ħjiel`,
+'sb83329fe48218739': `Iddiżattiva ċ-ċaqliq mill-istudenti`,
+'sbadd7c696d344cfb': `Sottoprogramm`,
+'sbc401e67067321d8': `Il-bidliet jiġu ssejvjati awtomatikament.`,
+'sbd0939c338b4cdea': `Times New Roman`,
+'sc797fd9076cc136d': `Kompiti`,
+'sc8c4c5c1bda03a7c': `Arial`,
+'sd06702d4cc7f42fa': `Courier New`,
+'sd8f923198e0c5c6a': `Tmiem`,
+'sdc673e73b5c13aea': `Ħassar`,
+'sed8da8a9b794e4a0': `Agħżel mogħdija`,
+'sef92ffa038c78883': `Deċiżjoni`,
+'sf01f6e2cc5900cbd': `Uri l-elementi`,
+'sf6586f55cebdc732': `Iswed/Abjad`,
+'sf755a4987e4c2af1': `Input/Output`,
+'sfbfc89b3a12052d6': `Iċċekkja l-mogħdija`,
+    };

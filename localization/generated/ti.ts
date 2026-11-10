@@ -1,0 +1,65 @@
+
+    // Do not modify this file by hand!
+    // Re-generate this file by running lit-localize
+
+
+
+
+    /* eslint-disable no-irregular-whitespace */
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+
+    export const templates = {
+      's012e7772b1fac646': `ብዘይ ዕድል፡ ዝተመርጸ መንገዲ ጌጋ እዩ!`,
+'s03ee3cfb0919c62c': `ዕማም`,
+'s079cf7850d9327f0': `ፎንት`,
+'s166bd56d19670a72': `ዙም`,
+'s20b232c96ed539f0': `ትሕዝቶ...`,
+'s275e8941632a9afa': `ስራሕ`,
+'s2ceb11be2290bb1b': `ሰርዝ`,
+'s2f2044f2431a32d5': `ርእሲ`,
+'s30f853f2943ac1ec': `ፓስተል`,
+'s36480f2f59da17d3': `ዕማም የለን!`,
+'s37c3fbc8adb256ec': `Verdana`,
+'s37edf2aec5ab122a': `ሞኖ`,
+'s40d30619c8d7ef3a': `እ/ው`,
+'s44f386b424330b66': `ፕሱዶኮድ`,
+'s4b10acae683d2978': `ምሉእ ስክሪን`,
+'s4f1565979d2815d9': `ካንቫስ ኣንቀሳቕስ`,
+'s4f5fcf942bca6be5': `ሓገዝ ወስኽ`,
+'s53a526d5c80c3e28': `ስሩዕ`,
+'s5be397a47866f7de': `ፍታሕ መርምር`,
+'s5bffe94b60a5e7d5': `ዝተመርጸ መንገዲ ቅኑዕ እዩ!`,
+'s5e8250fb85d64c23': `ዕጸው`,
+'s6228ab313e3c8dcf': `መንገዲ ዓቅብ`,
+'s69e040d57d5bcc5e': `ኣካላት ሕባእ`,
+'s70d2c6a9a84180ba': `ሓድሽ ጽሑፍ ኣእትዉ:`,
+'s8290d08ab5a49ed0': `መራኸቢ`,
+'s85e34dc8cc55f1a3': `ኩሉ ክትድምስሱ ርግጸኛ ዲኹም?`,
+'s914cc7fb419008a8': `ናይ ተማሃሮ ምእራም ኣብርህ`,
+'s930f77519fda90bb': `መንገዲ ወስኽ`,
+'s94d0e033f72fca89': `ዕማም ወስኽ`,
+'s99a474c8e41b56f0': `ባህርያዊ ቋንቋ`,
+'s99f110d27e30b289': `ኣርእስቲ`,
+'s9dcffdd89c8e0f58': `ሓገዝ`,
+'s9df2887de87a2a6b': `ሓገዝ የለን!`,
+'sa30f1981fd1cd441': `ዓቐን ፎንት`,
+'saab875d8cfcfe712': `ቴማ`,
+'sae1c7f13b7c0c47f': `መጀመርታ`,
+'saf84ec86139d349e': `ርእይቶ`,
+'sb67b82120563c611': `ሓገዛት`,
+'sb83329fe48218739': `ናይ ተማሃሮ ምንቅስቓስ ኣብርህ`,
+'sbadd7c696d344cfb': `ንኡስ ፕሮግራም`,
+'sbc401e67067321d8': `ለውጥታት ብኣውቶማቲክ ይዕቀቡ።`,
+'sbd0939c338b4cdea': `Times New Roman`,
+'sc797fd9076cc136d': `ዕማማት`,
+'sc8c4c5c1bda03a7c': `Arial`,
+'sd06702d4cc7f42fa': `Courier New`,
+'sd8f923198e0c5c6a': `መወዳእታ`,
+'sdc673e73b5c13aea': `ደምስስ`,
+'sed8da8a9b794e4a0': `መንገዲ ምረጽ`,
+'sef92ffa038c78883': `ውሳነ`,
+'sf01f6e2cc5900cbd': `ኣካላት ኣርኢ`,
+'sf6586f55cebdc732': `ጸሊም/ጻዕዳ`,
+'sf755a4987e4c2af1': `እታው/ውጽኢት`,
+'sfbfc89b3a12052d6': `መንገዲ መርምር`,
+    };
