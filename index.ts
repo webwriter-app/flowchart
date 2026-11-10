@@ -1,4 +1,4 @@
-import { LitElementWw, option } from '@webwriter/lit';
+import { LitElementWw, type OptionDeclaration } from '@webwriter/lit';
 import { html, LitElement } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
@@ -8,6 +8,7 @@ import { GraphNode } from './src/definitions/GraphNode';
 import { Arrow } from './src/definitions/Arrow';
 import { ItemList } from './src/definitions/ItemList';
 import { optionLabels } from './src/definitions/optionLabels';
+import { readData, writeData } from './src/modules/data-state';
 
 import { drawGraphNode, drawNodeAnchors } from './src/modules/drawer/drawGraphNode';
 import { drawArrow, drawTempArrow, generateArrowPoints, drawArrowAnchor } from './src/modules/drawer/drawArrow';
@@ -76,7 +77,7 @@ import LOCALIZE from "./localization/generated"
  * @tag webwriter-flowchart
  * @tagname webwriter-flowchart
  *
- * @attr {string} graph-nodes - JSON string representing an array of GraphNode objects. When set, arrows are recomputed.
+ * @slot data - Direct application/json block stores flowchart nodes, tasks, and hints.
  * @attr {number} height - Canvas height in pixels. Default 400.
  * @attr {number} zoom-level - Zoom percentage in the range [50, 200]. Default 100.
  * @attr {number} canvas-offset-x - Horizontal pan offset in world units.
@@ -108,13 +109,32 @@ import LOCALIZE from "./localization/generated"
 @customElement('webwriter-flowchart')
 @localized()
 export class FlowchartWidget extends LitElementWw {
+    static options: Record<string, OptionDeclaration> = {
+        zoomLevel: { type: "number", label: optionLabels.zoom, min: 50, max: 200, step: 10 },
+        disableStudentEdit: { type: "boolean", label: optionLabels.disableStudentEditing },
+        disableStudentPan: { type: "boolean", label: optionLabels.disableStudentPanning },
+        font: { type: "select", label: optionLabels.font, options: [
+            { value: "Arial", label: { en: "Arial" } },
+            { value: "Courier_New", label: { en: "Courier New" } },
+            { value: "Times_New_Roman", label: { en: "Times New Roman" } },
+            { value: "Verdana", label: { en: "Verdana" } },
+        ] },
+        fontSize: { type: "number", label: optionLabels.fontSize, min: 8, max: 40, step: 1 },
+        theme: { type: "select", label: optionLabels.theme, options: [
+            { value: "standard", label: optionLabels.themeStandard },
+            { value: "pastel", label: optionLabels.themePastel },
+            { value: "mono", label: optionLabels.themeMono },
+            { value: "s/w", label: optionLabels.themeBlackWhite },
+        ] },
+    };
+    readonly options = FlowchartWidget.options;
     public localize = LOCALIZE;
 
     /**
      * List of graph nodes comprising the flowchart.
      * Reflected as the 'graph-nodes' attribute (expects JSON when set externally).
      */
-    @property({ type: Array, reflect: true, attribute: true }) accessor graphNodes: GraphNode[] = [];
+    @property({ type: Array, attribute: false }) accessor graphNodes: GraphNode[] = [];
 
     /** @internal Currently selected/focused node. */
     @property({ type: Object }) accessor selectedNode: GraphNode | undefined = undefined;
@@ -138,10 +158,22 @@ export class FlowchartWidget extends LitElementWw {
     getArrows = () => this.arrows;
 
     /** Tasks visible in the task menu. */
-    @property({ type: Array, reflect: true, attribute: true }) accessor taskList: ItemList[] = [];
+    @property({ type: Array, attribute: false }) accessor taskList: ItemList[] = [];
 
     /** Hints visible in the help menu. */
-    @property({ type: Array, reflect: true, attribute: true }) accessor helpList: ItemList[] = [];
+    @property({ type: Array, attribute: false }) accessor helpList: ItemList[] = [];
+
+    private dataObserver = new MutationObserver(() => this.restoreData());
+
+    private restoreData() {
+        const data = readData<{ graphNodes?: GraphNode[]; taskList?: ItemList[]; helpList?: ItemList[] }>(this);
+        if (Array.isArray(data.graphNodes)) this.graphNodes = data.graphNodes;
+        if (Array.isArray(data.taskList)) this.taskList = data.taskList;
+        if (Array.isArray(data.helpList)) this.helpList = data.helpList;
+        this.arrows = createArrowsFromGraphNodes(this.arrows, this.graphNodes);
+        this.reconnectArrows();
+        this.redrawCanvas();
+    }
 
     /** Canvas height (px). */
     @property({ type: Number, reflect: true, attribute: true }) accessor height: number = 400;
@@ -163,13 +195,6 @@ export class FlowchartWidget extends LitElementWw {
 
     /** Zoom level in percent [50–200]. */
     @property({ type: Number, reflect: true, attribute: true })
-    @option({
-        type: Number,
-        label: optionLabels.zoom,
-        min: 50,
-        max: 200,
-        step: 10
-    })
     accessor zoomLevel: number = 100;
 
     /** @internal Base grid spacing (world units). */
@@ -186,7 +211,6 @@ export class FlowchartWidget extends LitElementWw {
 
     /** Disables interactive editing (adding/dragging/deleting). */
     @property({ type: Boolean, reflect: true, attribute: true })
-    @option({ type: Boolean, label: optionLabels.disableStudentEditing })
     accessor disableStudentEdit: boolean = false;
 
     /** Whether students may add, drag and delete elements. */
@@ -196,7 +220,6 @@ export class FlowchartWidget extends LitElementWw {
 
     /** Disables panning/zooming interactions. */
     @property({ type: Boolean, reflect: true, attribute: true })
-    @option({ type: Boolean, label: optionLabels.disableStudentPanning })
     accessor disableStudentPan: boolean = false;
 
     /** Whether students may pan and zoom the canvas. */
@@ -206,41 +229,14 @@ export class FlowchartWidget extends LitElementWw {
 
     /** Font family for node labels, multi-word families are underscored (see `fontFamily`). */
     @property({ type: String, reflect: true, attribute: true })
-    @option({
-        type: "select",
-        label: optionLabels.font,
-        options: [
-            { value: "Arial", label: { "en": "Arial" } },
-            { value: "Courier_New", label: { "en": "Courier New" } },
-            { value: "Times_New_Roman", label: { "en": "Times New Roman" } },
-            { value: "Verdana", label: { "en": "Verdana" } }
-        ]
-     })
     accessor font = 'Courier_New';
 
     /** Font size for node labels. */
     @property({ type: Number, reflect: true, attribute: true })
-    @option({
-        type: Number,
-        label: optionLabels.fontSize,
-        min: 8,
-        max: 40,
-        step: 1
-    })
     accessor fontSize = 16;
 
     /** Color theme name. */
     @property({ type: String, reflect: true, attribute: true })
-    @option({
-        type: "select",
-        label: optionLabels.theme,
-        options: [
-            { value: "standard", label: optionLabels.themeStandard },
-            { value: "pastel", label: optionLabels.themePastel },
-            { value: "mono", label: optionLabels.themeMono },
-            { value: "s/w", label: optionLabels.themeBlackWhite }
-        ]
-    })
     accessor theme = 'standard';
 
     /** Whether the widget is in fullscreen mode. */
@@ -1781,6 +1777,8 @@ export class FlowchartWidget extends LitElementWw {
     /** @internal Lifecycle: wire global listeners and custom events. */
     connectedCallback() {
         super.connectedCallback();
+        this.restoreData();
+        this.dataObserver.observe(this, { childList: true });
         window.addEventListener('keydown', this.handleKeyDown);
 
         this.resizeObserver.observe(this);
@@ -1790,6 +1788,7 @@ export class FlowchartWidget extends LitElementWw {
 
     /** @internal Lifecycle: teardown listeners. */
     disconnectedCallback() {
+        this.dataObserver.disconnect();
         window.removeEventListener('keydown', this.handleKeyDown);
 
         this.cancelLongPress();
@@ -1801,6 +1800,9 @@ export class FlowchartWidget extends LitElementWw {
 
     /** @internal Lit lifecycle: re-render after contentEditable changes; auto-delete empty items. */
     updated(changedProperties: Map<string, any>) {
+        if (this.hasUpdated && ['graphNodes', 'taskList', 'helpList'].some((name) => changedProperties.has(name))) {
+            writeData(this, { graphNodes: this.graphNodes, taskList: this.taskList, helpList: this.helpList });
+        }
         if (changedProperties.has('contentEditable') && this.isEditable()) {
             this.taskList = this.taskList.filter((task) => task.titel?.trim() || task.content?.trim());
             this.helpList = this.helpList.filter((help) => help.titel?.trim() || help.content?.trim());
@@ -1824,29 +1826,6 @@ export class FlowchartWidget extends LitElementWw {
             changedProperties.has('theme')
         ) {
             this.redrawCanvas();
-        }
-    }
-
-    /**
-     * When the 'graph-nodes' attribute changes, parse the JSON to `graphNodes`,
-     * recompute `arrows`, and redraw the canvas.
-     * @param {string} name
-     * @param {string} oldVal
-     * @param {string} newVal
-     */
-    attributeChangedCallback(name: string, oldVal: string, newVal: string) {
-        super.attributeChangedCallback(name, oldVal, newVal);
-        if (name === 'graph-nodes') {
-            try {
-                // Konvertiert den String zurück in ein Array
-                this.graphNodes = JSON.parse(newVal);
-                this.arrows = createArrowsFromGraphNodes(this.arrows, this.graphNodes);
-                this.reconnectArrows();
-
-                this.redrawCanvas();
-            } catch (e) {
-                console.error('Invalid JSON in graph-nodes attribute:', e);
-            }
         }
     }
 
