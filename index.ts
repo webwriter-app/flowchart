@@ -164,12 +164,24 @@ export class FlowchartWidget extends LitElementWw {
     @property({ type: Array, attribute: false }) accessor helpList: ItemList[] = [];
 
     private dataObserver = new MutationObserver(() => this.restoreData());
+    private skipDataWrite = false;
 
     private restoreData() {
         const data = readData<{ graphNodes?: GraphNode[]; taskList?: ItemList[]; helpList?: ItemList[] }>(this);
-        if (Array.isArray(data.graphNodes)) this.graphNodes = data.graphNodes;
-        if (Array.isArray(data.taskList)) this.taskList = data.taskList;
-        if (Array.isArray(data.helpList)) this.helpList = data.helpList;
+        let changed = false;
+        if (Array.isArray(data.graphNodes) && JSON.stringify(data.graphNodes) !== JSON.stringify(this.graphNodes)) {
+            this.graphNodes = data.graphNodes;
+            changed = true;
+        }
+        if (Array.isArray(data.taskList) && JSON.stringify(data.taskList) !== JSON.stringify(this.taskList)) {
+            this.taskList = data.taskList;
+            changed = true;
+        }
+        if (Array.isArray(data.helpList) && JSON.stringify(data.helpList) !== JSON.stringify(this.helpList)) {
+            this.helpList = data.helpList;
+            changed = true;
+        }
+        if (changed) this.skipDataWrite = true;
         this.arrows = createArrowsFromGraphNodes(this.arrows, this.graphNodes);
         this.reconnectArrows();
         if (this.canvas && this.ctx) this.redrawCanvas();
@@ -1778,7 +1790,7 @@ export class FlowchartWidget extends LitElementWw {
     connectedCallback() {
         super.connectedCallback();
         this.restoreData();
-        this.dataObserver.observe(this, { childList: true });
+        this.dataObserver.observe(this, { childList: true, subtree: true });
         window.addEventListener('keydown', this.handleKeyDown);
 
         this.resizeObserver.observe(this);
@@ -1800,9 +1812,11 @@ export class FlowchartWidget extends LitElementWw {
 
     /** @internal Lit lifecycle: re-render after contentEditable changes; auto-delete empty items. */
     updated(changedProperties: Map<string, any>) {
-        if (this.hasUpdated && ['graphNodes', 'taskList', 'helpList'].some((name) => changedProperties.has(name))) {
+        const dataChanged = ['graphNodes', 'taskList', 'helpList'].some((name) => changedProperties.has(name));
+        if (this.hasUpdated && dataChanged && !this.skipDataWrite) {
             writeData(this, { graphNodes: this.graphNodes, taskList: this.taskList, helpList: this.helpList });
         }
+        if (dataChanged) this.skipDataWrite = false;
         if (changedProperties.has('contentEditable') && this.isEditable()) {
             this.taskList = this.taskList.filter((task) => task.titel?.trim() || task.content?.trim());
             this.helpList = this.helpList.filter((help) => help.titel?.trim() || help.content?.trim());
