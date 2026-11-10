@@ -172,7 +172,7 @@ export class FlowchartWidget extends LitElementWw {
         if (Array.isArray(data.helpList)) this.helpList = data.helpList;
         this.arrows = createArrowsFromGraphNodes(this.arrows, this.graphNodes);
         this.reconnectArrows();
-        this.redrawCanvas();
+        if (this.canvas && this.ctx) this.redrawCanvas();
     }
 
     /** Canvas height (px). */
