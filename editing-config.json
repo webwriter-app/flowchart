@@ -105,7 +105,16 @@
       "so": "Samee jaantus socod oo barnaamijayn leh hawlo isdhexgal ah. Adeegso walxo caadi ah sida wareegyo iyo laamo.",
       "ti": "ምስ ተሳትፎ ዘለዎም ዕማማት ናይ ፕሮግራም ፍሰት ስእልታት ፍጠሩ። ከም ምዝዋርን ጨንፈርን ዝኣመሰሉ ስሩዓት ኣካላት ተጠቐሙ።",
       "sw": "Unda chati za mtiririko wa programu zenye kazi shirikishi. Tumia vipengele sanifu kama vile mizunguko na matawi.",
-      "ha": "Ƙirƙiri jadawalin gudana na shirye-shirye masu ayyukan hulɗa. Yi amfani da daidaitattun abubuwa kamar madaukai da rassan hanya."
+      "ha": "Ƙirƙiri jadawalin gudana na shirye-shirye masu ayyukan hulɗa. Yi amfani da daidaitattun abubuwa kamar madaukai da rassan hanya.",
+      "yue-Hans": "制作互动式程式流程图练习，使用回圈同分支等标准化元素。",
+      "yue-Hant": "製作互動式程式流程圖練習，使用迴圈同分支等標準化元素。",
+      "kmr": "Şemayên bernamêkirinê bi karên înteraktîf çêbikin. Hêmanên standardîzekirî yên wekî çerx û şaxbûnê bi kar bînin.",
+      "kmr-Latn": "Şemayên bernamêkirinê bi karên înteraktîf çêbikin. Hêmanên standardîzekirî yên wekî çerx û şaxbûnê bi kar bînin.",
+      "kmr-Arab": "شەمایێن بەرنامێکرنێ ب کارێن ئینتەراکتیف چێبکن. هێمانێن ستانداردیزەکری یێن وەکی چەرخ ئوو شاخبوونێ ب کار بینن.",
+      "ckb": "هێڵکاریی ڕەوتی بەرنامەسازیی کارلێک‌لێکراو دروست بکە. توخمە ستانداردەکان وەک بازنە و لق‌بەندی بەکاربهێنە.",
+      "ckb-Arab": "هێڵکاریی ڕەوتی بەرنامەسازیی کارلێک‌لێکراو دروست بکە. توخمە ستانداردەکان وەک بازنە و لق‌بەندی بەکاربهێنە.",
+      "af-ZA": "Skep programmeringsvloeidiagramme met interaktiewe take. Gebruik standaardelemente soos lusse en vertakkings.",
+      "af-NA": "Skep programmeringsvloeidiagramme met interaktiewe take. Gebruik standaardelemente soos lusse en vertakkings."
     },
     "label": {
       "_": "Flowchart",
@@ -210,7 +219,16 @@
       "so": "Jaantus socod",
       "ti": "ናይ ፍሰት ስእሊ",
       "sw": "Chati ya mtiririko",
-      "ha": "Jadawalin gudana"
+      "ha": "Jadawalin gudana",
+      "yue-Hans": "流程图",
+      "yue-Hant": "流程圖",
+      "kmr": "Şemaya",
+      "kmr-Latn": "Şemaya",
+      "kmr-Arab": "شەمایا",
+      "ckb": "هێڵکاریی ڕەوت",
+      "ckb-Arab": "هێڵکاریی ڕەوت",
+      "af-ZA": "Vloeidiagram",
+      "af-NA": "Vloeidiagram"
     }
   },
   "./widgets/webwriter-flowchart": {
@@ -317,7 +335,16 @@
       "so": "Jaantus socod",
       "ti": "ናይ ፍሰት ስእሊ",
       "sw": "Chati ya mtiririko",
-      "ha": "Jadawalin gudana"
+      "ha": "Jadawalin gudana",
+      "yue-Hans": "流程图",
+      "yue-Hant": "流程圖",
+      "kmr": "Şemaya",
+      "kmr-Latn": "Şemaya",
+      "kmr-Arab": "شەمایا",
+      "ckb": "هێڵکاریی ڕەوت",
+      "ckb-Arab": "هێڵکاریی ڕەوت",
+      "af-ZA": "Vloeidiagram",
+      "af-NA": "Vloeidiagram"
     }
   },
   "./snippets/Erklaerung": {
@@ -424,7 +451,16 @@
       "so": "Sharaxaad",
       "ti": "መብርሂ",
       "sw": "Maelezo",
-      "ha": "Bayani"
+      "ha": "Bayani",
+      "yue-Hans": "解说",
+      "yue-Hant": "解說",
+      "kmr": "Ravekirin",
+      "kmr-Latn": "Ravekirin",
+      "kmr-Arab": "راڤەکرن",
+      "ckb": "ڕوونکردنەوە",
+      "ckb-Arab": "ڕوونکردنەوە",
+      "af-ZA": "Verduideliking",
+      "af-NA": "Verduideliking"
     }
   },
   "./snippets/For-Schleife": {
@@ -531,7 +567,16 @@
       "so": "Wareegga for",
       "ti": "For ምዝዋር",
       "sw": "Mzunguko wa for",
-      "ha": "Madaukin for"
+      "ha": "Madaukin for",
+      "yue-Hans": "For 回圈",
+      "yue-Hant": "For 迴圈",
+      "kmr": "Dorpêla For",
+      "kmr-Latn": "Dorpêla For",
+      "kmr-Arab": "دۆرپێلا فۆر",
+      "ckb": "بازنەی For",
+      "ckb-Arab": "بازنەی For",
+      "af-ZA": "For-lus",
+      "af-NA": "For-lus"
     }
   },
   "./snippets/If-Else": {
@@ -638,7 +683,16 @@
       "so": "If-Else",
       "ti": "If-Else",
       "sw": "If-Else",
-      "ha": "If-Else"
+      "ha": "If-Else",
+      "yue-Hans": "If-Else",
+      "yue-Hant": "If-Else",
+      "kmr": "Heke-Nexwe",
+      "kmr-Latn": "Heke-Nexwe",
+      "kmr-Arab": "هەکە-نەخوە",
+      "ckb": "ئەگەر-ئەوەی تر",
+      "ckb-Arab": "ئەگەر-ئەوەی تر",
+      "af-ZA": "If-else",
+      "af-NA": "If-else"
     }
   },
   "./snippets/Switch": {
@@ -745,7 +799,16 @@
       "so": "Switch",
       "ti": "Switch",
       "sw": "Switch",
-      "ha": "Switch"
+      "ha": "Switch",
+      "yue-Hans": "Switch",
+      "yue-Hant": "Switch",
+      "kmr": "Rêza hilbijartinê",
+      "kmr-Latn": "Rêza hilbijartinê",
+      "kmr-Arab": "رێزا هلبژارتنێ",
+      "ckb": "هەڵبژاردن",
+      "ckb-Arab": "هەڵبژاردن",
+      "af-ZA": "Switch",
+      "af-NA": "Switch"
     }
   },
   "./snippets/Kontextbeispiel": {
@@ -852,7 +915,16 @@
       "so": "Tusaale xaaladeed",
       "ti": "ናይ ኩነታት ኣብነት",
       "sw": "Mfano wa muktadha",
-      "ha": "Misalin mahalli"
+      "ha": "Misalin mahalli",
+      "yue-Hans": "情境例子",
+      "yue-Hant": "情境例子",
+      "kmr": "Mînakek ji kontekstê",
+      "kmr-Latn": "Mînakek ji kontekstê",
+      "kmr-Arab": "میناکەک ژ کۆنتەکستێ",
+      "ckb": "نموونەی کۆنتێکست",
+      "ckb-Arab": "نموونەی کۆنتێکست",
+      "af-ZA": "Konteksvoorbeeld",
+      "af-NA": "Konteksvoorbeeld"
     }
   }
 }

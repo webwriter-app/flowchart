@@ -1,0 +1,65 @@
+
+    // Do not modify this file by hand!
+    // Re-generate this file by running lit-localize
+
+
+
+
+    /* eslint-disable no-irregular-whitespace */
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+
+    export const templates = {
+      's012e7772b1fac646': `Ongelukkig is die gekose roete verkeerd!`,
+'s03ee3cfb0919c62c': `Taak`,
+'s079cf7850d9327f0': `Lettertipe`,
+'s166bd56d19670a72': `Zoem`,
+'s20b232c96ed539f0': `Inhoud…`,
+'s275e8941632a9afa': `Proses`,
+'s2ceb11be2290bb1b': `Kanselleer`,
+'s2f2044f2431a32d5': `Opskrif`,
+'s30f853f2943ac1ec': `Pastel`,
+'s36480f2f59da17d3': `Geen take nie!`,
+'s37c3fbc8adb256ec': `Verdana`,
+'s37edf2aec5ab122a': `Monochroom`,
+'s40d30619c8d7ef3a': `I/U`,
+'s44f386b424330b66': `Pseudokode`,
+'s4b10acae683d2978': `Volskerm`,
+'s4f1565979d2815d9': `Skuif die tekenvlak`,
+'s4f5fcf942bca6be5': `Voeg wenk by`,
+'s53a526d5c80c3e28': `Standaard`,
+'s5be397a47866f7de': `Kontroleer oplossing`,
+'s5bffe94b60a5e7d5': `Die gekose roete is reg!`,
+'s5e8250fb85d64c23': `Maak toe`,
+'s6228ab313e3c8dcf': `Stoor roete`,
+'s69e040d57d5bcc5e': `Versteek elemente`,
+'s70d2c6a9a84180ba': `Tik die nuwe teks:`,
+'s8290d08ab5a49ed0': `Verbinder`,
+'s85e34dc8cc55f1a3': `Is jy seker jy wil alles uitvee?`,
+'s914cc7fb419008a8': `Verhoed leerderwysigings`,
+'s930f77519fda90bb': `Voeg roete by`,
+'s94d0e033f72fca89': `Voeg taak by`,
+'s99a474c8e41b56f0': `Natuurlike taal`,
+'s99f110d27e30b289': `Titel`,
+'s9dcffdd89c8e0f58': `Wenk`,
+'s9df2887de87a2a6b': `Geen wenke nie!`,
+'sa30f1981fd1cd441': `Lettergrootte`,
+'saab875d8cfcfe712': `Tema`,
+'sae1c7f13b7c0c47f': `Begin`,
+'saf84ec86139d349e': `Opmerking`,
+'sb67b82120563c611': `Wenke`,
+'sb83329fe48218739': `Verhoed dat leerders die tekenvlak skuif`,
+'sbadd7c696d344cfb': `Subprogram`,
+'sbc401e67067321d8': `Veranderinge word outomaties gestoor.`,
+'sbd0939c338b4cdea': `Times New Roman`,
+'sc797fd9076cc136d': `Take`,
+'sc8c4c5c1bda03a7c': `Arial`,
+'sd06702d4cc7f42fa': `Courier New`,
+'sd8f923198e0c5c6a': `Einde`,
+'sdc673e73b5c13aea': `Vee uit`,
+'sed8da8a9b794e4a0': `Kies roete`,
+'sef92ffa038c78883': `Besluit`,
+'sf01f6e2cc5900cbd': `Wys elemente`,
+'sf6586f55cebdc732': `Swart en wit`,
+'sf755a4987e4c2af1': `Invoer/uitvoer`,
+'sfbfc89b3a12052d6': `Kontroleer roete`,
+    };
