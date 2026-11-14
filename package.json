@@ -148,15 +148,16 @@
   "dependencies": {
     "@lit/localize": "^0.12.2",
     "@shoelace-style/shoelace": "^2.20.1",
-    "@webwriter/lit": "^2.1.6",
-    "axios": ">=1.4.0 <2.0.0-0",
-    "dotenv": "^17.4.2",
+    "@webwriter/lit": "^3.0.0",
+    "axios": ">=1.21.1 <2.0.0-0",
+    "dotenv": "^18.0.10",
     "lit": ">=3.0.0 <4.0.0-0",
-    "uuid": "^14.0.1"
+    "uuid": "^14.0.3"
   },
   "devDependencies": {
+    "@webwriter/build": "^1.13.1",
     "typescript": "^7.0.2",
-    "vite": "^8.1.5"
+    "vite": "^8.3.8"
   },
   "exports": {
     "./widgets/webwriter-flowchart.*": {
