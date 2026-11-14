@@ -1,0 +1,65 @@
+
+    // Do not modify this file by hand!
+    // Re-generate this file by running lit-localize
+
+
+
+
+    /* eslint-disable no-irregular-whitespace */
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+
+    export const templates = {
+      's012e7772b1fac646': `Sa kasamaang-palad, mali ang napiling landas!`,
+'s03ee3cfb0919c62c': `Gawain`,
+'s079cf7850d9327f0': `Font`,
+'s166bd56d19670a72': `Zoom`,
+'s20b232c96ed539f0': `Nilalaman...`,
+'s275e8941632a9afa': `Proseso`,
+'s2ceb11be2290bb1b': `Kanselahin`,
+'s2f2044f2431a32d5': `Heading`,
+'s30f853f2943ac1ec': `Pastel`,
+'s36480f2f59da17d3': `Walang mga gawain!`,
+'s37c3fbc8adb256ec': `Verdana`,
+'s37edf2aec5ab122a': `Mono`,
+'s40d30619c8d7ef3a': `I/O`,
+'s44f386b424330b66': `Pseudocode`,
+'s4b10acae683d2978': `Fullscreen`,
+'s4f1565979d2815d9': `Ilipat ang canvas`,
+'s4f5fcf942bca6be5': `Magdagdag ng pahiwatig`,
+'s53a526d5c80c3e28': `Standard`,
+'s5be397a47866f7de': `Suriin ang solusyon`,
+'s5bffe94b60a5e7d5': `Tama ang napiling landas!`,
+'s5e8250fb85d64c23': `Isara`,
+'s6228ab313e3c8dcf': `I-save ang landas`,
+'s69e040d57d5bcc5e': `Itago ang mga elemento`,
+'s70d2c6a9a84180ba': `I-type ang bagong teksto:`,
+'s8290d08ab5a49ed0': `Connector`,
+'s85e34dc8cc55f1a3': `Sigurado ka bang gusto mong burahin ang lahat?`,
+'s914cc7fb419008a8': `Huwag paganahin ang pag-edit ng mag-aaral`,
+'s930f77519fda90bb': `Magdagdag ng landas`,
+'s94d0e033f72fca89': `Magdagdag ng gawain`,
+'s99a474c8e41b56f0': `Natural na wika`,
+'s99f110d27e30b289': `Pamagat`,
+'s9dcffdd89c8e0f58': `Pahiwatig`,
+'s9df2887de87a2a6b': `Walang mga pahiwatig!`,
+'sa30f1981fd1cd441': `Laki ng font`,
+'saab875d8cfcfe712': `Tema`,
+'sae1c7f13b7c0c47f': `Simula`,
+'saf84ec86139d349e': `Komento`,
+'sb67b82120563c611': `Mga pahiwatig`,
+'sb83329fe48218739': `Huwag paganahin ang pag-pan ng mag-aaral`,
+'sbadd7c696d344cfb': `Subprogram`,
+'sbc401e67067321d8': `Awtomatikong nase-save ang mga pagbabago.`,
+'sbd0939c338b4cdea': `Times New Roman`,
+'sc797fd9076cc136d': `Mga gawain`,
+'sc8c4c5c1bda03a7c': `Arial`,
+'sd06702d4cc7f42fa': `Courier New`,
+'sd8f923198e0c5c6a': `Wakas`,
+'sdc673e73b5c13aea': `Burahin`,
+'sed8da8a9b794e4a0': `Pumili ng landas`,
+'sef92ffa038c78883': `Desisyon`,
+'sf01f6e2cc5900cbd': `Ipakita ang mga elemento`,
+'sf6586f55cebdc732': `Itim/Puti`,
+'sf755a4987e4c2af1': `Input/Output`,
+'sfbfc89b3a12052d6': `Suriin ang landas`,
+    };

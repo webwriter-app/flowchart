@@ -1,0 +1,65 @@
+
+    // Do not modify this file by hand!
+    // Re-generate this file by running lit-localize
+
+
+
+
+    /* eslint-disable no-irregular-whitespace */
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+
+    export const templates = {
+      's012e7772b1fac646': `Ar an drochuair, tá an chonair roghnaithe mícheart!`,
+'s03ee3cfb0919c62c': `Tasc`,
+'s079cf7850d9327f0': `Cló`,
+'s166bd56d19670a72': `Zúmáil`,
+'s20b232c96ed539f0': `Ábhar...`,
+'s275e8941632a9afa': `Próiseas`,
+'s2ceb11be2290bb1b': `Cealaigh`,
+'s2f2044f2431a32d5': `Ceannteideal`,
+'s30f853f2943ac1ec': `Pastal`,
+'s36480f2f59da17d3': `Níl aon tascanna ann!`,
+'s37c3fbc8adb256ec': `Verdana`,
+'s37edf2aec5ab122a': `Mono`,
+'s40d30619c8d7ef3a': `I/A`,
+'s44f386b424330b66': `Cód bréige`,
+'s4b10acae683d2978': `Lánscáileán`,
+'s4f1565979d2815d9': `Bog an chanbhás`,
+'s4f5fcf942bca6be5': `Cuir leid leis`,
+'s53a526d5c80c3e28': `Caighdeánach`,
+'s5be397a47866f7de': `Seiceáil an réiteach`,
+'s5bffe94b60a5e7d5': `Tá an chonair roghnaithe ceart!`,
+'s5e8250fb85d64c23': `Dún`,
+'s6228ab313e3c8dcf': `Sábháil an chonair`,
+'s69e040d57d5bcc5e': `Folaigh eilimintí`,
+'s70d2c6a9a84180ba': `Clóscríobh an téacs nua:`,
+'s8290d08ab5a49ed0': `Nascóir`,
+'s85e34dc8cc55f1a3': `An bhfuil tú cinnte gur mian leat gach rud a scriosadh?`,
+'s914cc7fb419008a8': `Díchumasaigh eagarthóireacht na ndaltaí`,
+'s930f77519fda90bb': `Cuir conair leis`,
+'s94d0e033f72fca89': `Cuir tasc leis`,
+'s99a474c8e41b56f0': `Teanga nádúrtha`,
+'s99f110d27e30b289': `Teideal`,
+'s9dcffdd89c8e0f58': `Leid`,
+'s9df2887de87a2a6b': `Níl aon leideanna ann!`,
+'sa30f1981fd1cd441': `Clómhéid`,
+'saab875d8cfcfe712': `Téama`,
+'sae1c7f13b7c0c47f': `Tús`,
+'saf84ec86139d349e': `Trácht`,
+'sb67b82120563c611': `Leideanna`,
+'sb83329fe48218739': `Díchumasaigh lánléargas na ndaltaí`,
+'sbadd7c696d344cfb': `Fochlár`,
+'sbc401e67067321d8': `Sábháiltear athruithe go huathoibríoch.`,
+'sbd0939c338b4cdea': `Times New Roman`,
+'sc797fd9076cc136d': `Tascanna`,
+'sc8c4c5c1bda03a7c': `Arial`,
+'sd06702d4cc7f42fa': `Courier New`,
+'sd8f923198e0c5c6a': `Críoch`,
+'sdc673e73b5c13aea': `Scrios`,
+'sed8da8a9b794e4a0': `Roghnaigh conair`,
+'sef92ffa038c78883': `Cinneadh`,
+'sf01f6e2cc5900cbd': `Taispeáin eilimintí`,
+'sf6586f55cebdc732': `Dubh/Bán`,
+'sf755a4987e4c2af1': `Ionchur/Aschur`,
+'sfbfc89b3a12052d6': `Seiceáil an chonair`,
+    };

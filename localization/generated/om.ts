@@ -1,0 +1,65 @@
+
+    // Do not modify this file by hand!
+    // Re-generate this file by running lit-localize
+
+
+
+
+    /* eslint-disable no-irregular-whitespace */
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+
+    export const templates = {
+      's012e7772b1fac646': `Karaan filatame sirrii miti!`,
+'s03ee3cfb0919c62c': `Hojii`,
+'s079cf7850d9327f0': `Bocquu`,
+'s166bd56d19670a72': `Guddisi`,
+'s20b232c96ed539f0': `Qabiyyee...`,
+'s275e8941632a9afa': `Adeemsa`,
+'s2ceb11be2290bb1b': `Dhiisi`,
+'s2f2044f2431a32d5': `Mataduree`,
+'s30f853f2943ac1ec': `Pastel`,
+'s36480f2f59da17d3': `Hojii hin jiru!`,
+'s37c3fbc8adb256ec': `Verdana`,
+'s37edf2aec5ab122a': `Mono`,
+'s40d30619c8d7ef3a': `G/B`,
+'s44f386b424330b66': `Pseudocode`,
+'s4b10acae683d2978': `Iskiriinii guutuu`,
+'s4f1565979d2815d9': `Kanvasii sochoosi`,
+'s4f5fcf942bca6be5': `Yaadachiisa dabali`,
+'s53a526d5c80c3e28': `Idilee`,
+'s5be397a47866f7de': `Furmaata mirkaneessi`,
+'s5bffe94b60a5e7d5': `Karaan filatame sirrii dha!`,
+'s5e8250fb85d64c23': `Cufi`,
+'s6228ab313e3c8dcf': `Karaa olkaa'i`,
+'s69e040d57d5bcc5e': `Wantoota dhoksi`,
+'s70d2c6a9a84180ba': `Barruu haaraa galchi:`,
+'s8290d08ab5a49ed0': `Walqabsiisaa`,
+'s85e34dc8cc55f1a3': `Waan hunda haquu akka barbaaddan mirkaneeffattaniittuu?`,
+'s914cc7fb419008a8': `Gulaallii barattootaa dhaami`,
+'s930f77519fda90bb': `Karaa dabali`,
+'s94d0e033f72fca89': `Hojii dabali`,
+'s99a474c8e41b56f0': `Afaan uumamaa`,
+'s99f110d27e30b289': `Mata-duree`,
+'s9dcffdd89c8e0f58': `Yaadachiisa`,
+'s9df2887de87a2a6b': `Yaadachiisni hin jiru!`,
+'sa30f1981fd1cd441': `Hammamtaa bocquu`,
+'saab875d8cfcfe712': `Mata-duree`,
+'sae1c7f13b7c0c47f': `Jalqaba`,
+'saf84ec86139d349e': `Yaada`,
+'sb67b82120563c611': `Yaadachiisawwan`,
+'sb83329fe48218739': `Sochii barattootaa dhaami`,
+'sbadd7c696d344cfb': `Sagantaa xiqqaa`,
+'sbc401e67067321d8': `Jijjiiramoonni ofumaan ni olkaa'amu.`,
+'sbd0939c338b4cdea': `Times New Roman`,
+'sc797fd9076cc136d': `Hojiiwwan`,
+'sc8c4c5c1bda03a7c': `Arial`,
+'sd06702d4cc7f42fa': `Courier New`,
+'sd8f923198e0c5c6a': `Xumura`,
+'sdc673e73b5c13aea': `Haqi`,
+'sed8da8a9b794e4a0': `Karaa fili`,
+'sef92ffa038c78883': `Murtii`,
+'sf01f6e2cc5900cbd': `Wantoota agarsiisi`,
+'sf6586f55cebdc732': `Gurraacha/Adii`,
+'sf755a4987e4c2af1': `Galchii/Ba'ii`,
+'sfbfc89b3a12052d6': `Karaa mirkaneessi`,
+    };

@@ -2,7 +2,6 @@ import { ItemList } from '../../definitions/ItemList';
 import { FlowchartWidget } from '../../..';
 import { html } from 'lit';
 import selectIcon from '../../assets/pointer.svg';
-import { msg } from '@lit/localize';
 
 // render alle Tasks in der UI
 export function renderTasks(this: FlowchartWidget, taskList: ItemList[]) {
@@ -95,29 +94,29 @@ export function renderTasks(this: FlowchartWidget, taskList: ItemList[]) {
         return html`
             <div class="task-wrapper">
                 <sl-input
-                    placeholder="${msg('Heading')}"
+                    placeholder="${this.msg('Heading')}"
                     .value=${task.titel ?? ''}
                     ?disabled=${!this.isEditable()}
                     @sl-change=${onTitleChange}
                 ></sl-input>
                 <sl-textarea
                     resize="auto"
-                    placeholder="${msg('Content...')} ${msg('Changes are saved automatically.')}"
+                    placeholder="${this.msg('Content...')} ${this.msg('Changes are saved automatically.')}"
                     .value=${task.content ?? ''}
                     ?disabled=${!this.isEditable()}
                     @sl-change=${onContentChange}
                 ></sl-textarea>
                 <div class="task-button-container editMode">
                     <sl-button variant=${isRecording ? 'primary' : 'default'} @click=${addSequence}>
-                        ${msg('Add path')}
+                        ${this.msg('Add path')}
                     </sl-button>
                     ${isRecording
                         ? html`
-                              <sl-button @click=${cancelSequence}>${msg('Cancel')}</sl-button>
-                              <sl-button variant="primary" @click=${saveSequence}>${msg('Save path')}</sl-button>
+                              <sl-button @click=${cancelSequence}>${this.msg('Cancel')}</sl-button>
+                              <sl-button variant="primary" @click=${saveSequence}>${this.msg('Save path')}</sl-button>
                           `
                         : ''}
-                    <sl-button variant="danger" @click=${deleteTask}>${msg('Delete')}</sl-button>
+                    <sl-button variant="danger" @click=${deleteTask}>${this.msg('Delete')}</sl-button>
                 </div>
                 ${!this.isEditable() && task.sequence
                     ? html`
@@ -128,10 +127,10 @@ export function renderTasks(this: FlowchartWidget, taskList: ItemList[]) {
                                   @click="${this.selectSequence}"
                               >
                                   <sl-icon slot="prefix" src=${selectIcon}></sl-icon>
-                                  ${msg('Select path')}
+                                  ${this.msg('Select path')}
                               </sl-button>
                               <sl-button @click=${() => this.checkSolution(task)} ?disabled=${!this.isSelectingSequence}>
-                                  ${msg('Check solution')}
+                                  ${this.msg('Check solution')}
                               </sl-button>
                           </div>
                       `

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+<file target-language="dv" source-language="en" original="lit-localize-inputs" datatype="plaintext">
+<body>
+<trans-unit id="s4f1565979d2815d9">
+  <source>Move the canvas</source>
+<target>ކެންވަސް ފިލާ</target></trans-unit>
+<trans-unit id="s4b10acae683d2978">
+  <source>Fullscreen</source>
+<target>ފުރިހަމަ ސްކްރީން</target></trans-unit>
+<trans-unit id="s69e040d57d5bcc5e">
+  <source>Hide elements</source>
+<target>އަންސުރު ފޮރުވާ</target></trans-unit>
+<trans-unit id="sf01f6e2cc5900cbd">
+  <source>Show elements</source>
+<target>އަންސުރު ދައްކާ</target></trans-unit>
+<trans-unit id="sc797fd9076cc136d">
+  <source>Tasks</source>
+<target>ޓާސްކްތައް</target></trans-unit>
+<trans-unit id="s36480f2f59da17d3">
+  <source>No tasks!</source>
+<target>ޓާސްކް ނެތް!</target></trans-unit>
+<trans-unit id="sfbfc89b3a12052d6">
+  <source>Check path</source>
+<target>މަގު ޗެކް ކުރޭ</target></trans-unit>
+<trans-unit id="s94d0e033f72fca89">
+  <source>Add task</source>
+<target>ޓާސްކް އިތުރު ކުރޭ</target></trans-unit>
+<trans-unit id="sb67b82120563c611">
+  <source>Hints</source>
+<target>ހިތްވަރުތައް</target></trans-unit>
+<trans-unit id="s9df2887de87a2a6b">
+  <source>No hints!</source>
+<target>ހިތްވަރު ނެތް!</target></trans-unit>
+<trans-unit id="s4f5fcf942bca6be5">
+  <source>Add hint</source>
+<target>ހިތްވަރު އިތުރު ކުރޭ</target></trans-unit>
+<trans-unit id="s99a474c8e41b56f0">
+  <source>Natural language</source>
+<target>އެންމެ ނެޗުރަލް ބަސް</target></trans-unit>
+<trans-unit id="s44f386b424330b66">
+  <source>Pseudocode</source>
+<target>ޕިސެޑޯ ކޯޑު</target></trans-unit>
+<trans-unit id="s70d2c6a9a84180ba">
+  <source>Type in the new text:</source>
+<target>އާ ޓެކްސްޓް ލިޔޭ:</target></trans-unit>
+<trans-unit id="s85e34dc8cc55f1a3">
+  <source>Are you sure, that you want to delete everything?</source>
+<target>ހުރިހާ އެއްޗެހި ޑިލީޓް ކުރަން ޔަގީންތަ؟</target></trans-unit>
+<trans-unit id="s5e8250fb85d64c23">
+  <source>Close</source>
+<target>ބަންދު</target></trans-unit>
+<trans-unit id="s012e7772b1fac646">
+  <source>Unfortunately, the selected path is wrong!</source>
+<target>ދެކިފައިވާ މަގު މަދަން!</target></trans-unit>
+<trans-unit id="s5bffe94b60a5e7d5">
+  <source>The selected path is correct!</source>
+<target>ދެކިފައިވާ މަގު ރަނގަޅު!</target></trans-unit>
+<trans-unit id="s99f110d27e30b289">
+  <source>Title</source>
+<target>ޓައިޓަލް</target></trans-unit>
+<trans-unit id="s03ee3cfb0919c62c">
+  <source>Task</source>
+<target>ޓާސްކް</target></trans-unit>
+<trans-unit id="s9dcffdd89c8e0f58">
+  <source>Hint</source>
+<target>ހިތްވަރު</target></trans-unit>
+<trans-unit id="s2f2044f2431a32d5">
+  <source>Heading</source>
+<target>ހެޑިންގ</target></trans-unit>
+<trans-unit id="s20b232c96ed539f0">
+  <source>Content...</source>
+<target>ކޮންޓެންޓް...</target></trans-unit>
+<trans-unit id="sbc401e67067321d8">
+  <source>Changes are saved automatically.</source>
+<target>ބަދަލުތައް އޮޓޯމެޓިކް ސޭވް ކުރެވޭ.</target></trans-unit>
+<trans-unit id="sdc673e73b5c13aea">
+  <source>Delete</source>
+<target>ޑިލީޓް</target></trans-unit>
+<trans-unit id="s930f77519fda90bb">
+  <source>Add path</source>
+<target>މަގު އިތުރު ކުރޭ</target></trans-unit>
+<trans-unit id="s2ceb11be2290bb1b">
+  <source>Cancel</source>
+<target>ކެންސަލް</target></trans-unit>
+<trans-unit id="s6228ab313e3c8dcf">
+  <source>Save path</source>
+<target>މަގު ސޭވް ކުރޭ</target></trans-unit>
+<trans-unit id="sed8da8a9b794e4a0">
+  <source>Select path</source>
+<target>މަގު ސެލެކްޓް ކުރޭ</target></trans-unit>
+<trans-unit id="s5be397a47866f7de">
+  <source>Check solution</source>
+<target>ސޮލިޔުޝަން ޗެކް ކުރޭ</target></trans-unit>
+<trans-unit id="s166bd56d19670a72">
+  <source>Zoom</source>
+<target>ޒޫމް</target></trans-unit>
+<trans-unit id="s914cc7fb419008a8">
+  <source>Disable student editing</source>
+<target>ދަރިވަރުން އެޑިޓް ކުރެވޭނެގޮތް މަނާ ކުރޭ</target></trans-unit>
+<trans-unit id="sb83329fe48218739">
+  <source>Disable student panning</source>
+<target>ދަރިވަރުން ޕެނިންގ ކުރެވޭނެގޮތް މަނާ ކުރޭ</target></trans-unit>
+<trans-unit id="s079cf7850d9327f0">
+  <source>Font</source>
+<target>ފޮންޓް</target></trans-unit>
+<trans-unit id="sc8c4c5c1bda03a7c">
+  <source>Arial</source>
+<target>Arial</target></trans-unit>
+<trans-unit id="sd06702d4cc7f42fa">
+  <source>Courier New</source>
+<target>Courier New</target></trans-unit>
+<trans-unit id="sbd0939c338b4cdea">
+  <source>Times New Roman</source>
+<target>Times New Roman</target></trans-unit>
+<trans-unit id="s37c3fbc8adb256ec">
+  <source>Verdana</source>
+<target>Verdana</target></trans-unit>
+<trans-unit id="sa30f1981fd1cd441">
+  <source>Font size</source>
+<target>ފޮންޓް ސައިޒް</target></trans-unit>
+<trans-unit id="saab875d8cfcfe712">
+  <source>Theme</source>
+<target>ތީމް</target></trans-unit>
+<trans-unit id="s53a526d5c80c3e28">
+  <source>Standard</source>
+<target>ސްޓޭންޑަރޑް</target></trans-unit>
+<trans-unit id="s30f853f2943ac1ec">
+  <source>Pastel</source>
+<target>ޕާސްޓެލް</target></trans-unit>
+<trans-unit id="s37edf2aec5ab122a">
+  <source>Mono</source>
+<target>މޮނޯ</target></trans-unit>
+<trans-unit id="sf6586f55cebdc732">
+  <source>Black/White</source>
+<target>ކަޅު/ހުދު</target></trans-unit>
+<trans-unit id="sae1c7f13b7c0c47f">
+  <source>Start</source>
+<target>ފެށުން</target></trans-unit>
+<trans-unit id="s275e8941632a9afa">
+  <source>Process</source>
+<target>ޕްރޮސެސް</target></trans-unit>
+<trans-unit id="sef92ffa038c78883">
+  <source>Decision</source>
+<target>ޑިސިޝަން</target></trans-unit>
+<trans-unit id="sf755a4987e4c2af1">
+  <source>Input/Output</source>
+<target>އިންޕުޓް/އައުޓްޕުޓް</target></trans-unit>
+<trans-unit id="sbadd7c696d344cfb">
+  <source>Subprogram</source>
+<target>ސަބްޕްރޮގްރާމް</target></trans-unit>
+<trans-unit id="s8290d08ab5a49ed0">
+  <source>Connector</source>
+<target>ކަނެކްޓަރ</target></trans-unit>
+<trans-unit id="sd8f923198e0c5c6a">
+  <source>End</source>
+<target>ނިމުން</target></trans-unit>
+<trans-unit id="saf84ec86139d349e">
+  <source>Comment</source>
+<target>ކޮމެންޓް</target></trans-unit>
+<trans-unit id="s40d30619c8d7ef3a">
+  <source>I/O</source>
+<target>I/O</target></trans-unit>
+</body>
+</file>
+</xliff>

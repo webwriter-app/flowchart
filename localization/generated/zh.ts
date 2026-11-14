@@ -1,0 +1,65 @@
+
+    // Do not modify this file by hand!
+    // Re-generate this file by running lit-localize
+
+
+
+
+    /* eslint-disable no-irregular-whitespace */
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+
+    export const templates = {
+      's012e7772b1fac646': `很遗憾，所选路径有误！`,
+'s03ee3cfb0919c62c': `任务`,
+'s079cf7850d9327f0': `字体`,
+'s166bd56d19670a72': `放大`,
+'s20b232c96ed539f0': `内容...`,
+'s275e8941632a9afa': `过程`,
+'s2ceb11be2290bb1b': `取消`,
+'s2f2044f2431a32d5': `标题`,
+'s30f853f2943ac1ec': `粉彩`,
+'s36480f2f59da17d3': `没有任务！`,
+'s37c3fbc8adb256ec': `Verdana`,
+'s37edf2aec5ab122a': `单色`,
+'s40d30619c8d7ef3a': `I/O`,
+'s44f386b424330b66': `伪代码`,
+'s4b10acae683d2978': `全屏`,
+'s4f1565979d2815d9': `移动画布`,
+'s4f5fcf942bca6be5': `添加提示`,
+'s53a526d5c80c3e28': `标准`,
+'s5be397a47866f7de': `检查解法`,
+'s5bffe94b60a5e7d5': `所选路径正确！`,
+'s5e8250fb85d64c23': `关闭`,
+'s6228ab313e3c8dcf': `保存路径`,
+'s69e040d57d5bcc5e': `隐藏元素`,
+'s70d2c6a9a84180ba': `键入新文本：`,
+'s8290d08ab5a49ed0': `连接器`,
+'s85e34dc8cc55f1a3': `你确定要删除所有内容吗？`,
+'s914cc7fb419008a8': `禁用学生编辑`,
+'s930f77519fda90bb': `添加路径`,
+'s94d0e033f72fca89': `添加任务`,
+'s99a474c8e41b56f0': `自然语言`,
+'s99f110d27e30b289': `标题`,
+'s9dcffdd89c8e0f58': `提示`,
+'s9df2887de87a2a6b': `没有提示！`,
+'sa30f1981fd1cd441': `字体大小`,
+'saab875d8cfcfe712': `主题`,
+'sae1c7f13b7c0c47f': `开始`,
+'saf84ec86139d349e': `评论`,
+'sb67b82120563c611': `提示`,
+'sb83329fe48218739': `禁用学生平移画布`,
+'sbadd7c696d344cfb': `次级计划`,
+'sbc401e67067321d8': `更改会自动保存。`,
+'sbd0939c338b4cdea': `Times New Roman`,
+'sc797fd9076cc136d': `任务`,
+'sc8c4c5c1bda03a7c': `Arial`,
+'sd06702d4cc7f42fa': `Courier New`,
+'sd8f923198e0c5c6a': `结束`,
+'sdc673e73b5c13aea': `删除`,
+'sed8da8a9b794e4a0': `选择路径`,
+'sef92ffa038c78883': `决定`,
+'sf01f6e2cc5900cbd': `显示元素`,
+'sf6586f55cebdc732': `黑色/白色`,
+'sf755a4987e4c2af1': `输入/输出`,
+'sfbfc89b3a12052d6': `检查路径`,
+    };

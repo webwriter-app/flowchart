@@ -1,0 +1,65 @@
+
+    // Do not modify this file by hand!
+    // Re-generate this file by running lit-localize
+
+
+
+
+    /* eslint-disable no-irregular-whitespace */
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+
+    export const templates = {
+      's012e7772b1fac646': `Por desgraza, o camiño seleccionado é incorrecto!`,
+'s03ee3cfb0919c62c': `Tarefa`,
+'s079cf7850d9327f0': `Tipo de letra`,
+'s166bd56d19670a72': `Zoom`,
+'s20b232c96ed539f0': `Contido...`,
+'s275e8941632a9afa': `Proceso`,
+'s2ceb11be2290bb1b': `Cancelar`,
+'s2f2044f2431a32d5': `Encabezado`,
+'s30f853f2943ac1ec': `Pastel`,
+'s36480f2f59da17d3': `Non hai tarefas!`,
+'s37c3fbc8adb256ec': `Verdana`,
+'s37edf2aec5ab122a': `Mono`,
+'s40d30619c8d7ef3a': `E/S`,
+'s44f386b424330b66': `Pseudocódigo`,
+'s4b10acae683d2978': `Pantalla completa`,
+'s4f1565979d2815d9': `Mover o lenzo`,
+'s4f5fcf942bca6be5': `Engadir axuda`,
+'s53a526d5c80c3e28': `Estándar`,
+'s5be397a47866f7de': `Comprobar a solución`,
+'s5bffe94b60a5e7d5': `O camiño seleccionado é correcto!`,
+'s5e8250fb85d64c23': `Pechar`,
+'s6228ab313e3c8dcf': `Gardar o camiño`,
+'s69e040d57d5bcc5e': `Agochar elementos`,
+'s70d2c6a9a84180ba': `Escribe o texto novo:`,
+'s8290d08ab5a49ed0': `Conector`,
+'s85e34dc8cc55f1a3': `Tes a certeza de que queres borralo todo?`,
+'s914cc7fb419008a8': `Desactivar a edición do alumnado`,
+'s930f77519fda90bb': `Engadir camiño`,
+'s94d0e033f72fca89': `Engadir tarefa`,
+'s99a474c8e41b56f0': `Linguaxe natural`,
+'s99f110d27e30b289': `Título`,
+'s9dcffdd89c8e0f58': `Axuda`,
+'s9df2887de87a2a6b': `Non hai axudas!`,
+'sa30f1981fd1cd441': `Tamaño da letra`,
+'saab875d8cfcfe712': `Tema`,
+'sae1c7f13b7c0c47f': `Inicio`,
+'saf84ec86139d349e': `Comentario`,
+'sb67b82120563c611': `Axudas`,
+'sb83329fe48218739': `Desactivar o desprazamento do alumnado`,
+'sbadd7c696d344cfb': `Subprograma`,
+'sbc401e67067321d8': `Os cambios gárdanse automaticamente.`,
+'sbd0939c338b4cdea': `Times New Roman`,
+'sc797fd9076cc136d': `Tarefas`,
+'sc8c4c5c1bda03a7c': `Arial`,
+'sd06702d4cc7f42fa': `Courier New`,
+'sd8f923198e0c5c6a': `Fin`,
+'sdc673e73b5c13aea': `Eliminar`,
+'sed8da8a9b794e4a0': `Seleccionar o camiño`,
+'sef92ffa038c78883': `Decisión`,
+'sf01f6e2cc5900cbd': `Amosar elementos`,
+'sf6586f55cebdc732': `Branco e negro`,
+'sf755a4987e4c2af1': `Entrada/saída`,
+'sfbfc89b3a12052d6': `Comprobar o camiño`,
+    };

@@ -1,0 +1,65 @@
+
+    // Do not modify this file by hand!
+    // Re-generate this file by running lit-localize
+
+
+
+
+    /* eslint-disable no-irregular-whitespace */
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+
+    export const templates = {
+      's012e7772b1fac646': `Nasiib darro, jidka la doortay waa khalad!`,
+'s03ee3cfb0919c62c': `Hawl`,
+'s079cf7850d9327f0': `Far`,
+'s166bd56d19670a72': `Fogee/soo dhawee`,
+'s20b232c96ed539f0': `Nuxur...`,
+'s275e8941632a9afa': `Habraac`,
+'s2ceb11be2290bb1b': `Jooji`,
+'s2f2044f2431a32d5': `Madax`,
+'s30f853f2943ac1ec': `Pastel`,
+'s36480f2f59da17d3': `Hawlo ma jiraan!`,
+'s37c3fbc8adb256ec': `Verdana`,
+'s37edf2aec5ab122a': `Mono`,
+'s40d30619c8d7ef3a': `G/B`,
+'s44f386b424330b66': `Kood been-abuur ah`,
+'s4b10acae683d2978': `Shaashad buuxda`,
+'s4f1565979d2815d9': `Dhaqaaji shiraaca`,
+'s4f5fcf942bca6be5': `Ku dar tilmaam`,
+'s53a526d5c80c3e28': `Heer`,
+'s5be397a47866f7de': `Hubi xalka`,
+'s5bffe94b60a5e7d5': `Jidka la doortay waa sax!`,
+'s5e8250fb85d64c23': `Xir`,
+'s6228ab313e3c8dcf': `Kaydi jidka`,
+'s69e040d57d5bcc5e': `Qari walxaha`,
+'s70d2c6a9a84180ba': `Geli qoraalka cusub:`,
+'s8290d08ab5a49ed0': `Xidhiidhiye`,
+'s85e34dc8cc55f1a3': `Ma hubtaa inaad rabto inaad wax walba tirtirto?`,
+'s914cc7fb419008a8': `Dami tafatirka ardayda`,
+'s930f77519fda90bb': `Ku dar jid`,
+'s94d0e033f72fca89': `Ku dar hawl`,
+'s99a474c8e41b56f0': `Luqad dabiici ah`,
+'s99f110d27e30b289': `Cinwaan`,
+'s9dcffdd89c8e0f58': `Tilmaam`,
+'s9df2887de87a2a6b': `Tilmaamo ma jiraan!`,
+'sa30f1981fd1cd441': `Cabbirka far`,
+'saab875d8cfcfe712': `Mawduuc`,
+'sae1c7f13b7c0c47f': `Bilow`,
+'saf84ec86139d349e': `Faallo`,
+'sb67b82120563c611': `Tilmaamo`,
+'sb83329fe48218739': `Dami dhaqaajinta ardayda`,
+'sbadd7c696d344cfb': `Barnaamij-hoosaad`,
+'sbc401e67067321d8': `Isbeddellada si toos ah ayaa loo kaydiyaa.`,
+'sbd0939c338b4cdea': `Times New Roman`,
+'sc797fd9076cc136d': `Hawlo`,
+'sc8c4c5c1bda03a7c': `Arial`,
+'sd06702d4cc7f42fa': `Courier New`,
+'sd8f923198e0c5c6a': `Dhammaad`,
+'sdc673e73b5c13aea': `Tirtir`,
+'sed8da8a9b794e4a0': `Dooro jid`,
+'sef92ffa038c78883': `Go'aan`,
+'sf01f6e2cc5900cbd': `Muuji walxaha`,
+'sf6586f55cebdc732': `Madow/Caddaan`,
+'sf755a4987e4c2af1': `Gelid/Bixid`,
+'sfbfc89b3a12052d6': `Hubi jidka`,
+    };

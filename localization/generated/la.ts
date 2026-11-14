@@ -1,0 +1,65 @@
+
+    // Do not modify this file by hand!
+    // Re-generate this file by running lit-localize
+
+
+
+
+    /* eslint-disable no-irregular-whitespace */
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+
+    export const templates = {
+      's012e7772b1fac646': `Pro dolor, via electa falsa est!`,
+'s03ee3cfb0919c62c': `Munus`,
+'s079cf7850d9327f0': `Fons`,
+'s166bd56d19670a72': `Zoom`,
+'s20b232c96ed539f0': `Contentum...`,
+'s275e8941632a9afa': `Processus`,
+'s2ceb11be2290bb1b': `Cancella`,
+'s2f2044f2431a32d5': `Caput`,
+'s30f853f2943ac1ec': `Pastel`,
+'s36480f2f59da17d3': `Nulla munera!`,
+'s37c3fbc8adb256ec': `Verdana`,
+'s37edf2aec5ab122a': `Mono`,
+'s40d30619c8d7ef3a': `I/E`,
+'s44f386b424330b66': `Pseudocodex`,
+'s4b10acae683d2978': `Plenus velum`,
+'s4f1565979d2815d9': `Tabulam move`,
+'s4f5fcf942bca6be5': `Indicium adde`,
+'s53a526d5c80c3e28': `Ordinarium`,
+'s5be397a47866f7de': `Solutionem inspice`,
+'s5bffe94b60a5e7d5': `Via electa recta est!`,
+'s5e8250fb85d64c23': `Claude`,
+'s6228ab313e3c8dcf': `Viam serva`,
+'s69e040d57d5bcc5e': `Elementa cela`,
+'s70d2c6a9a84180ba': `Novum textum inscribe:`,
+'s8290d08ab5a49ed0': `Coniunctio`,
+'s85e34dc8cc55f1a3': `Certusne es omnia delere velle?`,
+'s914cc7fb419008a8': `Discipulorum emendationem disable`,
+'s930f77519fda90bb': `Viam adde`,
+'s94d0e033f72fca89': `Munus adde`,
+'s99a474c8e41b56f0': `Lingua naturalis`,
+'s99f110d27e30b289': `Titulus`,
+'s9dcffdd89c8e0f58': `Indicium`,
+'s9df2887de87a2a6b': `Nulla indicia!`,
+'sa30f1981fd1cd441': `Magnitudo fontis`,
+'saab875d8cfcfe712': `Thema`,
+'sae1c7f13b7c0c47f': `Initium`,
+'saf84ec86139d349e': `Commentarium`,
+'sb67b82120563c611': `Indicium`,
+'sb83329fe48218739': `Discipulorum motum disable`,
+'sbadd7c696d344cfb': `Subprogramma`,
+'sbc401e67067321d8': `Mutationes sponte servantur.`,
+'sbd0939c338b4cdea': `Times New Roman`,
+'sc797fd9076cc136d': `Munera`,
+'sc8c4c5c1bda03a7c': `Arial`,
+'sd06702d4cc7f42fa': `Courier New`,
+'sd8f923198e0c5c6a': `Finis`,
+'sdc673e73b5c13aea': `Dele`,
+'sed8da8a9b794e4a0': `Viam elige`,
+'sef92ffa038c78883': `Decisio`,
+'sf01f6e2cc5900cbd': `Elementa ostende`,
+'sf6586f55cebdc732': `Nigrum/album`,
+'sf755a4987e4c2af1': `Ingressus/egressus`,
+'sfbfc89b3a12052d6': `Viam inspice`,
+    };

@@ -1,0 +1,65 @@
+
+    // Do not modify this file by hand!
+    // Re-generate this file by running lit-localize
+
+
+
+
+    /* eslint-disable no-irregular-whitespace */
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+
+    export const templates = {
+      's012e7772b1fac646': `Því miður er valda leiðin röng!`,
+'s03ee3cfb0919c62c': `Verkefni`,
+'s079cf7850d9327f0': `Leturgerð`,
+'s166bd56d19670a72': `Aðdráttur`,
+'s20b232c96ed539f0': `Efni...`,
+'s275e8941632a9afa': `Ferli`,
+'s2ceb11be2290bb1b': `Hætta við`,
+'s2f2044f2431a32d5': `Fyrirsögn`,
+'s30f853f2943ac1ec': `Pastel`,
+'s36480f2f59da17d3': `Engin verkefni!`,
+'s37c3fbc8adb256ec': `Verdana`,
+'s37edf2aec5ab122a': `Mono`,
+'s40d30619c8d7ef3a': `I/O`,
+'s44f386b424330b66': `Gervikóði`,
+'s4b10acae683d2978': `Fullur skjár`,
+'s4f1565979d2815d9': `Færa striga`,
+'s4f5fcf942bca6be5': `Bæta við vísbendingu`,
+'s53a526d5c80c3e28': `Staðlað`,
+'s5be397a47866f7de': `Athuga lausn`,
+'s5bffe94b60a5e7d5': `Valda leiðin er rétt!`,
+'s5e8250fb85d64c23': `Loka`,
+'s6228ab313e3c8dcf': `Vista leið`,
+'s69e040d57d5bcc5e': `Fela atriði`,
+'s70d2c6a9a84180ba': `Sláðu inn nýja textann:`,
+'s8290d08ab5a49ed0': `Tengi`,
+'s85e34dc8cc55f1a3': `Ertu viss um að þú viljir eyða öllu?`,
+'s914cc7fb419008a8': `Gera breytingar nemenda óvirkar`,
+'s930f77519fda90bb': `Bæta við leið`,
+'s94d0e033f72fca89': `Bæta við verkefni`,
+'s99a474c8e41b56f0': `Náttúrulegt mál`,
+'s99f110d27e30b289': `Titill`,
+'s9dcffdd89c8e0f58': `Vísbending`,
+'s9df2887de87a2a6b': `Engar vísbendingar!`,
+'sa30f1981fd1cd441': `Leturstærð`,
+'saab875d8cfcfe712': `Þema`,
+'sae1c7f13b7c0c47f': `Byrjun`,
+'saf84ec86139d349e': `Athugasemd`,
+'sb67b82120563c611': `Vísbendingar`,
+'sb83329fe48218739': `Gera hliðrun nemenda óvirka`,
+'sbadd7c696d344cfb': `Undirforrit`,
+'sbc401e67067321d8': `Breytingar vistast sjálfkrafa.`,
+'sbd0939c338b4cdea': `Times New Roman`,
+'sc797fd9076cc136d': `Verkefni`,
+'sc8c4c5c1bda03a7c': `Arial`,
+'sd06702d4cc7f42fa': `Courier New`,
+'sd8f923198e0c5c6a': `Endir`,
+'sdc673e73b5c13aea': `Eyða`,
+'sed8da8a9b794e4a0': `Velja leið`,
+'sef92ffa038c78883': `Ákvörðun`,
+'sf01f6e2cc5900cbd': `Sýna atriði`,
+'sf6586f55cebdc732': `Svart/hvítt`,
+'sf755a4987e4c2af1': `Inntak/úttak`,
+'sfbfc89b3a12052d6': `Athuga leið`,
+    };

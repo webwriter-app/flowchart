@@ -1,0 +1,65 @@
+
+    // Do not modify this file by hand!
+    // Re-generate this file by running lit-localize
+
+
+
+
+    /* eslint-disable no-irregular-whitespace */
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+
+    export const templates = {
+      's012e7772b1fac646': `Sayange, dalan sing dipilih salah!`,
+'s03ee3cfb0919c62c': `Tugas`,
+'s079cf7850d9327f0': `Font`,
+'s166bd56d19670a72': `Zoom`,
+'s20b232c96ed539f0': `Isi...`,
+'s275e8941632a9afa': `Proses`,
+'s2ceb11be2290bb1b': `Batal`,
+'s2f2044f2431a32d5': `Irah-irahan`,
+'s30f853f2943ac1ec': `Pastel`,
+'s36480f2f59da17d3': `Ora ana tugas!`,
+'s37c3fbc8adb256ec': `Verdana`,
+'s37edf2aec5ab122a': `Mono`,
+'s40d30619c8d7ef3a': `I/O`,
+'s44f386b424330b66': `Pseudokode`,
+'s4b10acae683d2978': `Layar wutuh`,
+'s4f1565979d2815d9': `Obahna kanvas`,
+'s4f5fcf942bca6be5': `Tambah pituduh`,
+'s53a526d5c80c3e28': `Standar`,
+'s5be397a47866f7de': `Priksa solusi`,
+'s5bffe94b60a5e7d5': `Dalan sing dipilih bener!`,
+'s5e8250fb85d64c23': `Tutup`,
+'s6228ab313e3c8dcf': `Simpen dalan`,
+'s69e040d57d5bcc5e': `Delikna unsur`,
+'s70d2c6a9a84180ba': `Ketik teks anyar:`,
+'s8290d08ab5a49ed0': `Konektor`,
+'s85e34dc8cc55f1a3': `Apa sampeyan yakin arep mbusak kabeh?`,
+'s914cc7fb419008a8': `Pateni panyuntingan siswa`,
+'s930f77519fda90bb': `Tambah dalan`,
+'s94d0e033f72fca89': `Tambah tugas`,
+'s99a474c8e41b56f0': `Basa alami`,
+'s99f110d27e30b289': `Irah-irahan`,
+'s9dcffdd89c8e0f58': `Pituduh`,
+'s9df2887de87a2a6b': `Ora ana pituduh!`,
+'sa30f1981fd1cd441': `Ukuran font`,
+'saab875d8cfcfe712': `Tema`,
+'sae1c7f13b7c0c47f': `Wiwitan`,
+'saf84ec86139d349e': `Komentar`,
+'sb67b82120563c611': `Pituduh`,
+'sb83329fe48218739': `Pateni obahing siswa`,
+'sbadd7c696d344cfb': `Subprogram`,
+'sbc401e67067321d8': `Owah-owahan disimpen otomatis.`,
+'sbd0939c338b4cdea': `Times New Roman`,
+'sc797fd9076cc136d': `Tugas`,
+'sc8c4c5c1bda03a7c': `Arial`,
+'sd06702d4cc7f42fa': `Courier New`,
+'sd8f923198e0c5c6a': `Pungkasan`,
+'sdc673e73b5c13aea': `Busak`,
+'sed8da8a9b794e4a0': `Pilih dalan`,
+'sef92ffa038c78883': `Kaputusan`,
+'sf01f6e2cc5900cbd': `Tuduhna unsur`,
+'sf6586f55cebdc732': `Ireng/Putih`,
+'sf755a4987e4c2af1': `Input/Output`,
+'sfbfc89b3a12052d6': `Priksa dalan`,
+    };

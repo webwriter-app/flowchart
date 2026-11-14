@@ -1,0 +1,65 @@
+
+    // Do not modify this file by hand!
+    // Re-generate this file by running lit-localize
+
+
+
+
+    /* eslint-disable no-irregular-whitespace */
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+
+    export const templates = {
+      's012e7772b1fac646': `可惜，所選路徑唔啱！`,
+'s03ee3cfb0919c62c': `工作`,
+'s079cf7850d9327f0': `字體`,
+'s166bd56d19670a72': `縮放`,
+'s20b232c96ed539f0': `內容⋯⋯`,
+'s275e8941632a9afa': `處理程序`,
+'s2ceb11be2290bb1b': `取消`,
+'s2f2044f2431a32d5': `標題`,
+'s30f853f2943ac1ec': `柔和色調`,
+'s36480f2f59da17d3': `冇工作！`,
+'s37c3fbc8adb256ec': `Verdana`,
+'s37edf2aec5ab122a': `單色`,
+'s40d30619c8d7ef3a': `I/O`,
+'s44f386b424330b66': `偽代碼`,
+'s4b10acae683d2978': `全螢幕`,
+'s4f1565979d2815d9': `移動畫布`,
+'s4f5fcf942bca6be5': `加入提示`,
+'s53a526d5c80c3e28': `標準`,
+'s5be397a47866f7de': `檢查答案`,
+'s5bffe94b60a5e7d5': `所選路徑正確！`,
+'s5e8250fb85d64c23': `關閉`,
+'s6228ab313e3c8dcf': `儲存路徑`,
+'s69e040d57d5bcc5e': `隱藏元素`,
+'s70d2c6a9a84180ba': `輸入新文字：`,
+'s8290d08ab5a49ed0': `連接點`,
+'s85e34dc8cc55f1a3': `確定要刪除所有內容嗎？`,
+'s914cc7fb419008a8': `停用學生編輯`,
+'s930f77519fda90bb': `加入路徑`,
+'s94d0e033f72fca89': `加入工作`,
+'s99a474c8e41b56f0': `自然語言`,
+'s99f110d27e30b289': `標題`,
+'s9dcffdd89c8e0f58': `提示`,
+'s9df2887de87a2a6b': `冇提示！`,
+'sa30f1981fd1cd441': `字體大小`,
+'saab875d8cfcfe712': `主題`,
+'sae1c7f13b7c0c47f': `開始`,
+'saf84ec86139d349e': `註解`,
+'sb67b82120563c611': `提示`,
+'sb83329fe48218739': `停用學生平移`,
+'sbadd7c696d344cfb': `子程序`,
+'sbc401e67067321d8': `變更會自動儲存。`,
+'sbd0939c338b4cdea': `Times New Roman`,
+'sc797fd9076cc136d': `工作`,
+'sc8c4c5c1bda03a7c': `Arial`,
+'sd06702d4cc7f42fa': `Courier New`,
+'sd8f923198e0c5c6a': `結束`,
+'sdc673e73b5c13aea': `刪除`,
+'sed8da8a9b794e4a0': `選取路徑`,
+'sef92ffa038c78883': `判斷`,
+'sf01f6e2cc5900cbd': `顯示元素`,
+'sf6586f55cebdc732': `黑白`,
+'sf755a4987e4c2af1': `輸入／輸出`,
+'sfbfc89b3a12052d6': `檢查路徑`,
+    };

@@ -1,0 +1,65 @@
+
+    // Do not modify this file by hand!
+    // Re-generate this file by running lit-localize
+
+
+
+
+    /* eslint-disable no-irregular-whitespace */
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+
+    export const templates = {
+      's012e7772b1fac646': `Nažalost, izabrana putanja je pogrešna!`,
+'s03ee3cfb0919c62c': `Zadatak`,
+'s079cf7850d9327f0': `Font`,
+'s166bd56d19670a72': `Zumiranje`,
+'s20b232c96ed539f0': `Sadržaj...`,
+'s275e8941632a9afa': `Proces`,
+'s2ceb11be2290bb1b': `Otkaži`,
+'s2f2044f2431a32d5': `Zaglavlje`,
+'s30f853f2943ac1ec': `Pastelna`,
+'s36480f2f59da17d3': `Nema zadataka!`,
+'s37c3fbc8adb256ec': `Verdana`,
+'s37edf2aec5ab122a': `Mono`,
+'s40d30619c8d7ef3a': `U/I`,
+'s44f386b424330b66': `Pseudokod`,
+'s4b10acae683d2978': `Ceo ekran`,
+'s4f1565979d2815d9': `Pomeri platno`,
+'s4f5fcf942bca6be5': `Dodaj savet`,
+'s53a526d5c80c3e28': `Standardna`,
+'s5be397a47866f7de': `Proveri rešenje`,
+'s5bffe94b60a5e7d5': `Izabrana putanja je tačna!`,
+'s5e8250fb85d64c23': `Zatvori`,
+'s6228ab313e3c8dcf': `Sačuvaj putanju`,
+'s69e040d57d5bcc5e': `Sakrij elemente`,
+'s70d2c6a9a84180ba': `Unesite novi tekst:`,
+'s8290d08ab5a49ed0': `Povezivač`,
+'s85e34dc8cc55f1a3': `Da li ste sigurni da želite da izbrišete sve?`,
+'s914cc7fb419008a8': `Onemogući uređivanje učenicima`,
+'s930f77519fda90bb': `Dodaj putanju`,
+'s94d0e033f72fca89': `Dodaj zadatak`,
+'s99a474c8e41b56f0': `Prirodni jezik`,
+'s99f110d27e30b289': `Naslov`,
+'s9dcffdd89c8e0f58': `Savet`,
+'s9df2887de87a2a6b': `Nema saveta!`,
+'sa30f1981fd1cd441': `Veličina fonta`,
+'saab875d8cfcfe712': `Tema`,
+'sae1c7f13b7c0c47f': `Početak`,
+'saf84ec86139d349e': `Komentar`,
+'sb67b82120563c611': `Saveti`,
+'sb83329fe48218739': `Onemogući pomeranje učenicima`,
+'sbadd7c696d344cfb': `Potprogram`,
+'sbc401e67067321d8': `Promene se automatski čuvaju.`,
+'sbd0939c338b4cdea': `Times New Roman`,
+'sc797fd9076cc136d': `Zadaci`,
+'sc8c4c5c1bda03a7c': `Arial`,
+'sd06702d4cc7f42fa': `Courier New`,
+'sd8f923198e0c5c6a': `Kraj`,
+'sdc673e73b5c13aea': `Izbriši`,
+'sed8da8a9b794e4a0': `Izaberi putanju`,
+'sef92ffa038c78883': `Odluka`,
+'sf01f6e2cc5900cbd': `Prikaži elemente`,
+'sf6586f55cebdc732': `Crno/belo`,
+'sf755a4987e4c2af1': `Ulaz/izlaz`,
+'sfbfc89b3a12052d6': `Proveri putanju`,
+    };
