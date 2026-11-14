@@ -1,4 +1,5 @@
-<xliff xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 http://docs.oasis-open.org/xliff/v1.2/os/xliff-core-1.2-strict.xsd" xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 http://docs.oasis-open.org/xliff/v1.2/os/xliff-core-1.2-strict.xsd" version="1.2">
   <file original="lit-localize-inputs" datatype="plaintext" source-language="en" target-language="ro">
     <body>
       <trans-unit id="sae1c7f13b7c0c47f">
@@ -157,6 +158,48 @@
         <source>Show elements</source>
         <target>Afișează elementele</target>
       </trans-unit>
-    </body>
+    <trans-unit id="s166bd56d19670a72">
+  <source>Zoom</source>
+<target>Zoom</target></trans-unit>
+<trans-unit id="s914cc7fb419008a8">
+  <source>Disable student editing</source>
+<target>Dezactivați editarea elevilor</target></trans-unit>
+<trans-unit id="sb83329fe48218739">
+  <source>Disable student panning</source>
+<target>Dezactivați deplasarea vizualizării</target></trans-unit>
+<trans-unit id="s079cf7850d9327f0">
+  <source>Font</source>
+<target>Font</target></trans-unit>
+<trans-unit id="sc8c4c5c1bda03a7c">
+  <source>Arial</source>
+<target>Arial</target></trans-unit>
+<trans-unit id="sd06702d4cc7f42fa">
+  <source>Courier New</source>
+<target>Courier New</target></trans-unit>
+<trans-unit id="sbd0939c338b4cdea">
+  <source>Times New Roman</source>
+<target>Times New Roman</target></trans-unit>
+<trans-unit id="s37c3fbc8adb256ec">
+  <source>Verdana</source>
+<target>Verdana</target></trans-unit>
+<trans-unit id="sa30f1981fd1cd441">
+  <source>Font size</source>
+<target>Dimensiunea fontului</target></trans-unit>
+<trans-unit id="saab875d8cfcfe712">
+  <source>Theme</source>
+<target>Tema</target></trans-unit>
+<trans-unit id="s53a526d5c80c3e28">
+  <source>Standard</source>
+<target>Standard</target></trans-unit>
+<trans-unit id="s30f853f2943ac1ec">
+  <source>Pastel</source>
+<target>Pastel</target></trans-unit>
+<trans-unit id="s37edf2aec5ab122a">
+  <source>Mono</source>
+<target>Mono</target></trans-unit>
+<trans-unit id="sf6586f55cebdc732">
+  <source>Black/White</source>
+<target>Negru/alb</target></trans-unit>
+</body>
   </file>
 </xliff>

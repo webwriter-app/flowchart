@@ -554,13 +554,6 @@
           "attributes": [
             {
               "type": {
-                "text": "string"
-              },
-              "description": "JSON string representing an array of GraphNode objects. When set, arrows are recomputed.",
-              "name": "graph-nodes"
-            },
-            {
-              "type": {
                 "text": "number"
               },
               "description": "Canvas height (px).",

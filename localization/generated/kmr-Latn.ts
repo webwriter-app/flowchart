@@ -1,0 +1,65 @@
+
+    // Do not modify this file by hand!
+    // Re-generate this file by running lit-localize
+
+
+
+
+    /* eslint-disable no-irregular-whitespace */
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+
+    export const templates = {
+      's012e7772b1fac646': `Mixabin, rêya hilbijartî çewt e!`,
+'s03ee3cfb0919c62c': `Kar`,
+'s079cf7850d9327f0': `Cureyê tîpan`,
+'s166bd56d19670a72': `Mezin bike`,
+'s20b232c96ed539f0': `Naverok...`,
+'s275e8941632a9afa': `Pêvajo`,
+'s2ceb11be2290bb1b': `Betal bike`,
+'s2f2044f2431a32d5': `Sernivîs`,
+'s30f853f2943ac1ec': `Pastel`,
+'s36480f2f59da17d3': `Kar tune ne!`,
+'s37c3fbc8adb256ec': `Verdana`,
+'s37edf2aec5ab122a': `Yek-reng`,
+'s40d30619c8d7ef3a': `I/O`,
+'s44f386b424330b66': `Koda psewdoyê`,
+'s4b10acae683d2978': `Dîmendera tevahî`,
+'s4f1565979d2815d9': `Tuvalê biguhezîne`,
+'s4f5fcf942bca6be5': `Alîkariyekê lê zêde bike`,
+'s53a526d5c80c3e28': `Standard`,
+'s5be397a47866f7de': `Çareseriyê kontrol bike`,
+'s5bffe94b60a5e7d5': `Rêya hilbijartî rast e!`,
+'s5e8250fb85d64c23': `Bigire`,
+'s6228ab313e3c8dcf': `Rêyê tomar bike`,
+'s69e040d57d5bcc5e': `Hêmanan veşêre`,
+'s70d2c6a9a84180ba': `Nivîsa nû binivîse:`,
+'s8290d08ab5a49ed0': `Girêder`,
+'s85e34dc8cc55f1a3': `Tu bi rastî dixwazî her tiştî jê bibî?`,
+'s914cc7fb419008a8': `Guhertina xwendekaran neçalak bike`,
+'s930f77519fda90bb': `Rêyekê lê zêde bike`,
+'s94d0e033f72fca89': `Kar lê zêde bike`,
+'s99a474c8e41b56f0': `Zimanê xwezayî`,
+'s99f110d27e30b289': `Sernav`,
+'s9dcffdd89c8e0f58': `Alîkarî`,
+'s9df2887de87a2a6b': `Alîkarî tune ye!`,
+'sa30f1981fd1cd441': `Mezinahiya tîpan`,
+'saab875d8cfcfe712': `Dirb`,
+'sae1c7f13b7c0c47f': `Destpêk`,
+'saf84ec86139d349e': `Şîrove`,
+'sb67b82120563c611': `Alîkarî`,
+'sb83329fe48218739': `Guhandina xwendekaran neçalak bike`,
+'sbadd7c696d344cfb': `Binbername`,
+'sbc401e67067321d8': `Guhertin bixweber têne tomarkirin.`,
+'sbd0939c338b4cdea': `Times New Roman`,
+'sc797fd9076cc136d': `Kar`,
+'sc8c4c5c1bda03a7c': `Arial`,
+'sd06702d4cc7f42fa': `Courier New`,
+'sd8f923198e0c5c6a': `Dawî`,
+'sdc673e73b5c13aea': `Jê bibe`,
+'sed8da8a9b794e4a0': `Rêyê hilbijêre`,
+'sef92ffa038c78883': `Biryar`,
+'sf01f6e2cc5900cbd': `Hêmanan nîşan bide`,
+'sf6586f55cebdc732': `Reş/Spî`,
+'sf755a4987e4c2af1': `Ketî/Derketî`,
+'sfbfc89b3a12052d6': `Rêyê kontrol bike`,
+    };

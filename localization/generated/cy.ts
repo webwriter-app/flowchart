@@ -1,0 +1,65 @@
+
+    // Do not modify this file by hand!
+    // Re-generate this file by running lit-localize
+
+
+
+
+    /* eslint-disable no-irregular-whitespace */
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+
+    export const templates = {
+      's012e7772b1fac646': `Yn anffodus, mae'r llwybr a ddewiswyd yn anghywir!`,
+'s03ee3cfb0919c62c': `Tasg`,
+'s079cf7850d9327f0': `Ffont`,
+'s166bd56d19670a72': `Chwyddo`,
+'s20b232c96ed539f0': `Cynnwys...`,
+'s275e8941632a9afa': `Proses`,
+'s2ceb11be2290bb1b': `Canslo`,
+'s2f2044f2431a32d5': `Pennawd`,
+'s30f853f2943ac1ec': `Pastel`,
+'s36480f2f59da17d3': `Dim tasgau!`,
+'s37c3fbc8adb256ec': `Verdana`,
+'s37edf2aec5ab122a': `Mono`,
+'s40d30619c8d7ef3a': `M/A`,
+'s44f386b424330b66': `Ffug-god`,
+'s4b10acae683d2978': `Sgrin lawn`,
+'s4f1565979d2815d9': `Symud y cynfas`,
+'s4f5fcf942bca6be5': `Ychwanegu awgrym`,
+'s53a526d5c80c3e28': `Safonol`,
+'s5be397a47866f7de': `Gwirio'r ateb`,
+'s5bffe94b60a5e7d5': `Mae'r llwybr a ddewiswyd yn gywir!`,
+'s5e8250fb85d64c23': `Cau`,
+'s6228ab313e3c8dcf': `Cadw'r llwybr`,
+'s69e040d57d5bcc5e': `Cuddio elfennau`,
+'s70d2c6a9a84180ba': `Teipiwch y testun newydd:`,
+'s8290d08ab5a49ed0': `Cysylltydd`,
+'s85e34dc8cc55f1a3': `Ydych chi'n siŵr eich bod am ddileu popeth?`,
+'s914cc7fb419008a8': `Analluogi golygu gan fyfyrwyr`,
+'s930f77519fda90bb': `Ychwanegu llwybr`,
+'s94d0e033f72fca89': `Ychwanegu tasg`,
+'s99a474c8e41b56f0': `Iaith naturiol`,
+'s99f110d27e30b289': `Teitl`,
+'s9dcffdd89c8e0f58': `Awgrym`,
+'s9df2887de87a2a6b': `Dim awgrymiadau!`,
+'sa30f1981fd1cd441': `Maint ffont`,
+'saab875d8cfcfe712': `Thema`,
+'sae1c7f13b7c0c47f': `Cychwyn`,
+'saf84ec86139d349e': `Sylw`,
+'sb67b82120563c611': `Awgrymiadau`,
+'sb83329fe48218739': `Analluogi symud y cynfas gan fyfyrwyr`,
+'sbadd7c696d344cfb': `Is-raglen`,
+'sbc401e67067321d8': `Mae newidiadau'n cael eu cadw'n awtomatig.`,
+'sbd0939c338b4cdea': `Times New Roman`,
+'sc797fd9076cc136d': `Tasgau`,
+'sc8c4c5c1bda03a7c': `Arial`,
+'sd06702d4cc7f42fa': `Courier New`,
+'sd8f923198e0c5c6a': `Diwedd`,
+'sdc673e73b5c13aea': `Dileu`,
+'sed8da8a9b794e4a0': `Dewis llwybr`,
+'sef92ffa038c78883': `Penderfyniad`,
+'sf01f6e2cc5900cbd': `Dangos elfennau`,
+'sf6586f55cebdc732': `Du/Gwyn`,
+'sf755a4987e4c2af1': `Mewnbwn/Allbwn`,
+'sfbfc89b3a12052d6': `Gwirio'r llwybr`,
+    };

@@ -1,0 +1,65 @@
+
+    // Do not modify this file by hand!
+    // Re-generate this file by running lit-localize
+
+
+
+
+    /* eslint-disable no-irregular-whitespace */
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+
+    export const templates = {
+      's012e7772b1fac646': `Rất tiếc, đường đi đã chọn không đúng!`,
+'s03ee3cfb0919c62c': `Bài tập`,
+'s079cf7850d9327f0': `Phông chữ`,
+'s166bd56d19670a72': `Thu phóng`,
+'s20b232c96ed539f0': `Nội dung...`,
+'s275e8941632a9afa': `Quy trình`,
+'s2ceb11be2290bb1b': `Hủy`,
+'s2f2044f2431a32d5': `Đề mục`,
+'s30f853f2943ac1ec': `Pastel`,
+'s36480f2f59da17d3': `Không có bài tập!`,
+'s37c3fbc8adb256ec': `Verdana`,
+'s37edf2aec5ab122a': `Mono`,
+'s40d30619c8d7ef3a': `I/O`,
+'s44f386b424330b66': `Mã giả`,
+'s4b10acae683d2978': `Toàn màn hình`,
+'s4f1565979d2815d9': `Di chuyển canvas`,
+'s4f5fcf942bca6be5': `Thêm gợi ý`,
+'s53a526d5c80c3e28': `Chuẩn`,
+'s5be397a47866f7de': `Kiểm tra lời giải`,
+'s5bffe94b60a5e7d5': `Đường đi đã chọn chính xác!`,
+'s5e8250fb85d64c23': `Đóng`,
+'s6228ab313e3c8dcf': `Lưu đường đi`,
+'s69e040d57d5bcc5e': `Ẩn phần tử`,
+'s70d2c6a9a84180ba': `Nhập văn bản mới:`,
+'s8290d08ab5a49ed0': `Đầu nối`,
+'s85e34dc8cc55f1a3': `Bạn có chắc chắn muốn xóa mọi thứ không?`,
+'s914cc7fb419008a8': `Tắt chỉnh sửa của học sinh`,
+'s930f77519fda90bb': `Thêm đường đi`,
+'s94d0e033f72fca89': `Thêm bài tập`,
+'s99a474c8e41b56f0': `Ngôn ngữ tự nhiên`,
+'s99f110d27e30b289': `Tiêu đề`,
+'s9dcffdd89c8e0f58': `Gợi ý`,
+'s9df2887de87a2a6b': `Không có gợi ý!`,
+'sa30f1981fd1cd441': `Cỡ chữ`,
+'saab875d8cfcfe712': `Chủ đề`,
+'sae1c7f13b7c0c47f': `Bắt đầu`,
+'saf84ec86139d349e': `Chú thích`,
+'sb67b82120563c611': `Gợi ý`,
+'sb83329fe48218739': `Tắt kéo khung nhìn của học sinh`,
+'sbadd7c696d344cfb': `Chương trình con`,
+'sbc401e67067321d8': `Các thay đổi được lưu tự động.`,
+'sbd0939c338b4cdea': `Times New Roman`,
+'sc797fd9076cc136d': `Bài tập`,
+'sc8c4c5c1bda03a7c': `Arial`,
+'sd06702d4cc7f42fa': `Courier New`,
+'sd8f923198e0c5c6a': `Kết thúc`,
+'sdc673e73b5c13aea': `Xóa`,
+'sed8da8a9b794e4a0': `Chọn đường đi`,
+'sef92ffa038c78883': `Quyết định`,
+'sf01f6e2cc5900cbd': `Hiện phần tử`,
+'sf6586f55cebdc732': `Đen/Trắng`,
+'sf755a4987e4c2af1': `Đầu vào/Đầu ra`,
+'sfbfc89b3a12052d6': `Kiểm tra đường đi`,
+    };

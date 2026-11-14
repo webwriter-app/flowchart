@@ -1,0 +1,65 @@
+
+    // Do not modify this file by hand!
+    // Re-generate this file by running lit-localize
+
+
+
+
+    /* eslint-disable no-irregular-whitespace */
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+
+    export const templates = {
+      's012e7772b1fac646': `Abin takaici, hanyar da aka zaɓa ba daidai ba ce!`,
+'s03ee3cfb0919c62c': `Aiki`,
+'s079cf7850d9327f0': `Font`,
+'s166bd56d19670a72': `Zuƙowa`,
+'s20b232c96ed539f0': `Abun ciki...`,
+'s275e8941632a9afa': `Tsari`,
+'s2ceb11be2290bb1b': `Soke`,
+'s2f2044f2431a32d5': `Kanun labari`,
+'s30f853f2943ac1ec': `Pastel`,
+'s36480f2f59da17d3': `Babu ayyuka!`,
+'s37c3fbc8adb256ec': `Verdana`,
+'s37edf2aec5ab122a': `Mono`,
+'s40d30619c8d7ef3a': `Sh/F`,
+'s44f386b424330b66': `Lambar ƙarya`,
+'s4b10acae683d2978': `Cikakken allo`,
+'s4f1565979d2815d9': `Matsar da zane`,
+'s4f5fcf942bca6be5': `Ƙara alama`,
+'s53a526d5c80c3e28': `Na yau da kullum`,
+'s5be397a47866f7de': `Duba mafita`,
+'s5bffe94b60a5e7d5': `Hanyar da aka zaɓa daidai ce!`,
+'s5e8250fb85d64c23': `Rufe`,
+'s6228ab313e3c8dcf': `Ajiye hanya`,
+'s69e040d57d5bcc5e': `Ɓoye abubuwa`,
+'s70d2c6a9a84180ba': `Shigar da sabon rubutu:`,
+'s8290d08ab5a49ed0': `Mai haɗawa`,
+'s85e34dc8cc55f1a3': `Ka tabbata kana son goge komai?`,
+'s914cc7fb419008a8': `Kashe gyaran ɗalibai`,
+'s930f77519fda90bb': `Ƙara hanya`,
+'s94d0e033f72fca89': `Ƙara aiki`,
+'s99a474c8e41b56f0': `Harshen halitta`,
+'s99f110d27e30b289': `Take`,
+'s9dcffdd89c8e0f58': `Alama`,
+'s9df2887de87a2a6b': `Babu alama!`,
+'sa30f1981fd1cd441': `Girman font`,
+'saab875d8cfcfe712': `Jigo`,
+'sae1c7f13b7c0c47f': `Fara`,
+'saf84ec86139d349e': `Sharhi`,
+'sb67b82120563c611': `Alamu`,
+'sb83329fe48218739': `Kashe motsin kallon ɗalibai`,
+'sbadd7c696d344cfb': `Ƙaramin shiri`,
+'sbc401e67067321d8': `Ana adana canje-canje ta atomatik.`,
+'sbd0939c338b4cdea': `Times New Roman`,
+'sc797fd9076cc136d': `Ayyuka`,
+'sc8c4c5c1bda03a7c': `Arial`,
+'sd06702d4cc7f42fa': `Courier New`,
+'sd8f923198e0c5c6a': `Ƙarshe`,
+'sdc673e73b5c13aea': `Goge`,
+'sed8da8a9b794e4a0': `Zaɓi hanya`,
+'sef92ffa038c78883': `Yanke shawara`,
+'sf01f6e2cc5900cbd': `Nuna abubuwa`,
+'sf6586f55cebdc732': `Baƙi/Fari`,
+'sf755a4987e4c2af1': `Shigarwa/Fitarwa`,
+'sfbfc89b3a12052d6': `Duba hanya`,
+    };

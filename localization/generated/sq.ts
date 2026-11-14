@@ -1,0 +1,65 @@
+
+    // Do not modify this file by hand!
+    // Re-generate this file by running lit-localize
+
+
+
+
+    /* eslint-disable no-irregular-whitespace */
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+
+    export const templates = {
+      's012e7772b1fac646': `Fatkeqësisht, rruga e zgjedhur është e gabuar!`,
+'s03ee3cfb0919c62c': `Detyrë`,
+'s079cf7850d9327f0': `Fonti`,
+'s166bd56d19670a72': `Zmadhimi`,
+'s20b232c96ed539f0': `Përmbajtja...`,
+'s275e8941632a9afa': `Procesi`,
+'s2ceb11be2290bb1b': `Anulo`,
+'s2f2044f2431a32d5': `Kreu`,
+'s30f853f2943ac1ec': `Pastel`,
+'s36480f2f59da17d3': `Nuk ka detyra!`,
+'s37c3fbc8adb256ec': `Verdana`,
+'s37edf2aec5ab122a': `Mono`,
+'s40d30619c8d7ef3a': `H/D`,
+'s44f386b424330b66': `Pseudokod`,
+'s4b10acae683d2978': `Ekran i plotë`,
+'s4f1565979d2815d9': `Lëviz kanavacën`,
+'s4f5fcf942bca6be5': `Shto udhëzim`,
+'s53a526d5c80c3e28': `Standard`,
+'s5be397a47866f7de': `Kontrollo zgjidhjen`,
+'s5bffe94b60a5e7d5': `Rruga e zgjedhur është e saktë!`,
+'s5e8250fb85d64c23': `Mbyll`,
+'s6228ab313e3c8dcf': `Ruaj rrugën`,
+'s69e040d57d5bcc5e': `Fshih elementet`,
+'s70d2c6a9a84180ba': `Shkruani tekstin e ri:`,
+'s8290d08ab5a49ed0': `Lidhësi`,
+'s85e34dc8cc55f1a3': `Jeni i sigurt se doni të fshini gjithçka?`,
+'s914cc7fb419008a8': `Çaktivizo redaktimin nga nxënësit`,
+'s930f77519fda90bb': `Shto rrugë`,
+'s94d0e033f72fca89': `Shto detyrë`,
+'s99a474c8e41b56f0': `Gjuhë natyrore`,
+'s99f110d27e30b289': `Titull`,
+'s9dcffdd89c8e0f58': `Udhëzim`,
+'s9df2887de87a2a6b': `Nuk ka udhëzime!`,
+'sa30f1981fd1cd441': `Madhësia e fontit`,
+'saab875d8cfcfe712': `Tema`,
+'sae1c7f13b7c0c47f': `Nisja`,
+'saf84ec86139d349e': `Koment`,
+'sb67b82120563c611': `Udhëzime`,
+'sb83329fe48218739': `Çaktivizo lëvizjen nga nxënësit`,
+'sbadd7c696d344cfb': `Nënprogram`,
+'sbc401e67067321d8': `Ndryshimet ruhen automatikisht.`,
+'sbd0939c338b4cdea': `Times New Roman`,
+'sc797fd9076cc136d': `Detyra`,
+'sc8c4c5c1bda03a7c': `Arial`,
+'sd06702d4cc7f42fa': `Courier New`,
+'sd8f923198e0c5c6a': `Fundi`,
+'sdc673e73b5c13aea': `Fshi`,
+'sed8da8a9b794e4a0': `Zgjidh rrugën`,
+'sef92ffa038c78883': `Vendimi`,
+'sf01f6e2cc5900cbd': `Shfaq elementet`,
+'sf6586f55cebdc732': `Bardhë/zi`,
+'sf755a4987e4c2af1': `Hyrje/Dalje`,
+'sfbfc89b3a12052d6': `Kontrollo rrugën`,
+    };

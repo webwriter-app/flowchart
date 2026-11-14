@@ -1,0 +1,65 @@
+
+    // Do not modify this file by hand!
+    // Re-generate this file by running lit-localize
+
+
+
+
+    /* eslint-disable no-irregular-whitespace */
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+
+    export const templates = {
+      's012e7772b1fac646': `Təəssüf ki, seçilmiş yol səhvdir!`,
+'s03ee3cfb0919c62c': `Tapşırıq`,
+'s079cf7850d9327f0': `Şrift`,
+'s166bd56d19670a72': `Miqyas`,
+'s20b232c96ed539f0': `Məzmun...`,
+'s275e8941632a9afa': `Proses`,
+'s2ceb11be2290bb1b': `Ləğv et`,
+'s2f2044f2431a32d5': `Başlıq`,
+'s30f853f2943ac1ec': `Pastel`,
+'s36480f2f59da17d3': `Tapşırıq yoxdur!`,
+'s37c3fbc8adb256ec': `Verdana`,
+'s37edf2aec5ab122a': `Mono`,
+'s40d30619c8d7ef3a': `G/Ç`,
+'s44f386b424330b66': `Psevdokod`,
+'s4b10acae683d2978': `Tam ekran`,
+'s4f1565979d2815d9': `Kətanı köçür`,
+'s4f5fcf942bca6be5': `İpucu əlavə et`,
+'s53a526d5c80c3e28': `Standart`,
+'s5be397a47866f7de': `Həlli yoxla`,
+'s5bffe94b60a5e7d5': `Seçilmiş yol doğrudur!`,
+'s5e8250fb85d64c23': `Bağla`,
+'s6228ab313e3c8dcf': `Yolu saxla`,
+'s69e040d57d5bcc5e': `Elementləri gizlət`,
+'s70d2c6a9a84180ba': `Yeni mətni daxil edin:`,
+'s8290d08ab5a49ed0': `Birləşdirici`,
+'s85e34dc8cc55f1a3': `Hər şeyi silmək istədiyinizə əminsiniz?`,
+'s914cc7fb419008a8': `Şagird redaktəsini söndür`,
+'s930f77519fda90bb': `Yol əlavə et`,
+'s94d0e033f72fca89': `Tapşırıq əlavə et`,
+'s99a474c8e41b56f0': `Təbii dil`,
+'s99f110d27e30b289': `Başlıq`,
+'s9dcffdd89c8e0f58': `İpucu`,
+'s9df2887de87a2a6b': `İpucu yoxdur!`,
+'sa30f1981fd1cd441': `Şrift ölçüsü`,
+'saab875d8cfcfe712': `Mövzu`,
+'sae1c7f13b7c0c47f': `Başlanğıc`,
+'saf84ec86139d349e': `Şərh`,
+'sb67b82120563c611': `İpucları`,
+'sb83329fe48218739': `Şagirdlərin görünüşü sürüşdürməsini söndür`,
+'sbadd7c696d344cfb': `Alt proqram`,
+'sbc401e67067321d8': `Dəyişikliklər avtomatik saxlanılır.`,
+'sbd0939c338b4cdea': `Times New Roman`,
+'sc797fd9076cc136d': `Tapşırıqlar`,
+'sc8c4c5c1bda03a7c': `Arial`,
+'sd06702d4cc7f42fa': `Courier New`,
+'sd8f923198e0c5c6a': `Son`,
+'sdc673e73b5c13aea': `Sil`,
+'sed8da8a9b794e4a0': `Yol seç`,
+'sef92ffa038c78883': `Qərar`,
+'sf01f6e2cc5900cbd': `Elementləri göstər`,
+'sf6586f55cebdc732': `Qara/Ağ`,
+'sf755a4987e4c2af1': `Giriş/Çıxış`,
+'sfbfc89b3a12052d6': `Yolu yoxla`,
+    };
