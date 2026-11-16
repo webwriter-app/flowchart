@@ -1,5 +1,5 @@
-# Flowchart (`@webwriter/flowchart@2.1.1`)
-[License: MIT](LICENSE) | Version: 2.1.1
+# Flowchart (`@webwriter/flowchart@3.0.0`)
+[License: MIT](LICENSE) | Version: 3.0.0
 
 Create programming flowcharts with interactive tasks. Use standardized Elements such as loops and Branchings.
 
@@ -16,7 +16,7 @@ Create programming flowcharts with interactive tasks. Use standardized Elements 
 
 
 
-## `FlowchartWidget` (`<webwriter-flowchart>`)
+## `WebwriterFlowchart` (`<webwriter-flowchart>`)
 
 
 ### Usage
@@ -43,41 +43,56 @@ npm install @webwriter/flowchart
 ## Fields
 | Name (Attribute Name) | Type | Description | Default | Reflects |
 | :-------------------: | :--: | :---------: | :-----: | :------: |
-| `localize` | - | - | `LOCALIZE` | ✗ |
-| `graphNodes` (`graphNodes`) | `GraphNode[]` | Current list of graph nodes (programmatic API). | `[]` | ✓ |
+| `WebwriterFlowchart.actions` | `object` | - | `{ deleteSelection: { label: { _: 'Delete' }, shortcut: ['Delete', 'Backspace'], hidden: true }, }` | ✗ |
+| `localize` | - | - | - | ✗ |
+| `msg` | - | - | - | ✗ |
+| `graphNodes` | `GraphNode[]` | Current list of graph nodes (programmatic API). | `[]` | ✗ |
 | `arrows` (`arrows`) | `Arrow[]` | Current list of arrows between nodes (programmatic API). | `[]` | ✗ |
 | `getGraphNodes` | - | Get the current nodes. | - | ✗ |
 | `getArrows` | - | Get the current arrows. | - | ✗ |
-| `taskList` (`taskList`) | `ItemList[]` | Tasks shown in the task menu. | `[]` | ✓ |
-| `helpList` (`helpList`) | `ItemList[]` | Hints shown in the help menu. | `[]` | ✓ |
+| `taskList` | `ItemList[]` | Tasks shown in the task menu. | `[]` | ✗ |
+| `helpList` | `ItemList[]` | Hints shown in the help menu. | `[]` | ✗ |
 | `height` (`height`) | `number` | Canvas height (px). | `400` | ✓ |
-| `zoomLevel` (`zoomLevel`) | `number` | Current zoom percentage (50–200). | `100` | ✓ |
 | `canvasOffsetX` (`canvasOffsetX`) | `number` | Horizontal pan offset (world units). | `0` | ✓ |
 | `canvasOffsetY` (`canvasOffsetY`) | `number` | Vertical pan offset (world units). | `0` | ✓ |
-| `disableStudentEdit` (`disableStudentEdit`) | `boolean` | Disables interactive editing (adding/dragging/deleting). | `false` | ✓ |
 | `allowStudentEdit` | `boolean` | Whether students may add, drag and delete elements. | - | ✗ |
-| `disableStudentPan` (`disableStudentPan`) | `boolean` | Disables panning/zooming interactions. | `false` | ✓ |
 | `allowStudentPan` | `boolean` | Whether students may pan and zoom the canvas. | - | ✗ |
-| `font` (`font`) | `string` | Font family used for labels, spaces written as underscores. | `'Courier_New'` | ✓ |
-| `fontSize` (`fontSize`) | `number` | Font size used for labels. | `16` | ✓ |
-| `theme` (`theme`) | `string` | Color theme name. | `'standard'` | ✓ |
 | `fullscreen` (`fullscreen`) | `boolean` | Whether the widget is currently in fullscreen mode. | `false` | ✗ |
 | `getSelectedSequence` | - | Get the currently selected path sequence. | - | ✗ |
 | `isSelectingSequence` | - | Set path-selection mode. | - | ✗ |
 | `solutionMessage` (`solutionMessage`) | `string` | Message shown in the solution prompt. | `''` | ✗ |
 | `showSolution` (`showSolution`) | `boolean` | Whether the solution prompt is visible. | `false` | ✗ |
-| `setSelectedSequence` | - | Programmatically set the selected path sequence.<br>Overwrites the internal `selectedSequence` with the provided ordered descriptors. | - | ✗ |
+| `setSelectedSequence` | - | Programmatically set the selected path sequence. | - | ✗ |
+| `zoomLevel` | `number` | Current zoom percentage (50–200). | - | ✗ |
+| `font` | `string` | Font family used for labels, spaces written as underscores. | - | ✗ |
+| `fontSize` | `number` | Font size used for labels. | - | ✗ |
+| `theme` | `string` | Color theme name. | - | ✗ |
+| `WebwriterFlowchart.settings` | - | - | `declarations` | ✗ |
+| `settingsCore` | - | - | `new SettingsCore(this, { ...options, root: () => this.renderRoot, rendered: () => this.updateComplete })` | ✗ |
+| `options` | - | - | - | ✗ |
 
 *Fields including [properties](https://developer.mozilla.org/en-US/docs/Glossary/Property/JavaScript) and [attributes](https://developer.mozilla.org/en-US/docs/Glossary/Attribute) define the current state of the widget and offer customization options.*
 
 ## Methods
 | Name | Description | Parameters |
 | :--: | :---------: | :-------: |
-| `isEditable` | Returns whether the widget is currently in an editable state<br>based on the `contenteditable` attribute. | -
-| `selectSequence` | Toggle path-selection mode for solution checking.<br>When turning off the mode, clears the current selected sequence, ends a running<br>task recording and drops any selected node/arrow/rectangle, then triggers a redraw. | -
-| `checkSolution` | Compare the currently selected path sequence with a task's expected sequence.<br>If length and element-wise id/type match, shows a success message; otherwise<br>shows a failure message. Uses `showSolutionWithMessage()` to display the result. | `task: ItemList`
+| `isEditable` | Returns whether the widget is currently in an editable state<br>based on the `contenteditable` attribute. | -
+| `selectSequence` | Toggle path-selection mode for solution checking.<br>When turning off the mode, clears the current selected sequence, ends a running<br>task recording and drops any selected node/arrow/rectangle, then triggers a redraw. | -
+| `checkSolution` | Compare the selected path with the task's recorded one and show the verdict. | `task: ItemList`
+| `addTask` | Append a new task with default title and content to the task list. | -
+| `addHelp` | Append a new hint with default title and content to the help list. | -
+| `addGraphNode` | Adds a new graph node of the given type at the current viewport center.<br>The node is appended to `graphNodes` and the canvas is redrawn. | `node: 'start'|'end'|'op'|'decision'|'connector'|'i/o'|'sub'|'text'`, `text: string`
+| `deleteSelection` | Removes the selected node(s) or arrow. Runs from Delete and Backspace while focus is in the widget (not in a text field or dialog).<br>With nothing selected it declines the key, which then goes on to the page. | -
+| `finalize` | - | -
 
 *[Methods](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Method_definitions) allow programmatic access to the widget.*
+
+## Slots
+| Name | Description | Content Type |
+| :--: | :---------: | :----------: |
+| `data` | Direct application/json block stores flowchart nodes, tasks, and hints. | - |
+
+*[Slots](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_templates_and_slots) define how the content of the widget is rendered.*
 
 ## Custom CSS properties
 | Name | Description |
@@ -95,7 +110,7 @@ npm install @webwriter/flowchart
 
 *The [editing config](https://webwriter.app/docs/packages/configuring/#editingconfig) defines how explorable authoring tools such as [WebWriter](https://webwriter.app) treat the widget.*
 
-*No public slots, events, or CSS parts.*
+*No public events, or CSS parts.*
 
 
 ---
