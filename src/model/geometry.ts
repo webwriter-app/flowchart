@@ -3,10 +3,10 @@ export interface Point {
    y: number;
 }
 
-export const MIN_ZOOM = 50;
-export const MAX_ZOOM = 200;
+const MIN_ZOOM = 50;
+const MAX_ZOOM = 200;
 
-export const clampZoom = (zoom: number) => Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, Math.round(zoom)));
+const clampZoom = (zoom: number) => Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, Math.round(zoom)));
 
 /**
  * Viewport position to world coordinates: relative to the canvas, divided by the zoom and,

@@ -8,7 +8,7 @@ export function renderTasks(this: WebwriterFlowchart, taskList: ItemList[]) {
     const renderTask = (task: ItemList, index: number) => {
         const selectSequenceEvent = new CustomEvent('startSelectSequence');
 
-        const deleteTask = (event: MouseEvent) => {
+        const deleteTask = () => {
             taskList.splice(index, 1);
             this.taskList = [...taskList];
         };

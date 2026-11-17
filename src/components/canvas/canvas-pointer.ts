@@ -1,6 +1,6 @@
 import type { WebwriterFlowchart } from '../../widgets/webwriter-flowchart';
 import type { GraphNode } from '../../model/graph-node';
-import { distanceBetween, midpointOf, type Point } from '../../model/geometry';
+import { distanceBetween, midpointOf } from '../../model/geometry';
 import { handleNodeDragStart, handleArrowDragStart, handleMultipleNodesDragStart } from '../handler/mouse-down-handler';
 import { handleGrabRelease, handleNodeDragStop, handleArrowCreation } from '../handler/mouse-up-handler';
 import { handleSequenceSelection } from '../handler/handle-sequence-selection';
@@ -563,7 +563,6 @@ export class CanvasPointer {
             this.host.selectedNodes = this.host.graphNodes.filter((node) =>
                 isNodeInRectangle(this.host.ctx, node, selectionRectangle)
             );
-            this.host.view.redrawCanvas();
         } else if (this.host.isGrabbing && this.grabStartPosition && this.grabStartOffset) {
             const grabCoordinates = this.host.view.getMouseCoordinates(event, true)
             const deltaX = grabCoordinates.x - this.grabStartPosition.x;
@@ -578,9 +577,6 @@ export class CanvasPointer {
             const offsetY = parseFloat(this.host.canvas.style.getPropertyValue('--offset-y'));
             this.host.canvas.style.setProperty('--offset-x', `${offsetX + (deltaX * this.host.zoomLevel) / 100}px`);
             this.host.canvas.style.setProperty('--offset-y', `${offsetY + (deltaY * this.host.zoomLevel) / 100}px`);
-
-            // Draw the updated canvas
-            this.host.view.redrawCanvas();
 
             // Set grabStartPosition to the current mouse position
             this.grabStartPosition = { x: grabCoordinates.x, y: grabCoordinates.y };
@@ -612,18 +608,13 @@ export class CanvasPointer {
                 }
 
                 this.dragOffset = { x, y };
-
-                this.host.view.redrawCanvas();
             } else if (this.isDragging && this.draggedNode) {
                 this.draggedNode.x = x - this.dragOffset.x;
                 this.draggedNode.y = y - this.dragOffset.y;
-                this.host.view.redrawCanvas();
             } else if (this.isDrawingArrow && this.arrowStart && (this.host.selectedNode || this.host.selectedArrow)) {
                 const { x, y } = this.host.view.getMouseCoordinates(event);
 
                 this.tempArrowEnd = { x, y };
-
-                this.host.view.redrawCanvas();
             }
         }
 

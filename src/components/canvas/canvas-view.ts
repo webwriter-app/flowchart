@@ -48,14 +48,16 @@ export class CanvasView {
 
         ctx.fillStyle = "#104e8b";
 
-        // Draw dots in grid
+        // Draw dots in grid: one path and one fill for all of them
+        ctx.beginPath();
         for (let x = this.host.canvasOffsetX % gridSize; x < width; x += gridSize) {
             for (let y = this.host.canvasOffsetY % gridSize; y < height; y += gridSize) {
-                ctx.beginPath();
+                ctx.moveTo(x + dotSize, y);
                 ctx.arc(x, y, dotSize, 0, 2 * Math.PI);
-                ctx.fill();
             }
         }
+        ctx.fill();
+        ctx.beginPath();
 
         ctx.translate(this.host.canvasOffsetX, this.host.canvasOffsetY)
 
@@ -149,10 +151,9 @@ export class CanvasView {
      * Update canvas offset CSS variables when the workspace scrolls.
      * Keeps pointer-to-world mapping consistent during scrolling.
      *
-     * @param {Event} event
      * @returns {void}
      */
-    handleScroll = (event: Event) => {
+    handleScroll = () => {
         this.updateCanvasOffset();
     }
 

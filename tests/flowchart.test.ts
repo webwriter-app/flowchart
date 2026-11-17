@@ -4,7 +4,7 @@ import { assert } from "chai";
 import { getMochaConfig } from "@webwriter/build/test";
 import "../src/widgets/webwriter-flowchart";
 import {
-  NODES, block, dataOf, frame, key, make, mount, reset, until,
+  NODES, dataOf, frame, key, make, reset, until,
 } from "./helpers";
 
 mocha.setup(getMochaConfig());
