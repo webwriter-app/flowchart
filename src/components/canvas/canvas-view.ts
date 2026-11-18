@@ -1,7 +1,7 @@
 import type { WebwriterFlowchart } from '../../widgets/webwriter-flowchart';
 import { toWorld, zoomAround } from '../../model/geometry';
 import { reconnectArrows } from '../../model/preset-helper';
-import { applyGraphFont } from './utilities';
+import { applyGraphFont, measureTextSize } from './utilities';
 import { drawGraphNode, drawNodeAnchors } from '../drawer/draw-graph-node';
 import { drawArrow, drawTempArrow, generateArrowPoints, drawArrowAnchor } from '../drawer/draw-arrow';
 import { drawSelectionField } from '../drawer/draw-selection-field';
@@ -12,6 +12,9 @@ import { drawSelectionField } from '../drawer/draw-selection-field';
  */
 export class CanvasView {
     constructor(private host: WebwriterFlowchart) {}
+
+    /** @internal Set while the chart is drawn for paper: the whole chart, fitted, without grid and selection. */
+    print?: { scale: number; x: number; y: number };
 
     /** @internal Base grid spacing (world units). */
     gridSize: number = 50;
@@ -32,34 +35,43 @@ export class CanvasView {
      * @returns {void}
      */
     redrawCanvas() {
-        const { ctx, canvas, graphSettings: settings, selectedSequence } = this.host;
+        const { ctx, canvas, graphSettings: settings } = this.host;
+        const print = this.print;
+        const selectedSequence = print ? [] : this.host.selectedSequence;
+        const selectedNodes = print ? [] : this.host.selectedNodes;
         const dpi = window.devicePixelRatio || 1;
         // Clear the canvas, taking the zoom factor into account
         const scaleFactor = this.host.zoomLevel / 100;
         ctx.resetTransform();
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.scale(scaleFactor * dpi, scaleFactor * dpi);
 
-        // Draw the grid
-        const gridSize = this.gridSize;         // base spacing between grid points (unscaled)
-        const dotSize = this.dotSize;           // radius of each dot (unscaled)
-        const width = canvas.width / scaleFactor / dpi;
-        const height = canvas.height / scaleFactor / dpi;
+        if (print) {
+            ctx.scale(print.scale, print.scale);
+            ctx.translate(print.x, print.y);
+        } else {
+            ctx.scale(scaleFactor * dpi, scaleFactor * dpi);
 
-        ctx.fillStyle = "#104e8b";
+            // Draw the grid
+            const gridSize = this.gridSize;         // base spacing between grid points (unscaled)
+            const dotSize = this.dotSize;           // radius of each dot (unscaled)
+            const width = canvas.width / scaleFactor / dpi;
+            const height = canvas.height / scaleFactor / dpi;
 
-        // Draw dots in grid: one path and one fill for all of them
-        ctx.beginPath();
-        for (let x = this.host.canvasOffsetX % gridSize; x < width; x += gridSize) {
-            for (let y = this.host.canvasOffsetY % gridSize; y < height; y += gridSize) {
-                ctx.moveTo(x + dotSize, y);
-                ctx.arc(x, y, dotSize, 0, 2 * Math.PI);
+            ctx.fillStyle = this.accent(1, '#104e8b');
+
+            // Draw dots in grid: one path and one fill for all of them
+            ctx.beginPath();
+            for (let x = this.host.canvasOffsetX % gridSize; x < width; x += gridSize) {
+                for (let y = this.host.canvasOffsetY % gridSize; y < height; y += gridSize) {
+                    ctx.moveTo(x + dotSize, y);
+                    ctx.arc(x, y, dotSize, 0, 2 * Math.PI);
+                }
             }
-        }
-        ctx.fill();
-        ctx.beginPath();
+            ctx.fill();
+            ctx.beginPath();
 
-        ctx.translate(this.host.canvasOffsetX, this.host.canvasOffsetY)
+            ctx.translate(this.host.canvasOffsetX, this.host.canvasOffsetY)
+        }
 
         applyGraphFont(ctx, settings);
 
@@ -67,15 +79,31 @@ export class CanvasView {
 
         // Draw all connections
         this.host.arrows.forEach((arrow) => {
-            const isSelected = arrow === this.host.selectedArrow;
+            const isSelected = !print && arrow === this.host.selectedArrow;
             arrow.points = generateArrowPoints(ctx, arrow);
             drawArrow(ctx, arrow, settings, isSelected, selectedSequence);
         });
 
         // Draw all nodes
         this.host.graphNodes?.forEach((element) => {
-            drawGraphNode(ctx, element, settings, this.host.selectedNodes, selectedSequence);
+            drawGraphNode(ctx, element, settings, selectedNodes, selectedSequence);
         });
+
+        if (print) {
+            return;
+        }
+
+        // The node the keyboard works on
+        const ring = this.host.keyboard.ringNode;
+        if (ring) {
+            const size = measureTextSize(ctx, ring.text);
+            ctx.save();
+            ctx.strokeStyle = this.accent(1, '#104e8b');
+            ctx.lineWidth = 3;
+            ctx.setLineDash([8, 5]);
+            ctx.strokeRect(ring.x - 8, ring.y - 8, size.width + 16, size.height + 16);
+            ctx.restore();
+        }
 
         // Draw the anchor points of the selected element, if any
         if (this.host.selectedNode) {
@@ -99,6 +127,128 @@ export class CanvasView {
             drawSelectionField(ctx, this.host.pointer.selectionRectangle);
         }
     }
+
+    /** @internal The box around all nodes and arrows in world units, or undefined for an empty chart. */
+    contentBounds(): { minX: number; minY: number; maxX: number; maxY: number } | undefined {
+        const { ctx, canvas, graphNodes, arrows } = this.host;
+        if (!canvas || !ctx || !graphNodes.length) return undefined;
+        applyGraphFont(ctx, this.host.graphSettings);
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        for (const node of graphNodes) {
+            const size = measureTextSize(ctx, node.text);
+            minX = Math.min(minX, node.x);
+            minY = Math.min(minY, node.y);
+            maxX = Math.max(maxX, node.x + size.width);
+            maxY = Math.max(maxY, node.y + size.height);
+        }
+        for (const arrow of arrows) {
+            const points = arrow.points ?? [];
+            for (const point of points) {
+                minX = Math.min(minX, point.x);
+                minY = Math.min(minY, point.y);
+                maxX = Math.max(maxX, point.x);
+                maxY = Math.max(maxY, point.y);
+            }
+            // The caption sits centred on the middle segment, as in addArrowText
+            const at = Math.floor(points.length / 2 - 0.5);
+            if (arrow.text && points[at] && points[at + 1]) {
+                const x = (points[at].x + points[at + 1].x) / 2;
+                const y = (points[at].y + points[at + 1].y) / 2;
+                const half = ctx.measureText(arrow.text).width / 2 + 5;
+                minX = Math.min(minX, x - half);
+                maxX = Math.max(maxX, x + half);
+                minY = Math.min(minY, y - 10);
+                maxY = Math.max(maxY, y + 8);
+            }
+        }
+        return { minX, minY, maxX, maxY };
+    }
+
+    /** @internal Zoom and pan so that the whole chart is in view, as large as fits up to 100%. */
+    fitToContent() {
+        const bounds = this.contentBounds();
+        if (!bounds) return;
+        const margin = 30;
+        const palette = this.host.shadowRoot?.querySelector<HTMLElement>('.flowchart-menu:not(.collapsed)');
+        const width = this.host.canvas.clientWidth;
+        // The buttons in the top corner cover the first 48px.
+        const top = 48;
+        const height = this.host.canvas.clientHeight - top - (palette?.offsetHeight ?? 0);
+        const contentWidth = bounds.maxX - bounds.minX + 2 * margin;
+        const contentHeight = bounds.maxY - bounds.minY + 2 * margin;
+        const zoom = Math.max(50, Math.min(100, Math.floor((Math.min(width / contentWidth, height / contentHeight) * 100) / 10) * 10));
+        const scale = zoom / 100;
+        this.host.zoomLevel = zoom;
+        this.host.canvasOffsetX = (width / scale - contentWidth) / 2 + margin - bounds.minX;
+        this.host.canvasOffsetY = (height / scale - contentHeight) / 2 + margin - bounds.minY + top / scale;
+        this.applyZoom();
+    }
+
+    /** @internal In reading mode, fit the chart when none of it lies in view, as on a narrow container for a chart authored on a wide one. */
+    fitIfHidden() {
+        const bounds = this.contentBounds();
+        if (!bounds || this.host.isEditable() || this.host.fullscreen) return;
+        const scale = this.host.zoomLevel / 100;
+        const left = -this.host.canvasOffsetX;
+        const top = -this.host.canvasOffsetY;
+        const right = left + this.host.canvas.clientWidth / scale;
+        const bottom = top + this.host.canvas.clientHeight / scale;
+        if (bounds.maxX < left || bounds.minX > right || bounds.maxY < top || bounds.minY > bottom) this.fitToContent();
+    }
+
+    /** @internal Apply changed options to the running canvas. */
+    applyOptionChanges(changed: Map<PropertyKey, unknown>) {
+        if (!this.host.canvas || !this.host.ctx) return;
+        if (changed.has('zoomLevel')) {
+            this.applyZoom();
+        } else if (changed.has('font') || changed.has('fontSize') || changed.has('theme')) {
+            this.redrawCanvas();
+        }
+    }
+
+    /** @internal Keep the canvas `touch-action` in sync with interactivity. */
+    updateTouchAction() {
+        const { canvas, allowStudentEdit, allowStudentPan } = this.host;
+        if (!canvas) return;
+        canvas.style.touchAction = allowStudentEdit || allowStudentPan || this.host.isEditable() ? 'none' : 'auto';
+    }
+
+    /** @internal Accent color `n` of the document's theme, or `fallback` without a theme. */
+    accent(n: number, fallback: string): string {
+        return getComputedStyle(this.host).getPropertyValue(`--ww-theme-accent-${n}`).trim() || fallback;
+    }
+
+    /** @internal Print scale: CSS pixels on paper per world unit, and the sharpness of the bitmap. */
+    private static readonly PRINT_SCALE = 1.25;
+    private static readonly PRINT_SHARPNESS = 2;
+
+    /**
+     * @internal Before printing: size the canvas to the whole chart and draw it fitted, since the
+     * screen view shows an arbitrary window onto the chart. Returns false when there is nothing to print.
+     */
+    beginPrint = (): boolean => {
+        const bounds = this.contentBounds();
+        if (!bounds) return false;
+        const { canvas } = this.host;
+        const margin = 30;
+        const { minX, minY, maxX, maxY } = bounds;
+        const width = maxX - minX + 2 * margin;
+        const height = maxY - minY + 2 * margin;
+        const scale = CanvasView.PRINT_SCALE * CanvasView.PRINT_SHARPNESS;
+        canvas.width = Math.ceil(width * scale);
+        canvas.height = Math.ceil(height * scale);
+        canvas.style.width = `${width * CanvasView.PRINT_SCALE}px`;
+        this.print = { scale, x: margin - minX, y: margin - minY };
+        this.redrawCanvas();
+        return true;
+    };
+
+    /** @internal After printing: back to the screen view. */
+    endPrint = () => {
+        if (!this.print) return;
+        this.print = undefined;
+        this.syncLayout();
+    };
 
     /** @internal Recompute canvas dimensions and trigger redraw. */
     updateCanvasSize = () => {
@@ -292,7 +442,7 @@ export class CanvasView {
 
     /** @internal Update canvas with the current fullscreen state and height. */
     syncLayout = () => {
-        if (!this.host.canvas) return;
+        if (!this.host.canvas || this.print) return;
 
         const fullscreen = this.isFullscreen;
 
@@ -310,5 +460,6 @@ export class CanvasView {
         this.host.canvas.style.width = '100%';
         this.host.canvas.style.height = '';
         this.updateCanvasSize();
+        this.fitIfHidden();
     };
 }

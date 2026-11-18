@@ -345,7 +345,14 @@
       "ckb-Arab": "هێڵکاریی ڕەوت",
       "af-ZA": "Vloeidiagram",
       "af-NA": "Vloeidiagram"
-    }
+    },
+    "importFormats": [
+      ".mmd"
+    ],
+    "exportFormats": [
+      ".mmd",
+      "image/png"
+    ]
   },
   "./snippets/Erklaerung": {
     "label": {

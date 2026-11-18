@@ -105,3 +105,17 @@ export function renderDialogs(host: WebwriterFlowchart) {
         </sl-dialog>
     `;
 }
+
+/** Paper only: the tasks under the chart, or a note where an empty chart would print as a blank box. */
+export function renderPrintView(host: WebwriterFlowchart) {
+    const tasks = host.taskList.filter((task) => task.titel?.trim() || task.content?.trim());
+    return html`
+        ${host.graphNodes.length ? '' : html`<div class="print-only print-note">${host.msg('Interactive content: open the document online')}</div>`}
+        ${tasks.length ? html`
+            <section class="print-only print-tasks">
+                <h2>${host.msg('Tasks')}</h2>
+                <ol>${tasks.map((task) => html`<li><strong>${task.titel}</strong> ${task.content}</li>`)}</ol>
+            </section>
+        ` : ''}
+    `;
+}

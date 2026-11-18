@@ -4,7 +4,7 @@ import { assert } from "chai";
 import { getMochaConfig } from "@webwriter/build/test";
 import "../src/widgets/webwriter-flowchart";
 import {
-  NODES, dataOf, frame, key, make, reset, until,
+  NODES, block, dataOf, frame, key, make, mount, reset, until,
 } from "./helpers";
 
 mocha.setup(getMochaConfig());
@@ -220,6 +220,291 @@ describe("<webwriter-flowchart> permissions and canvas", function () {
     canvas.dispatchEvent(new WheelEvent("wheel", { deltaY: -100, clientX: r.left + 50, clientY: r.top + 50, bubbles: true, composed: true, cancelable: true }));
     await w.updateComplete;
     assert.equal(w.zoomLevel, 110, `zoom ${w.zoomLevel}`);
+  });
+});
+
+describe("<webwriter-flowchart> keyboard", function () {
+  afterEach(reset);
+
+  const canvasOf = (w: any) => w.shadowRoot!.querySelector("canvas")! as HTMLCanvasElement;
+
+  it("makes the canvas one labelled tab stop", async function () {
+    const w = await make();
+    const canvas = canvasOf(w);
+    assert.equal(canvas.tabIndex, 0);
+    assert.isNotEmpty(canvas.getAttribute("aria-label"));
+    assert.isNotNull(w.shadowRoot!.querySelector("#canvas-help"));
+  });
+
+  it("walks from node to node with the arrow keys", async function () {
+    const w = await make({ edit: true });
+    const canvas = canvasOf(w);
+    canvas.focus();
+    key(canvas, "ArrowDown");
+    assert.equal(w.selectedNode?.id, "a", "first node in reading order");
+    key(canvas, "ArrowDown");
+    assert.equal(w.selectedNode?.id, "b");
+    key(canvas, "ArrowUp");
+    assert.equal(w.selectedNode?.id, "a");
+    assert.isNotEmpty(w.announcement);
+  });
+
+  it("only moves the focus ring for readers who may not edit", async function () {
+    const w = await make({ attrs: "disablestudentedit" });
+    const canvas = canvasOf(w);
+    canvas.focus();
+    key(canvas, "ArrowDown");
+    assert.equal(w.keyboard.focusNode?.id, "a");
+    assert.isUndefined(w.selectedNode);
+  });
+
+  it("adds the focused node to the path being selected", async function () {
+    const w = await make({ attrs: "disablestudentedit" });
+    const canvas = canvasOf(w);
+    canvas.focus();
+    w.selectSequence();
+    key(canvas, "ArrowDown");
+    key(canvas, "Enter");
+    key(canvas, "ArrowDown");
+    key(canvas, " ");
+    assert.deepEqual(w.selectedSequence.map((step: any) => step.id), ["a", "b"]);
+  });
+
+  it("opens the caption prompt on Enter for authors", async function () {
+    const w = await make({ edit: true });
+    const canvas = canvasOf(w);
+    canvas.focus();
+    key(canvas, "ArrowDown");
+    key(canvas, "Enter");
+    assert.equal(w.textPrompt?.type, "node");
+    assert.equal(w.textPrompt?.index, 0);
+  });
+
+  it("moves the node with Alt and the arrow keys and writes it to the block", async function () {
+    const w = await make({ edit: true });
+    const canvas = canvasOf(w);
+    canvas.focus();
+    key(canvas, "ArrowDown");
+    key(canvas, "ArrowRight", { altKey: true });
+    key(canvas, "ArrowDown", { altKey: true, shiftKey: true });
+    assert.equal(w.graphNodes[0].x, 110);
+    assert.equal(w.graphNodes[0].y, 110);
+    await until(() => dataOf(w).graphNodes[0].x === 110, "move written");
+  });
+
+  it("connects two nodes with c, the arrow keys and Enter", async function () {
+    const w = await make({ edit: true });
+    const canvas = canvasOf(w);
+    canvas.focus();
+    key(canvas, "ArrowDown");
+    key(canvas, "c");
+    assert.isTrue(w.pointer.isDrawingArrow, "dashed arrow while choosing");
+    key(canvas, "Enter");
+    assert.equal(w.arrows.length, 1);
+    assert.equal(w.arrows[0].from.id, "a");
+    assert.equal(w.arrows[0].to.id, "b");
+    assert.isFalse(w.pointer.isDrawingArrow);
+    await until(() => dataOf(w).graphNodes[0].connections?.length === 1, "connection written");
+    key(canvas, "a");
+    assert.equal(w.selectedArrow?.id, w.arrows[0].id, "a selects the arrow");
+    key(canvas, "Delete");
+    await until(() => w.arrows.length === 0, "arrow removed");
+  });
+
+  it("cancels a connection with Escape", async function () {
+    const w = await make({ edit: true });
+    const canvas = canvasOf(w);
+    canvas.focus();
+    key(canvas, "ArrowDown");
+    key(canvas, "c");
+    key(canvas, "Escape");
+    assert.isFalse(w.pointer.isDrawingArrow);
+    assert.equal(w.arrows.length, 0);
+  });
+
+  it("pans with Shift and the arrow keys, zooms with plus and minus", async function () {
+    const w = await make();
+    const canvas = canvasOf(w);
+    canvas.focus();
+    key(canvas, "ArrowLeft", { shiftKey: true });
+    assert.equal(w.canvasOffsetX, 60);
+    key(canvas, "+");
+    assert.equal(w.zoomLevel, 110);
+    key(canvas, "-");
+    key(canvas, "-");
+    assert.equal(w.zoomLevel, 90);
+  });
+
+  it("leaves the keys alone when the reader may not pan", async function () {
+    const w = await make({ attrs: "disablestudentpan disablestudentedit" });
+    const canvas = canvasOf(w);
+    canvas.focus();
+    assert.isTrue(key(canvas, "+"), "plus was consumed");
+    assert.equal(w.zoomLevel, 100);
+  });
+});
+
+describe("<webwriter-flowchart> touch", function () {
+  afterEach(reset);
+
+  const touch = (canvas: HTMLCanvasElement, type: string, id: number, x: number, y: number) =>
+    canvas.dispatchEvent(new PointerEvent(type, { pointerId: id, pointerType: "touch", isPrimary: id === 1, clientX: x, clientY: y, button: 0, bubbles: true, composed: true, cancelable: true }));
+
+  it("selects a node with a tap", async function () {
+    const w = await make({ edit: true });
+    const canvas = w.shadowRoot!.querySelector("canvas")! as HTMLCanvasElement;
+    const r = canvas.getBoundingClientRect();
+    const x = r.left + 110, y = r.top + 75;
+    touch(canvas, "pointerdown", 1, x, y);
+    touch(canvas, "pointerup", 1, x, y);
+    canvas.dispatchEvent(new MouseEvent("click", { clientX: x, clientY: y, bubbles: true, composed: true }));
+    assert.equal(w.selectedNode?.id, "a");
+  });
+
+  it("drags a node with one finger", async function () {
+    const w = await make({ edit: true });
+    const canvas = w.shadowRoot!.querySelector("canvas")! as HTMLCanvasElement;
+    const r = canvas.getBoundingClientRect();
+    const x = r.left + 110, y = r.top + 75;
+    touch(canvas, "pointerdown", 1, x, y);
+    touch(canvas, "pointermove", 1, x + 40, y + 30);
+    touch(canvas, "pointerup", 1, x + 40, y + 30);
+    assert.isAbove(w.graphNodes.find((n: any) => n.id === "a").x, 120);
+  });
+
+  it("zooms with two fingers", async function () {
+    const w = await make();
+    const canvas = w.shadowRoot!.querySelector("canvas")! as HTMLCanvasElement;
+    const r = canvas.getBoundingClientRect();
+    const cx = r.left + 200, cy = r.top + 150;
+    touch(canvas, "pointerdown", 1, cx - 40, cy);
+    touch(canvas, "pointerdown", 2, cx + 40, cy);
+    touch(canvas, "pointermove", 1, cx - 80, cy);
+    touch(canvas, "pointermove", 2, cx + 80, cy);
+    touch(canvas, "pointerup", 1, cx - 80, cy);
+    touch(canvas, "pointerup", 2, cx + 80, cy);
+    assert.isAbove(w.zoomLevel, 100);
+  });
+
+  it("opens the node menu with a long press", async function () {
+    const w = await make({ edit: true });
+    const canvas = w.shadowRoot!.querySelector("canvas")! as HTMLCanvasElement;
+    const r = canvas.getBoundingClientRect();
+    touch(canvas, "pointerdown", 1, r.left + 110, r.top + 75);
+    await until(() => w.contextMenuAt, "context menu after the long press");
+    touch(canvas, "pointerup", 1, r.left + 110, r.top + 75);
+  });
+
+  it("keeps the buttons at least 24px high", async function () {
+    const w = await make({ edit: true });
+    for (const button of w.shadowRoot!.querySelectorAll(".action-menu sl-button, .flowchart-menu-content sl-button")) {
+      const box = (button as HTMLElement).getBoundingClientRect();
+      assert.isAtLeast(box.height, 24);
+      assert.isAtLeast(box.width, 24);
+    }
+  });
+});
+
+describe("<webwriter-flowchart> layout, theme and print", function () {
+  afterEach(reset);
+
+  it("limits the host width", async function () {
+    const w = await make();
+    const style = getComputedStyle(w);
+    assert.equal(style.minWidth, "300px");
+    assert.equal(style.maxWidth, "2100px");
+    assert.equal(style.boxSizing, "border-box");
+  });
+
+  it("includes arrow captions in the content bounds", async function () {
+    const w = await make();
+    const Widget = customElements.get("webwriter-flowchart") as any;
+    const load = async (caption: string) => {
+      const apply = await Widget.convertFrom[".mmd"].call(w, new File([`flowchart TD\n A[One] -->|"${caption}"| B[Two]\n`], "c.mmd"));
+      apply();
+      await frame(); await frame();
+      return w.view.contentBounds();
+    };
+    const plain = await load("x");
+    const long = await load("a very long caption that is wider than both nodes together, really");
+    assert.isBelow(long.minX, plain.minX, "the caption widens the box to the left");
+    assert.isAbove(long.maxX, plain.maxX, "and to the right");
+  });
+
+  it("fits the chart in reading mode when none of it lies in view", async function () {
+    const far = [{ id: "far", node: "op", text: "Far", x: 2000, y: 80, connections: [] }];
+    const w = await make({ data: { graphNodes: far, taskList: [], helpList: [] } });
+    await until(() => w.canvasOffsetX !== 0, "fitted");
+    const left = -w.canvasOffsetX;
+    assert.isAtMost(left, 2000, "the node lies right of the view's left edge");
+    assert.isAbove(left + w.canvas.clientWidth / (w.zoomLevel / 100), 2000, "and inside the view");
+  });
+
+  it("leaves the view of an author alone", async function () {
+    const far = [{ id: "far", node: "op", text: "Far", x: 2000, y: 80, connections: [] }];
+    const w = await make({ edit: true, data: { graphNodes: far, taskList: [], helpList: [] } });
+    await frame(); await frame();
+    assert.equal(w.canvasOffsetX, 0);
+  });
+
+  it("follows the document's text color and font, and its accent for the grid", async function () {
+    reset();
+    mount.innerHTML = `<div style="--ww-text-color: rgb(1, 2, 3); --ww-font-family: Georgia; --ww-theme-accent-1: rgb(10, 20, 30)"><webwriter-flowchart height="400">${block({ graphNodes: NODES, taskList: [], helpList: [] })}</webwriter-flowchart></div>`;
+    const w = mount.querySelector("webwriter-flowchart") as any;
+    await w.updateComplete;
+    await until(() => w.canvas, "canvas");
+    const style = getComputedStyle(w);
+    assert.equal(style.color, "rgb(1, 2, 3)");
+    assert.include(style.fontFamily, "Georgia");
+    assert.equal(w.view.accent(1, "red"), "rgb(10, 20, 30)");
+    assert.equal(getComputedStyle(w.shadowRoot!.querySelector(".workspace")!).getPropertyValue("--sl-font-sans").trim(), "Georgia");
+  });
+
+  it("falls back to the plain colors without a theme", async function () {
+    const w = await make();
+    assert.equal(w.view.accent(1, "#104e8b"), "#104e8b");
+  });
+
+  it("exposes the canvas and workspace as parts", async function () {
+    const w = await make();
+    assert.equal(w.shadowRoot!.querySelector("canvas")!.getAttribute("part"), "canvas");
+    assert.equal(w.shadowRoot!.querySelector(".workspace")!.getAttribute("part"), "workspace");
+  });
+
+  it("draws the whole chart before printing and goes back afterwards", async function () {
+    const w = await make({ data: { graphNodes: NODES, taskList: [{ titel: "Draw it", content: "Connect the steps" }], helpList: [] } });
+    const before = w.canvas.width;
+    window.dispatchEvent(new Event("beforeprint"));
+    assert.isDefined(w.view.print);
+    assert.notEqual(w.canvas.width, before, "canvas sized to the chart");
+    assert.match(w.canvas.style.width, /px$/);
+    window.dispatchEvent(new Event("afterprint"));
+    assert.isUndefined(w.view.print);
+    assert.equal(w.canvas.style.width, "100%");
+    assert.equal(w.canvas.width, before);
+  });
+
+  it("prints the tasks and a note for an empty chart", async function () {
+    const w = await make({ data: { graphNodes: [], taskList: [{ titel: "Draw it", content: "Connect the steps" }], helpList: [] } });
+    assert.isNotNull(w.shadowRoot!.querySelector(".print-note"));
+    assert.include(w.shadowRoot!.querySelector(".print-tasks")!.textContent, "Draw it");
+    const full = await make();
+    assert.isNull(full.shadowRoot!.querySelector(".print-note"));
+    assert.isNull(full.shadowRoot!.querySelector(".print-tasks"));
+  });
+
+  it("removes its print listeners on disconnect", async function () {
+    const w = await make();
+    window.dispatchEvent(new Event("beforeprint"));
+    w.remove();
+    assert.isUndefined(w.view.print, "print state ends with the element");
+  });
+
+  it("offers the tasks and hints to readers who have some", async function () {
+    const none = await make();
+    assert.equal(none.shadowRoot!.querySelectorAll(".action-menu sl-button").length, 2, "grab, fullscreen");
+    const some = await make({ data: { graphNodes: NODES, taskList: [{ titel: "T", content: "c" }], helpList: [{ titel: "H", content: "h" }] } });
+    assert.equal(some.shadowRoot!.querySelectorAll(".action-menu sl-button").length, 4);
   });
 });
 

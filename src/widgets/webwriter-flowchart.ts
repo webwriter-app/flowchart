@@ -1,4 +1,4 @@
-import { LitElementWw } from '@webwriter/lit';
+import { LitElementWw, computed, signal } from '@webwriter/lit';
 import { jsonData } from '@webwriter/lit/data';
 import { localizer } from '@webwriter/lit/localize';
 import { Permissions } from '@webwriter/lit/permissions';
@@ -11,14 +11,16 @@ import type { MsgFn } from "@lit/localize";
 import { GraphNode } from '../model/graph-node';
 import { Arrow } from '../model/arrow';
 import { ItemList, type SequenceStep } from '../model/item-list';
-import { deleteArrow, deleteNode, placementOffset, sequencesMatch, type NodeType } from '../model/graph-edit';
+import { sequencesMatch, type NodeType } from '../model/graph-edit';
 import { createArrowsFromGraphNodes, reconnectArrows } from '../model/preset-helper';
 
-import { drawGraphNode } from '../components/drawer/draw-graph-node';
+import { addNodeInView, removeSelection } from '../components/canvas/node-edit';
 import { CanvasPointer } from '../components/canvas/canvas-pointer';
+import { CanvasKeyboard } from '../components/canvas/canvas-keyboard';
 import { CanvasView } from '../components/canvas/canvas-view';
 import { renderActionMenu, renderNodePalette, renderResizeHandle } from '../components/ui/toolbar';
-import { renderDialogs } from '../components/ui/dialogs';
+import { renderDialogs, renderPrintView } from '../components/ui/dialogs';
+import { exportImage, exportList, exportMermaid, exportPng, importList, importMermaid } from '../components/exchange';
 import { TextPrompt } from '../components/ui/text-prompt';
 import { papWidgetStyles } from '../components/flowchart.styles';
 
@@ -48,6 +50,13 @@ type DrawerTexts = { msg: MsgFn };
  * @tagname webwriter-flowchart
  *
  * @slot data - Direct application/json block stores flowchart nodes, tasks, and hints.
+ *
+ * Keyboard: the canvas is one tab stop. Arrow keys move between nodes; Enter adds the node to the path being selected, or edits its caption; `a` walks along the arrows of the node (Enter edits the arrow's caption); `c` starts a connection, the arrow keys pick the target and Enter creates it; Alt+arrows move the node (Alt+Shift for large steps); Shift+arrows pan; `+` and `-` zoom; `0` fits the chart; Escape cancels or clears the selection; Delete removes the selection.
+ * Touch: tap selects, drag moves, a long press opens the node menu, a double tap edits a caption, two fingers pan and zoom.
+ * Print: the whole chart is printed fitted to the page, without grid, controls and selection, followed by the task list. A chart without nodes prints a short note.
+ * Files and conversions: a Mermaid flowchart (`.mmd`) is imported and exported (lossy: positions, tasks, hints and colors are not part of Mermaid; on import the nodes are laid out in layers, subgraphs are refused, a second arrow between two nodes and arrows from a node to itself are dropped, and a recorded path of a task is cleared); the chart is exported as a PNG picture (`image/png`) or as an `img` element with a PNG data URL; an `ol` or `ul` becomes a chain of process steps between a start and an end, and the chart becomes an `ol` of its captions in reading order (branches and loops are flattened).
+ * @signal {boolean} pathCorrect - True while the path last checked against a task was correct; false after a wrong path or when path selection ends.
+ * @signal {string} selected - Caption of the selected node, or an empty string.
  * @attr {number} height - Canvas height in pixels. Default 400.
  * @attr {number} zoom-level - Zoom percentage in the range [50, 200]. Default 100.
  * @attr {number} canvas-offset-x - Horizontal pan offset in world units.
@@ -72,6 +81,12 @@ type DrawerTexts = { msg: MsgFn };
  * @prop {string} solutionMessage - Message shown in the solution prompt.
  * @prop {boolean} showSolution - Whether the solution prompt is visible.
  *
+ * @part canvas - The drawing surface with the chart.
+ * @part workspace - The area that holds the canvas and the overlay controls.
+ *
+ * @cssprop --ww-text-color - Text color of the controls and dialogs. Defaults to the inherited color.
+ * @cssprop --ww-font-family - Font of the controls and dialogs. Defaults to the inherited font.
+ * @cssprop --ww-theme-accent-1 - Color of the canvas grid, the keyboard focus ring and the focus outline. Defaults to #104e8b.
  * @cssprop --offset-x - Internal canvas left offset (managed by the widget).
  * @cssprop --offset-y - Internal canvas top offset (managed by the widget).
  * @cssprop --widget-height - Workspace height in pixels.
@@ -103,7 +118,16 @@ export class WebwriterFlowchart extends Settings(LitElementWw, {
 } as const) {
     static actions = {
         deleteSelection: { label: { _: 'Delete' }, shortcut: ['Delete', 'Backspace'], hidden: true },
+        fitToView: { label: (widget: DrawerTexts) => widget.msg('Fit to view') },
+        clearAll: {
+            label: (widget: DrawerTexts) => widget.msg('Clear chart'),
+            intent: 'danger' as const,
+            confirm: (widget: DrawerTexts) => widget.msg('Are you sure, that you want to delete everything?'),
+        },
     };
+
+    static convertFrom = { '.mmd': importMermaid, ol: importList, ul: importList };
+    static convertTo = { '.mmd': exportMermaid, 'image/png': exportPng, img: exportImage, ol: exportList };
 
     /** @internal Component style (provided by papWidgetStyles). */
     static styles = papWidgetStyles;
@@ -148,6 +172,16 @@ export class WebwriterFlowchart extends Settings(LitElementWw, {
      */
     @property({ type: Array, attribute: false }) accessor graphNodes: GraphNode[] = [];
 
+    /** @internal Backs the published signals. */
+    readonly #pathCorrect = signal(false);
+    readonly #selected = signal('');
+
+    /** Values other widgets can read through `#id[name]`. */
+    readonly signals = {
+        pathCorrect: computed(() => this.#pathCorrect.get()),
+        selected: computed(() => this.#selected.get()),
+    };
+
     /** @internal Currently selected/focused node. */
     @property({ type: Object }) accessor selectedNode: GraphNode | undefined = undefined;
 
@@ -157,16 +191,10 @@ export class WebwriterFlowchart extends Settings(LitElementWw, {
     /** @internal Currently selected/focused arrow. */
     @property({ type: Object }) accessor selectedArrow: Arrow | undefined = undefined;
 
-    /**
-     * Get the current nodes.
-     * @returns {GraphNode[]} Array of nodes
-     */
+    /** Get the current nodes. */
     getGraphNodes = () => this.graphNodes;
 
-    /**
-     * Get the current arrows.
-     * @returns {Arrow[]} Array of arrows
-     */
+    /** Get the current arrows. */
     getArrows = () => this.arrows;
 
     /** Tasks visible in the task menu. */
@@ -228,6 +256,12 @@ export class WebwriterFlowchart extends Settings(LitElementWw, {
 
     /** @internal Drawing, zoom, size and fullscreen of the canvas. */
     readonly view = new CanvasView(this);
+
+    /** @internal Keyboard input on the canvas. */
+    readonly keyboard = new CanvasKeyboard(this);
+
+    /** @internal Screen reader announcement for the node the keyboard moved to. */
+    @state() accessor announcement = '';
 
     /** @internal Mouse, touch and pen input on the canvas. */
     readonly pointer = new CanvasPointer(this);
@@ -330,16 +364,24 @@ export class WebwriterFlowchart extends Settings(LitElementWw, {
 
         this.view.applyZoom();
         this.view.redrawCanvas();
-        this.updateTouchAction();
+        this.view.updateTouchAction();
 
         if(this.allowStudentPan && !this.allowStudentEdit && !this.isEditable()){
             this.isGrabbing = true
         }
     }
 
+    /** @internal Removes the print listeners on `window`. */
+    #printListeners?: AbortController;
+
     /** @internal Lifecycle: wire global listeners and custom events. */
     connectedCallback() {
         super.connectedCallback();
+
+        this.#printListeners = new AbortController();
+        const { signal } = this.#printListeners;
+        window.addEventListener('beforeprint', this.view.beginPrint, { signal });
+        window.addEventListener('afterprint', this.view.endPrint, { signal });
 
         this.resizeObserver.observe(this);
         this.addEventListener('fullscreenchange', this.view.syncLayout);
@@ -348,6 +390,8 @@ export class WebwriterFlowchart extends Settings(LitElementWw, {
 
     /** @internal Lifecycle: teardown listeners. */
     disconnectedCallback() {
+        this.#printListeners?.abort();
+        this.view.endPrint();
         this.pointer.cancelLongPress();
         this.resizeObserver.disconnect();
         this.removeEventListener('fullscreenchange', this.view.syncLayout);
@@ -369,34 +413,9 @@ export class WebwriterFlowchart extends Settings(LitElementWw, {
             this.taskList = this.taskList.filter((task) => task.titel?.trim() || task.content?.trim());
             this.helpList = this.helpList.filter((help) => help.titel?.trim() || help.content?.trim());
         }
-        this.updateTouchAction();
-        this.applyOptionChanges(changedProperties);
-    }
-
-    /** @internal Apply changed options to the running canvas. */
-    private applyOptionChanges(changedProperties: PropertyValues<this>) {
-        if (!this.canvas || !this.ctx) {
-            return;
-        }
-
-        if (changedProperties.has('zoomLevel')) {
-            // Also triggers redraw
-            this.view.applyZoom();
-        } else if (
-            changedProperties.has('font') ||
-            changedProperties.has('fontSize') ||
-            changedProperties.has('theme')
-        ) {
-            this.view.redrawCanvas();
-        }
-    }
-
-    /** @internal Keep the canvas `touch-action` in sync with interactivity. */
-    private updateTouchAction() {
-        if (!this.canvas) return;
-        const interactive =
-            this.allowStudentEdit || this.allowStudentPan || this.isEditable();
-        this.canvas.style.touchAction = interactive ? 'none' : 'auto';
+        if (changedProperties.has('selectedNode')) this.#selected.set(this.selectedNode?.text.trim() ?? '');
+        this.view.updateTouchAction();
+        this.view.applyOptionChanges(changedProperties);
     }
 
     /**
@@ -411,6 +430,7 @@ export class WebwriterFlowchart extends Settings(LitElementWw, {
 
         if (!this.isSelectingSequence) {
             this.selectedSequence = [];
+            this.#pathCorrect.set(false);
             // Without the selection mode no task can record.
             this.sequenceEditIndex = null;
         }
@@ -490,23 +510,13 @@ export class WebwriterFlowchart extends Settings(LitElementWw, {
      * @returns {void}
      */
     addGraphNode(node: NodeType, text: string) {
-        const workspace = this.shadowRoot?.querySelector('.workspace') as HTMLElement;
-        const dpi = window.devicePixelRatio || 1;
-        const scaleFactor = this.zoomLevel / 100;
-        const shift = placementOffset(this.addGraphNodeIndex);
-        const element: GraphNode = {
-            id: crypto.randomUUID(),
-            node: node,
-            text: text,
-            x: (this.canvas.width / dpi * 0.4 + workspace.scrollLeft) / scaleFactor - this.canvasOffsetX + shift.x,
-            y: (this.canvas.height / dpi * 0.4 + workspace.scrollTop) / scaleFactor - this.canvasOffsetY + shift.y,
-        };
-
+        addNodeInView(this, node, text, this.addGraphNodeIndex);
         this.addGraphNodeIndex = (this.addGraphNodeIndex + 1) % 3;
+    }
 
-        this.graphNodes = [...this.graphNodes, element];
-        reconnectArrows(this.arrows, this.graphNodes);
-        drawGraphNode(this.ctx, element, this.graphSettings, this.selectedNodes, this.selectedSequence);
+    /** Zoom and pan so that the whole chart is in view. */
+    fitToView() {
+        this.view.fitToContent();
     }
 
     /** @internal Clear all nodes and arrows and reset the selection. */
@@ -520,19 +530,7 @@ export class WebwriterFlowchart extends Settings(LitElementWw, {
 
     /** @internal Delete selected node(s) or arrow; maintain connections; redraw. */
     deleteSelectedObject() {
-        for (const node of this.selectedNodes) {
-            ({ graphNodes: this.graphNodes, arrows: this.arrows } = deleteNode(this.graphNodes, this.arrows, node));
-        }
-        this.selectedNodes = [];
-
-        if (this.selectedNode) {
-            ({ graphNodes: this.graphNodes, arrows: this.arrows } = deleteNode(this.graphNodes, this.arrows, this.selectedNode));
-            this.selectedNode = undefined;
-        } else if (this.selectedArrow) {
-            this.arrows = deleteArrow(this.arrows, this.selectedArrow);
-            this.selectedArrow = undefined;
-        }
-
+        removeSelection(this);
         this.toggleMenu('context');
         this.view.redrawCanvas();
     }
@@ -558,6 +556,7 @@ export class WebwriterFlowchart extends Settings(LitElementWw, {
     showSolutionWithMessage(message: string, correct = false) {
         this.solutionMessage = message;
         this.solutionCorrect = correct;
+        this.#pathCorrect.set(correct);
         this.showSolution = true;
     }
 
@@ -568,9 +567,16 @@ export class WebwriterFlowchart extends Settings(LitElementWw, {
 
     render() {
         return html`
-            <div class="workspace" @scroll="${this.view.handleScroll}" @dragstart="${this.view.handleWorkspaceDragStart}">
+            <div class="workspace" part="workspace" @scroll="${this.view.handleScroll}" @dragstart="${this.view.handleWorkspaceDragStart}">
                 <canvas
-                    tabindex="-1"
+                    part="canvas"
+                    tabindex="0"
+                    role="application"
+                    aria-label="${this.msg('Flowchart')}"
+                    aria-describedby="canvas-help"
+                    @keydown="${this.keyboard.handleKeyDown}"
+                    @focus="${this.keyboard.handleFocus}"
+                    @blur="${this.keyboard.handleBlur}"
                     @pointerdown="${this.pointer.handlePointerDown}"
                     @pointerup="${this.pointer.handlePointerUp}"
                     @pointermove="${this.pointer.handlePointerMove}"
@@ -580,11 +586,14 @@ export class WebwriterFlowchart extends Settings(LitElementWw, {
                     @contextmenu="${this.pointer.handleContextMenu}"
                     @wheel="${this.view.handleWheel}"
                 ></canvas>
+                <p id="canvas-help" class="visually-hidden">${this.msg('Arrow keys select a node. Enter edits it or adds it to the path. A selects its arrows, C connects it to another node, Alt and arrow keys move it, Shift and arrow keys pan, plus and minus zoom, 0 fits the chart.')}</p>
+                <div class="visually-hidden" role="status" aria-live="polite">${this.announcement}</div>
                 ${renderActionMenu(this)}
                 ${renderNodePalette(this)}
                 ${renderDialogs(this)}
             </div>
             ${renderResizeHandle(this)}
+            ${renderPrintView(this)}
         `;
     }
 }

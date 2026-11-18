@@ -4,8 +4,15 @@ export const papWidgetStyles = css`
     :host {
         overflow: hidden !important;
         display: block;
+        box-sizing: border-box;
         position: relative;
         width: 100%;
+        min-width: 300px;
+        max-width: 2100px;
+        min-height: 12rem;
+
+        color: var(--ww-text-color, inherit);
+        font-family: var(--ww-font-family, inherit);
 
         --offset-x: 0;
         --offset-y: 0;
@@ -36,6 +43,10 @@ export const papWidgetStyles = css`
 
         /* Clips the flowchart menu while it slides out below the bottom edge. */
         overflow: hidden;
+
+        /* The overlay controls reflow with the width of the workspace. */
+        container-type: inline-size;
+        --sl-font-sans: var(--ww-font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol");
     }
 
     canvas {
@@ -55,7 +66,23 @@ export const papWidgetStyles = css`
     }
 
     canvas:focus-visible {
-        outline: none;
+        outline: 2px solid var(--ww-theme-accent-1, #104e8b);
+        outline-offset: -2px;
+    }
+
+    .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
+
+    .print-only {
+        display: none;
     }
 
     /*
@@ -176,7 +203,30 @@ export const papWidgetStyles = css`
     }
 
     .flowchart-menu-content sl-button {
-        flex: 1;
+        flex: 1 1 auto;
+    }
+
+    /* Narrow: tighter palette, so that the canvas keeps most of the height. */
+    @container (max-width: 420px) {
+        .flowchart-menu-content {
+            gap: 2px;
+            padding: var(--sl-spacing-2x-small);
+        }
+
+        .flowchart-menu-content sl-button::part(base) {
+            padding-inline: var(--sl-spacing-x-small);
+        }
+    }
+
+    /* Wide: the palette stays one row. */
+    @container (min-width: 900px) {
+        .flowchart-menu-content sl-button {
+            flex: 0 1 auto;
+        }
+
+        .flowchart-menu-content {
+            justify-content: center;
+        }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -250,5 +300,65 @@ export const papWidgetStyles = css`
     /* Keep the drag events (and their offsetY) on the handle itself. */
     .y-rezise sl-icon {
         pointer-events: none;
+    }
+
+    @media print {
+        :host {
+            min-width: 0;
+            border: none;
+            overflow: visible !important;
+            break-inside: avoid;
+        }
+
+        .workspace {
+            height: auto;
+            overflow: visible;
+            container-type: normal;
+            break-inside: avoid;
+        }
+
+        /* The whole chart is drawn for paper before printing; the canvas keeps its own aspect. */
+        canvas {
+            position: static;
+            display: block;
+            height: auto !important;
+            max-width: 100%;
+            margin-inline: auto;
+            background: none;
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+        }
+
+        .action-menu,
+        .flowchart-menu,
+        .context-menu,
+        .y-rezise,
+        sl-dialog {
+            display: none !important;
+        }
+
+        .print-only {
+            display: block;
+        }
+
+        .print-note {
+            padding: 1rem;
+            border: 1px dashed currentColor;
+        }
+
+        .print-tasks {
+            margin-top: 1rem;
+            break-inside: avoid;
+        }
+
+        .print-tasks h2 {
+            margin: 0 0 0.5rem;
+            font-size: 1.1em;
+        }
+
+        .print-tasks li {
+            margin-bottom: 0.5rem;
+            white-space: pre-line;
+        }
     }
 `;

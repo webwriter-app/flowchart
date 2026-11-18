@@ -5,6 +5,8 @@ import type { NodeType } from '../../model/graph-edit';
 import { newNodeText, nodeLabel } from '../../model/node-labels';
 
 import grabIcon from "@tabler/icons/outline/hand-grab.svg";
+import tasksIcon from "@tabler/icons/outline/list-check.svg";
+import hintsIcon from "@tabler/icons/outline/bulb.svg";
 import fullscreenIcon from "@tabler/icons/outline/arrows-maximize.svg";
 import chevronUpIcon from "@tabler/icons/outline/chevron-up.svg";
 import gripHorizontalIcon from "@tabler/icons/outline/grip-horizontal.svg";
@@ -40,6 +42,20 @@ export function renderActionMenu(host: WebwriterFlowchart) {
                         @click="${host.grabCanvas}"
                     >
                         <sl-icon slot="prefix" src=${grabIcon} label="${host.msg('Move the canvas')}"></sl-icon>
+                    </sl-button>
+                </sl-tooltip>
+            ` : html``}
+            ${host.isEditable() || host.taskList.length ? html`
+                <sl-tooltip content="${host.msg('Tasks')}" placement="bottom">
+                    <sl-button variant=${host.openMenu === 'task' ? 'primary' : 'default'} @click="${() => host.toggleMenu('task')}">
+                        <sl-icon slot="prefix" src=${tasksIcon} label="${host.msg('Tasks')}"></sl-icon>
+                    </sl-button>
+                </sl-tooltip>
+            ` : html``}
+            ${host.isEditable() || host.helpList.length ? html`
+                <sl-tooltip content="${host.msg('Hints')}" placement="bottom">
+                    <sl-button variant=${host.openMenu === 'help' ? 'primary' : 'default'} @click="${() => host.toggleMenu('help')}">
+                        <sl-icon slot="prefix" src=${hintsIcon} label="${host.msg('Hints')}"></sl-icon>
                     </sl-button>
                 </sl-tooltip>
             ` : html``}
