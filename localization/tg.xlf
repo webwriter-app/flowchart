@@ -163,12 +163,15 @@
 <target>В/Б</target></trans-unit>
 <trans-unit id="sb12a478341aeeaa0">
   <source>This is not a Mermaid flowchart.</source>
+  <target>Ин диаграммаи ҷараёни Mermaid нест.</target>
 </trans-unit>
 <trans-unit id="s3d75146004e88b95">
   <source>The Mermaid file uses syntax that the flowchart cannot represent.</source>
+  <target>Файли Mermaid наҳверо истифода мебарад, ки диаграммаи ҷараён нишон дода наметавонад.</target>
 </trans-unit>
 <trans-unit id="s680650116a0cb908">
   <source>The Mermaid file contains no nodes.</source>
+  <target>Файли Mermaid ягон гиреҳ надорад.</target>
 </trans-unit>
 <trans-unit id="sf71c79de504af8f7">
   <source>Interactive content: open the document online</source>
@@ -180,12 +183,15 @@
 </trans-unit>
 <trans-unit id="sb3add93f414b025a">
   <source>Clear chart</source>
+  <target>Тоза кардани диаграмма</target>
 </trans-unit>
 <trans-unit id="sb6de135cb577ab3b">
   <source>Flowchart</source>
+<target>Нақшаи ҷараён</target>
 </trans-unit>
 <trans-unit id="s7e7fbb831139b56a">
   <source>Arrow keys select a node. Enter edits it or adds it to the path. A selects its arrows, C connects it to another node, Alt and arrow keys move it, Shift and arrow keys pan, plus and minus zoom, 0 fits the chart.</source>
+  <target>Тугмаҳои тирча гиреҳро интихоб мекунанд. Enter онро таҳрир ё ба роҳ илова мекунад. A тирчаҳои онро интихоб мекунад ва C ба гиреҳи дигар мепайвандад. Alt бо тирчаҳо гиреҳро мекӯчонад, Shift бо тирчаҳо намоишро мекӯчонад, + ва − миқёсро иваз мекунанд ва 0 диаграммаро дар намоиш ҷой медиҳад.</target>
 </trans-unit>
 </body>
 </file>

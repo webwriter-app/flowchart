@@ -163,12 +163,15 @@
 <target>ಇ/ಔ</target></trans-unit>
 <trans-unit id="sb12a478341aeeaa0">
   <source>This is not a Mermaid flowchart.</source>
+  <target>ಇದು Mermaid ಹರಿವು ರೇಖಾಚಿತ್ರವಲ್ಲ.</target>
 </trans-unit>
 <trans-unit id="s3d75146004e88b95">
   <source>The Mermaid file uses syntax that the flowchart cannot represent.</source>
+  <target>Mermaid ಕಡತದಲ್ಲಿ ಹರಿವು ರೇಖಾಚಿತ್ರವು ನಿರೂಪಿಸಲಾಗದ ವಾಕ್ಯರಚನೆ ಇದೆ.</target>
 </trans-unit>
 <trans-unit id="s680650116a0cb908">
   <source>The Mermaid file contains no nodes.</source>
+  <target>Mermaid ಕಡತದಲ್ಲಿ ಯಾವುದೇ ನೋಡ್‌ಗಳಿಲ್ಲ.</target>
 </trans-unit>
 <trans-unit id="sf71c79de504af8f7">
   <source>Interactive content: open the document online</source>
@@ -180,12 +183,15 @@
 </trans-unit>
 <trans-unit id="sb3add93f414b025a">
   <source>Clear chart</source>
+  <target>ರೇಖಾಚಿತ್ರವನ್ನು ತೆರವುಗೊಳಿಸಿ</target>
 </trans-unit>
 <trans-unit id="sb6de135cb577ab3b">
   <source>Flowchart</source>
+<target>ಹರಿವು ಚಾರ್ಟ್</target>
 </trans-unit>
 <trans-unit id="s7e7fbb831139b56a">
   <source>Arrow keys select a node. Enter edits it or adds it to the path. A selects its arrows, C connects it to another node, Alt and arrow keys move it, Shift and arrow keys pan, plus and minus zoom, 0 fits the chart.</source>
+  <target>ಬಾಣದ ಕೀಲಿಗಳು ನೋಡ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡುತ್ತವೆ. Enter ಅದನ್ನು ತಿದ್ದುತ್ತದೆ ಅಥವಾ ಪಥಕ್ಕೆ ಸೇರಿಸುತ್ತದೆ. A ಅದರ ಬಾಣಗಳನ್ನು ಆಯ್ಕೆಮಾಡುತ್ತದೆ, C ಅದನ್ನು ಇನ್ನೊಂದು ನೋಡ್‌ಗೆ ಸಂಪರ್ಕಿಸುತ್ತದೆ. Alt ಮತ್ತು ಬಾಣದ ಕೀಲಿಗಳು ನೋಡ್ ಸರಿಸುತ್ತವೆ, Shift ಮತ್ತು ಬಾಣದ ಕೀಲಿಗಳು ನೋಟ ಸರಿಸುತ್ತವೆ, + ಮತ್ತು − ಜೂಮ್ ಮಾಡುತ್ತವೆ, 0 ಚಾರ್ಟ್ ಅನ್ನು ನೋಟಕ್ಕೆ ಹೊಂದಿಸುತ್ತದೆ.</target>
 </trans-unit>
 </body>
 </file>

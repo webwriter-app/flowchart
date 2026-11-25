@@ -202,12 +202,15 @@
 <target>Черный/белый</target></trans-unit>
 <trans-unit id="sb12a478341aeeaa0">
   <source>This is not a Mermaid flowchart.</source>
+  <target>Это не блок-схема Mermaid.</target>
 </trans-unit>
 <trans-unit id="s3d75146004e88b95">
   <source>The Mermaid file uses syntax that the flowchart cannot represent.</source>
+  <target>В файле Mermaid используется синтаксис, который блок-схема не может представить.</target>
 </trans-unit>
 <trans-unit id="s680650116a0cb908">
   <source>The Mermaid file contains no nodes.</source>
+  <target>Файл Mermaid не содержит узлов.</target>
 </trans-unit>
 <trans-unit id="sf71c79de504af8f7">
   <source>Interactive content: open the document online</source>
@@ -219,12 +222,15 @@
 </trans-unit>
 <trans-unit id="sb3add93f414b025a">
   <source>Clear chart</source>
+  <target>Очистить схему</target>
 </trans-unit>
 <trans-unit id="sb6de135cb577ab3b">
   <source>Flowchart</source>
+<target>Блок-схема</target>
 </trans-unit>
 <trans-unit id="s7e7fbb831139b56a">
   <source>Arrow keys select a node. Enter edits it or adds it to the path. A selects its arrows, C connects it to another node, Alt and arrow keys move it, Shift and arrow keys pan, plus and minus zoom, 0 fits the chart.</source>
+  <target>Клавиши со стрелками выбирают узел. Enter редактирует его или добавляет в путь. A выбирает его стрелки, C соединяет его с другим узлом. Alt со стрелками перемещает узел, Shift со стрелками сдвигает вид, + и − меняют масштаб, 0 вписывает схему в область просмотра.</target>
 </trans-unit>
 </body>
   </file>

@@ -163,12 +163,15 @@
 <target>इ/आ</target></trans-unit>
 <trans-unit id="sb12a478341aeeaa0">
   <source>This is not a Mermaid flowchart.</source>
+  <target>यो Mermaid प्रवाहचित्र होइन।</target>
 </trans-unit>
 <trans-unit id="s3d75146004e88b95">
   <source>The Mermaid file uses syntax that the flowchart cannot represent.</source>
+  <target>Mermaid फाइलमा प्रवाहचित्रले देखाउन नसक्ने सिन्ट्याक्स छ।</target>
 </trans-unit>
 <trans-unit id="s680650116a0cb908">
   <source>The Mermaid file contains no nodes.</source>
+  <target>Mermaid फाइलमा कुनै नोड छैन।</target>
 </trans-unit>
 <trans-unit id="sf71c79de504af8f7">
   <source>Interactive content: open the document online</source>
@@ -180,12 +183,15 @@
 </trans-unit>
 <trans-unit id="sb3add93f414b025a">
   <source>Clear chart</source>
+  <target>चार्ट खाली गर्नुहोस्</target>
 </trans-unit>
 <trans-unit id="sb6de135cb577ab3b">
   <source>Flowchart</source>
+<target>फ्लोचार्ट</target>
 </trans-unit>
 <trans-unit id="s7e7fbb831139b56a">
   <source>Arrow keys select a node. Enter edits it or adds it to the path. A selects its arrows, C connects it to another node, Alt and arrow keys move it, Shift and arrow keys pan, plus and minus zoom, 0 fits the chart.</source>
+  <target>एरो कुञ्जीले नोड छान्छन्। Enter ले त्यसलाई सम्पादन गर्छ वा मार्गमा थप्छ। A ले त्यसका तीर छान्छ र C ले अर्को नोडसँग जोड्छ। Alt र एरोले नोड सार्छन्, Shift र एरोले दृश्य सार्छन्, + र − ले जुम गर्छन् र 0 ले चित्रलाई दृश्यमा अटाउँछ।</target>
 </trans-unit>
 </body>
 </file>

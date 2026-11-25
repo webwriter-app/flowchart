@@ -202,12 +202,15 @@
 <target>Melns/balts</target></trans-unit>
 <trans-unit id="sb12a478341aeeaa0">
   <source>This is not a Mermaid flowchart.</source>
+  <target>Šī nav Mermaid plūsmas diagramma.</target>
 </trans-unit>
 <trans-unit id="s3d75146004e88b95">
   <source>The Mermaid file uses syntax that the flowchart cannot represent.</source>
+  <target>Mermaid failā izmantota sintakse, ko plūsmas diagramma nevar attēlot.</target>
 </trans-unit>
 <trans-unit id="s680650116a0cb908">
   <source>The Mermaid file contains no nodes.</source>
+  <target>Mermaid failā nav mezglu.</target>
 </trans-unit>
 <trans-unit id="sf71c79de504af8f7">
   <source>Interactive content: open the document online</source>
@@ -219,12 +222,15 @@
 </trans-unit>
 <trans-unit id="sb3add93f414b025a">
   <source>Clear chart</source>
+  <target>Notīrīt diagrammu</target>
 </trans-unit>
 <trans-unit id="sb6de135cb577ab3b">
   <source>Flowchart</source>
+<target>Plūsmas diagramma</target>
 </trans-unit>
 <trans-unit id="s7e7fbb831139b56a">
   <source>Arrow keys select a node. Enter edits it or adds it to the path. A selects its arrows, C connects it to another node, Alt and arrow keys move it, Shift and arrow keys pan, plus and minus zoom, 0 fits the chart.</source>
+  <target>Bulttaustiņi atlasa mezglu. Enter to rediģē vai pievieno ceļam. A atlasa tā bultas, bet C savieno to ar citu mezglu. Alt un bulttaustiņi pārvieto mezglu, Shift un bulttaustiņi pārbīda skatu, + un − maina mērogu, bet 0 ietilpina diagrammu skatā.</target>
 </trans-unit>
 </body>
   </file>

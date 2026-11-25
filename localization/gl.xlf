@@ -163,12 +163,15 @@
 <target>E/S</target></trans-unit>
 <trans-unit id="sb12a478341aeeaa0">
   <source>This is not a Mermaid flowchart.</source>
+  <target>Isto non é un diagrama de fluxo de Mermaid.</target>
 </trans-unit>
 <trans-unit id="s3d75146004e88b95">
   <source>The Mermaid file uses syntax that the flowchart cannot represent.</source>
+  <target>O ficheiro de Mermaid usa unha sintaxe que o diagrama de fluxo non pode representar.</target>
 </trans-unit>
 <trans-unit id="s680650116a0cb908">
   <source>The Mermaid file contains no nodes.</source>
+  <target>O ficheiro de Mermaid non contén nodos.</target>
 </trans-unit>
 <trans-unit id="sf71c79de504af8f7">
   <source>Interactive content: open the document online</source>
@@ -180,12 +183,15 @@
 </trans-unit>
 <trans-unit id="sb3add93f414b025a">
   <source>Clear chart</source>
+  <target>Baleirar o diagrama</target>
 </trans-unit>
 <trans-unit id="sb6de135cb577ab3b">
   <source>Flowchart</source>
+<target>Diagrama de fluxo</target>
 </trans-unit>
 <trans-unit id="s7e7fbb831139b56a">
   <source>Arrow keys select a node. Enter edits it or adds it to the path. A selects its arrows, C connects it to another node, Alt and arrow keys move it, Shift and arrow keys pan, plus and minus zoom, 0 fits the chart.</source>
+  <target>As frechas seleccionan un nodo. Intro edítao ou engádeo ao camiño. A selecciona as súas frechas e C conéctao a outro nodo. Alt e as frechas moven o nodo, Maiús e as frechas desprazan a vista, + e − cambian a ampliación e 0 encaixa o diagrama na vista.</target>
 </trans-unit>
 </body>
 </file>

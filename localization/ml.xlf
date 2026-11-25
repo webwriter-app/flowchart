@@ -163,12 +163,15 @@
 <target>I/O</target></trans-unit>
 <trans-unit id="sb12a478341aeeaa0">
   <source>This is not a Mermaid flowchart.</source>
+  <target>ഇത് Mermaid ഫ്ലോചാർട്ട് അല്ല.</target>
 </trans-unit>
 <trans-unit id="s3d75146004e88b95">
   <source>The Mermaid file uses syntax that the flowchart cannot represent.</source>
+  <target>Mermaid ഫയലിൽ ഫ്ലോചാർട്ടിന് പ്രതിനിധീകരിക്കാൻ കഴിയാത്ത വ്യാകരണം ഉപയോഗിച്ചിരിക്കുന്നു.</target>
 </trans-unit>
 <trans-unit id="s680650116a0cb908">
   <source>The Mermaid file contains no nodes.</source>
+  <target>Mermaid ഫയലിൽ നോഡുകളില്ല.</target>
 </trans-unit>
 <trans-unit id="sf71c79de504af8f7">
   <source>Interactive content: open the document online</source>
@@ -180,12 +183,15 @@
 </trans-unit>
 <trans-unit id="sb3add93f414b025a">
   <source>Clear chart</source>
+  <target>രേഖാചിത്രം മായ്ക്കുക</target>
 </trans-unit>
 <trans-unit id="sb6de135cb577ab3b">
   <source>Flowchart</source>
+<target>ഫ്ലോചാർട്ട്</target>
 </trans-unit>
 <trans-unit id="s7e7fbb831139b56a">
   <source>Arrow keys select a node. Enter edits it or adds it to the path. A selects its arrows, C connects it to another node, Alt and arrow keys move it, Shift and arrow keys pan, plus and minus zoom, 0 fits the chart.</source>
+  <target>അമ്പ് കീകൾ ഒരു നോഡ് തിരഞ്ഞെടുക്കുന്നു. Enter നോഡ് തിരുത്തുകയോ പാതയിലേക്ക് ചേർക്കുകയോ ചെയ്യുന്നു. A നോഡിന്റെ അമ്പുകൾ തിരഞ്ഞെടുക്കുന്നു, C മറ്റൊരു നോഡുമായി ബന്ധിപ്പിക്കുന്നു. Alt-ഉം അമ്പ് കീകളും നോഡ് നീക്കുന്നു, Shift-ഉം അമ്പ് കീകളും കാഴ്ച നീക്കുന്നു. +, − എന്നിവ സൂം ചെയ്യുന്നു, 0 ചാർട്ട് കാഴ്ചയിൽ ഒതുക്കുന്നു.</target>
 </trans-unit>
 </body>
 </file>

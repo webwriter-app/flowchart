@@ -202,12 +202,15 @@
 <target>Μαύρο/λευκό</target></trans-unit>
 <trans-unit id="sb12a478341aeeaa0">
   <source>This is not a Mermaid flowchart.</source>
+  <target>Αυτό δεν είναι διάγραμμα ροής Mermaid.</target>
 </trans-unit>
 <trans-unit id="s3d75146004e88b95">
   <source>The Mermaid file uses syntax that the flowchart cannot represent.</source>
+  <target>Το αρχείο Mermaid χρησιμοποιεί σύνταξη που δεν μπορεί να αναπαραστήσει το διάγραμμα ροής.</target>
 </trans-unit>
 <trans-unit id="s680650116a0cb908">
   <source>The Mermaid file contains no nodes.</source>
+  <target>Το αρχείο Mermaid δεν περιέχει κόμβους.</target>
 </trans-unit>
 <trans-unit id="sf71c79de504af8f7">
   <source>Interactive content: open the document online</source>
@@ -219,12 +222,15 @@
 </trans-unit>
 <trans-unit id="sb3add93f414b025a">
   <source>Clear chart</source>
+  <target>Εκκαθάριση διαγράμματος</target>
 </trans-unit>
 <trans-unit id="sb6de135cb577ab3b">
   <source>Flowchart</source>
+<target>Διάγραμμα ροής</target>
 </trans-unit>
 <trans-unit id="s7e7fbb831139b56a">
   <source>Arrow keys select a node. Enter edits it or adds it to the path. A selects its arrows, C connects it to another node, Alt and arrow keys move it, Shift and arrow keys pan, plus and minus zoom, 0 fits the chart.</source>
+  <target>Τα βέλη επιλέγουν κόμβο. Το Enter τον επεξεργάζεται ή τον προσθέτει στη διαδρομή. Το A επιλέγει τα βέλη του και το C τον συνδέει με άλλον κόμβο. Alt και βέλη μετακινούν τον κόμβο, Shift και βέλη μετατοπίζουν την προβολή, + και − κάνουν ζουμ και το 0 προσαρμόζει το διάγραμμα στην προβολή.</target>
 </trans-unit>
 </body>
   </file>

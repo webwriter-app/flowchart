@@ -163,12 +163,15 @@
 <target>உ/வெ</target></trans-unit>
 <trans-unit id="sb12a478341aeeaa0">
   <source>This is not a Mermaid flowchart.</source>
+  <target>இது Mermaid பாய்வுப்படம் அல்ல.</target>
 </trans-unit>
 <trans-unit id="s3d75146004e88b95">
   <source>The Mermaid file uses syntax that the flowchart cannot represent.</source>
+  <target>Mermaid கோப்பு பாய்வுப்படம் காட்ட முடியாத தொடரியலைப் பயன்படுத்துகிறது.</target>
 </trans-unit>
 <trans-unit id="s680650116a0cb908">
   <source>The Mermaid file contains no nodes.</source>
+  <target>Mermaid கோப்பில் கணுக்கள் இல்லை.</target>
 </trans-unit>
 <trans-unit id="sf71c79de504af8f7">
   <source>Interactive content: open the document online</source>
@@ -180,12 +183,15 @@
 </trans-unit>
 <trans-unit id="sb3add93f414b025a">
   <source>Clear chart</source>
+  <target>வரைபடத்தை அழி</target>
 </trans-unit>
 <trans-unit id="sb6de135cb577ab3b">
   <source>Flowchart</source>
+<target>பாய்வு விளக்கப்படம்</target>
 </trans-unit>
 <trans-unit id="s7e7fbb831139b56a">
   <source>Arrow keys select a node. Enter edits it or adds it to the path. A selects its arrows, C connects it to another node, Alt and arrow keys move it, Shift and arrow keys pan, plus and minus zoom, 0 fits the chart.</source>
+  <target>அம்பு விசைகள் கணுவைத் தேர்ந்தெடுக்கும். Enter அதைத் திருத்தும் அல்லது பாதையில் சேர்க்கும். A அதன் அம்புகளைத் தேர்ந்தெடுக்கும், C மற்றொரு கணுவுடன் இணைக்கும். Alt மற்றும் அம்பு விசைகள் கணுவை நகர்த்தும், Shift மற்றும் அம்பு விசைகள் பார்வையை நகர்த்தும். + மற்றும் − பெரிதாக்கும் அல்லது சிறிதாக்கும். 0 வரைபடத்தைப் பார்வைக்குள் பொருத்தும்.</target>
 </trans-unit>
 </body>
 </file>

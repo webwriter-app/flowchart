@@ -163,12 +163,15 @@
 <target>E/S</target></trans-unit>
 <trans-unit id="sb12a478341aeeaa0">
   <source>This is not a Mermaid flowchart.</source>
+  <target>Isto não é um fluxograma Mermaid.</target>
 </trans-unit>
 <trans-unit id="s3d75146004e88b95">
   <source>The Mermaid file uses syntax that the flowchart cannot represent.</source>
+  <target>O ficheiro Mermaid usa sintaxe que o fluxograma não consegue representar.</target>
 </trans-unit>
 <trans-unit id="s680650116a0cb908">
   <source>The Mermaid file contains no nodes.</source>
+  <target>O ficheiro Mermaid não contém nós.</target>
 </trans-unit>
 <trans-unit id="sf71c79de504af8f7">
   <source>Interactive content: open the document online</source>
@@ -180,12 +183,15 @@
 </trans-unit>
 <trans-unit id="sb3add93f414b025a">
   <source>Clear chart</source>
+  <target>Limpar o diagrama</target>
 </trans-unit>
 <trans-unit id="sb6de135cb577ab3b">
   <source>Flowchart</source>
+<target>Fluxograma</target>
 </trans-unit>
 <trans-unit id="s7e7fbb831139b56a">
   <source>Arrow keys select a node. Enter edits it or adds it to the path. A selects its arrows, C connects it to another node, Alt and arrow keys move it, Shift and arrow keys pan, plus and minus zoom, 0 fits the chart.</source>
+  <target>As teclas de seta selecionam um nó. Enter edita-o ou adiciona-o ao caminho. A seleciona as suas setas e C liga-o a outro nó. Alt e as setas movem o nó, Shift e as setas deslocam a vista, + e − ajustam o zoom e 0 ajusta o diagrama à vista.</target>
 </trans-unit>
 </body>
 </file>

@@ -163,12 +163,15 @@
 <target>ଇ/ଆ</target></trans-unit>
 <trans-unit id="sb12a478341aeeaa0">
   <source>This is not a Mermaid flowchart.</source>
+  <target>ଏହା Mermaid ଫ୍ଲୋଚାର୍ଟ ନୁହେଁ।</target>
 </trans-unit>
 <trans-unit id="s3d75146004e88b95">
   <source>The Mermaid file uses syntax that the flowchart cannot represent.</source>
+  <target>Mermaid ଫାଇଲ୍‌ରେ ଫ୍ଲୋଚାର୍ଟ ଦର୍ଶାଇପାରୁ ନଥିବା ସିନ୍‌ଟାକ୍ସ ଅଛି।</target>
 </trans-unit>
 <trans-unit id="s680650116a0cb908">
   <source>The Mermaid file contains no nodes.</source>
+  <target>Mermaid ଫାଇଲ୍‌ରେ କୌଣସି ନୋଡ୍ ନାହିଁ।</target>
 </trans-unit>
 <trans-unit id="sf71c79de504af8f7">
   <source>Interactive content: open the document online</source>
@@ -180,12 +183,15 @@
 </trans-unit>
 <trans-unit id="sb3add93f414b025a">
   <source>Clear chart</source>
+  <target>ଚିତ୍ରଟି ସଫା କରନ୍ତୁ</target>
 </trans-unit>
 <trans-unit id="sb6de135cb577ab3b">
   <source>Flowchart</source>
+<target>ପ୍ରବାହ ଚାର୍ଟ</target>
 </trans-unit>
 <trans-unit id="s7e7fbb831139b56a">
   <source>Arrow keys select a node. Enter edits it or adds it to the path. A selects its arrows, C connects it to another node, Alt and arrow keys move it, Shift and arrow keys pan, plus and minus zoom, 0 fits the chart.</source>
+  <target>ତୀର କି ଗୋଟିଏ ନୋଡ୍ ବାଛେ। Enter ତାହାକୁ ସମ୍ପାଦନା କରେ କିମ୍ବା ପଥରେ ଯୋଡ଼େ। A ତାହାର ତୀରଗୁଡ଼ିକୁ ବାଛେ ଏବଂ C ଅନ୍ୟ ନୋଡ୍ ସହ ଯୋଡ଼େ। Alt ସହ ତୀର ନୋଡ୍ ଘୁଞ୍ଚାଏ, Shift ସହ ତୀର ଦୃଶ୍ୟ ଘୁଞ୍ଚାଏ, + ଓ − ଜୁମ୍ କରେ ଏବଂ 0 ଚିତ୍ରକୁ ଦୃଶ୍ୟରେ ଫିଟ୍ କରେ।</target>
 </trans-unit>
 </body>
 </file>

@@ -163,12 +163,15 @@
 <target>I/O</target></trans-unit>
 <trans-unit id="sb12a478341aeeaa0">
   <source>This is not a Mermaid flowchart.</source>
+  <target>Hindi ito Mermaid flowchart.</target>
 </trans-unit>
 <trans-unit id="s3d75146004e88b95">
   <source>The Mermaid file uses syntax that the flowchart cannot represent.</source>
+  <target>Gumagamit ang Mermaid file ng sintaks na hindi maipapakita ng flowchart.</target>
 </trans-unit>
 <trans-unit id="s680650116a0cb908">
   <source>The Mermaid file contains no nodes.</source>
+  <target>Walang mga node ang Mermaid file.</target>
 </trans-unit>
 <trans-unit id="sf71c79de504af8f7">
   <source>Interactive content: open the document online</source>
@@ -180,12 +183,15 @@
 </trans-unit>
 <trans-unit id="sb3add93f414b025a">
   <source>Clear chart</source>
+  <target>I-clear ang diagram</target>
 </trans-unit>
 <trans-unit id="sb6de135cb577ab3b">
   <source>Flowchart</source>
+<target>Flowchart</target>
 </trans-unit>
 <trans-unit id="s7e7fbb831139b56a">
   <source>Arrow keys select a node. Enter edits it or adds it to the path. A selects its arrows, C connects it to another node, Alt and arrow keys move it, Shift and arrow keys pan, plus and minus zoom, 0 fits the chart.</source>
+  <target>Pumipili ng node ang mga arrow key. Ine-edit ito o idinaragdag sa path ng Enter. Pinipili ng A ang mga arrow nito at ikinokonekta ng C sa ibang node. Inililipat ng Alt at mga arrow ang node, iniusog ng Shift at mga arrow ang view, nag-zoom ang + at −, at ipinagkakasya ng 0 ang diagram sa view.</target>
 </trans-unit>
 </body>
 </file>

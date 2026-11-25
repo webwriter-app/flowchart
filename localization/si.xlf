@@ -163,12 +163,15 @@
 <target>I/O</target></trans-unit>
 <trans-unit id="sb12a478341aeeaa0">
   <source>This is not a Mermaid flowchart.</source>
+  <target>මෙය Mermaid ගැලීම් සටහනක් නොවේ.</target>
 </trans-unit>
 <trans-unit id="s3d75146004e88b95">
   <source>The Mermaid file uses syntax that the flowchart cannot represent.</source>
+  <target>Mermaid ගොනුවේ ගැලීම් සටහනට නිරූපණය කළ නොහැකි වාක්‍ය රීති භාවිත කරයි.</target>
 </trans-unit>
 <trans-unit id="s680650116a0cb908">
   <source>The Mermaid file contains no nodes.</source>
+  <target>Mermaid ගොනුවේ නෝඩ නොමැත.</target>
 </trans-unit>
 <trans-unit id="sf71c79de504af8f7">
   <source>Interactive content: open the document online</source>
@@ -180,12 +183,15 @@
 </trans-unit>
 <trans-unit id="sb3add93f414b025a">
   <source>Clear chart</source>
+  <target>රූපසටහන හිස් කරන්න</target>
 </trans-unit>
 <trans-unit id="sb6de135cb577ab3b">
   <source>Flowchart</source>
+<target>ප්‍රවාහ සටහන</target>
 </trans-unit>
 <trans-unit id="s7e7fbb831139b56a">
   <source>Arrow keys select a node. Enter edits it or adds it to the path. A selects its arrows, C connects it to another node, Alt and arrow keys move it, Shift and arrow keys pan, plus and minus zoom, 0 fits the chart.</source>
+  <target>ඊතල යතුරු මඟින් නෝඩයක් තෝරයි. Enter යතුර එය සංස්කරණය කරයි හෝ මාර්ගයට එක් කරයි. A එහි ඊතල තෝරයි, C එය වෙනත් නෝඩයකට සම්බන්ධ කරයි. Alt හා ඊතල නෝඩය ගෙනයයි, Shift හා ඊතල දර්ශනය ගෙනයයි, + හා − විශාලනය කරයි, 0 රූපසටහන දර්ශනයට ගළපයි.</target>
 </trans-unit>
 </body>
 </file>
