@@ -2,8 +2,8 @@
     // Do not modify this file by hand!
     // Re-generate this file by running lit-localize
 
-    
-    
+
+
 
     /* eslint-disable no-irregular-whitespace */
     /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -11,42 +11,61 @@
     export const templates = {
       's012e7772b1fac646': `Valitettavasti valittu reitti on väärä!`,
 's03ee3cfb0919c62c': `Tehtävä`,
+'s079cf7850d9327f0': `Fontti`,
+'s166bd56d19670a72': `Zoomaa`,
 's20b232c96ed539f0': `Sisältö...`,
 's275e8941632a9afa': `Prosessi`,
 's2ceb11be2290bb1b': `Peruuta`,
 's2f2044f2431a32d5': `Otsikko`,
+'s30f853f2943ac1ec': `Pastelli`,
 's36480f2f59da17d3': `Ei tehtäviä!`,
+'s37c3fbc8adb256ec': `Verdana`,
+'s37edf2aec5ab122a': `Mono`,
+'s3c604c5ce842d6f2': `Sovita näkymään`,
+'s3d75146004e88b95': `Mermaid-tiedosto käyttää syntaksia, jota vuokaavio ei voi esittää.`,
 's40d30619c8d7ef3a': `I/O`,
-'s44f386b424330b66': `Pseudokoodi`,
 's4b10acae683d2978': `Koko näyttö`,
 's4f1565979d2815d9': `Siirrä kangasta`,
 's4f5fcf942bca6be5': `Lisää vihje`,
+'s53a526d5c80c3e28': `Standardi`,
 's5be397a47866f7de': `Tarkista ratkaisu`,
 's5bffe94b60a5e7d5': `Valittu polku on oikea!`,
 's5e8250fb85d64c23': `Sulje`,
 's6228ab313e3c8dcf': `Tallenna polku`,
+'s680650116a0cb908': `Mermaid-tiedosto ei sisällä solmuja.`,
 's69e040d57d5bcc5e': `Piilota elementit`,
 's70d2c6a9a84180ba': `Kirjoita uusi teksti:`,
+'s7e7fbb831139b56a': `Valitse solmu nuolinäppäimillä. Enter muokkaa solmua tai lisää sen polkuun. A valitsee sen nuolet ja C yhdistää sen toiseen solmuun. Alt ja nuolinäppäimet siirtävät solmua, Shift ja nuolinäppäimet siirtävät näkymää, + ja − zoomaavat ja 0 sovittaa kaavion näkymään.`,
 's8290d08ab5a49ed0': `Liitin`,
 's85e34dc8cc55f1a3': `Oletko varma, että haluat poistaa kaiken?`,
+'s914cc7fb419008a8': `Estä opiskelijoiden muokkaus`,
 's930f77519fda90bb': `Lisää polku`,
 's94d0e033f72fca89': `Lisää tehtävä`,
-'s99a474c8e41b56f0': `Luonnollinen kieli`,
 's99f110d27e30b289': `Otsikko`,
 's9dcffdd89c8e0f58': `Vihje`,
 's9df2887de87a2a6b': `Ei vihjeitä!`,
+'sa30f1981fd1cd441': `Fonttikoko`,
+'saab875d8cfcfe712': `Teema`,
 'sae1c7f13b7c0c47f': `Aloita`,
 'saf84ec86139d349e': `Kommentti`,
+'sb12a478341aeeaa0': `Tämä ei ole Mermaid-vuokaavio.`,
+'sb3add93f414b025a': `Tyhjennä kaavio`,
 'sb67b82120563c611': `Vihjeitä`,
+'sb6de135cb577ab3b': `Vuokaavio`,
+'sb83329fe48218739': `Estä opiskelijoiden näkymän siirto`,
 'sbadd7c696d344cfb': `Alaohjelma`,
 'sbc401e67067321d8': `Muutokset tallennetaan automaattisesti.`,
+'sbd0939c338b4cdea': `Times New Roman`,
 'sc797fd9076cc136d': `Tehtävät`,
+'sc8c4c5c1bda03a7c': `Arial`,
+'sd06702d4cc7f42fa': `Courier New`,
 'sd8f923198e0c5c6a': `End`,
 'sdc673e73b5c13aea': `Poista`,
 'sed8da8a9b794e4a0': `Valitse reitti`,
 'sef92ffa038c78883': `Päätös`,
 'sf01f6e2cc5900cbd': `Näytä elementit`,
+'sf6586f55cebdc732': `Musta/valkoinen`,
+'sf71c79de504af8f7': `Vuorovaikutteinen sisältö: avaa asiakirja verkossa`,
 'sf755a4987e4c2af1': `Tulo/lähtö`,
 'sfbfc89b3a12052d6': `Tarkista polku`,
     };
-  

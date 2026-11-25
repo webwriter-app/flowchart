@@ -2,8 +2,8 @@
     // Do not modify this file by hand!
     // Re-generate this file by running lit-localize
 
-    
-    
+
+
 
     /* eslint-disable no-irregular-whitespace */
     /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -11,42 +11,61 @@
     export const templates = {
       's012e7772b1fac646': `Maalesef, seçilen yol yanlış!`,
 's03ee3cfb0919c62c': `Görev`,
+'s079cf7850d9327f0': `Yazı tipi`,
+'s166bd56d19670a72': `Yakınlaştır`,
 's20b232c96ed539f0': `İçerik...`,
 's275e8941632a9afa': `Süreç`,
 's2ceb11be2290bb1b': `İptal`,
 's2f2044f2431a32d5': `Başlık`,
+'s30f853f2943ac1ec': `Pastel`,
 's36480f2f59da17d3': `Görev yok!`,
+'s37c3fbc8adb256ec': `Verdana`,
+'s37edf2aec5ab122a': `Mono`,
+'s3c604c5ce842d6f2': `Görüntüye sığdır`,
+'s3d75146004e88b95': `Mermaid dosyası, akış şemasının gösteremeyeceği bir sözdizimi kullanıyor.`,
 's40d30619c8d7ef3a': `G/Ç`,
-'s44f386b424330b66': `Yalancı kod`,
 's4b10acae683d2978': `Tam Ekran`,
 's4f1565979d2815d9': `Tuvali hareket ettirin`,
 's4f5fcf942bca6be5': `İpucu ekle`,
+'s53a526d5c80c3e28': `Standart`,
 's5be397a47866f7de': `Çözümü kontrol et`,
 's5bffe94b60a5e7d5': `Seçilen yol doğru!`,
 's5e8250fb85d64c23': `Kapat`,
 's6228ab313e3c8dcf': `Yolu kaydet`,
+'s680650116a0cb908': `Mermaid dosyasında düğüm yok.`,
 's69e040d57d5bcc5e': `Öğeleri gizle`,
 's70d2c6a9a84180ba': `Yeni metni yazın:`,
+'s7e7fbb831139b56a': `Ok tuşları düğüm seçer. Enter düğümü düzenler veya yola ekler. A düğümün oklarını seçer, C başka bir düğüme bağlar. Alt ve ok tuşları düğümü, Shift ve ok tuşları görünümü kaydırır. + ve − yakınlaştırır veya uzaklaştırır, 0 şemayı görünüme sığdırır.`,
 's8290d08ab5a49ed0': `Konektör`,
 's85e34dc8cc55f1a3': `Her şeyi silmek istediğinizden emin misiniz?`,
+'s914cc7fb419008a8': `Öğrenci düzenlemesini kapat`,
 's930f77519fda90bb': `Yol ekle`,
 's94d0e033f72fca89': `Görev ekle`,
-'s99a474c8e41b56f0': `Doğal dil`,
 's99f110d27e30b289': `Başlık`,
 's9dcffdd89c8e0f58': `İpucu`,
 's9df2887de87a2a6b': `İpucu yok!`,
+'sa30f1981fd1cd441': `Yazı tipi boyutu`,
+'saab875d8cfcfe712': `Tema`,
 'sae1c7f13b7c0c47f': `Başlangıç`,
 'saf84ec86139d349e': `Yorum`,
+'sb12a478341aeeaa0': `Bu bir Mermaid akış şeması değil.`,
+'sb3add93f414b025a': `Şemayı temizle`,
 'sb67b82120563c611': `İpuçları`,
+'sb6de135cb577ab3b': `Akış şeması`,
+'sb83329fe48218739': `Öğrenci kaydırmasını kapat`,
 'sbadd7c696d344cfb': `Alt Program`,
 'sbc401e67067321d8': `Değişiklikler otomatik olarak kaydedilir.`,
+'sbd0939c338b4cdea': `Times New Roman`,
 'sc797fd9076cc136d': `Görevler`,
+'sc8c4c5c1bda03a7c': `Arial`,
+'sd06702d4cc7f42fa': `Courier New`,
 'sd8f923198e0c5c6a': `Bitiş`,
 'sdc673e73b5c13aea': `Silme`,
 'sed8da8a9b794e4a0': `Yolu seç`,
 'sef92ffa038c78883': `Karar`,
 'sf01f6e2cc5900cbd': `Öğeleri göster`,
+'sf6586f55cebdc732': `Siyah/Beyaz`,
+'sf71c79de504af8f7': `Etkileşimli içerik: belgeyi çevrimiçi açın`,
 'sf755a4987e4c2af1': `Giriş/Çıkış`,
 'sfbfc89b3a12052d6': `Yolu kontrol edin`,
     };
-  

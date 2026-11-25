@@ -2,8 +2,8 @@
     // Do not modify this file by hand!
     // Re-generate this file by running lit-localize
 
-    
-    
+
+
 
     /* eslint-disable no-irregular-whitespace */
     /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -11,42 +11,61 @@
     export const templates = {
       's012e7772b1fac646': `Niestety, wybrana ścieżka jest nieprawidłowa!`,
 's03ee3cfb0919c62c': `Zadanie`,
+'s079cf7850d9327f0': `Czcionka`,
+'s166bd56d19670a72': `Zoom`,
 's20b232c96ed539f0': `Treść...`,
 's275e8941632a9afa': `Proces`,
 's2ceb11be2290bb1b': `Anuluj`,
 's2f2044f2431a32d5': `Nagłówek`,
+'s30f853f2943ac1ec': `Pastel`,
 's36480f2f59da17d3': `Żadnych zadań!`,
+'s37c3fbc8adb256ec': `Verdana`,
+'s37edf2aec5ab122a': `Mono`,
+'s3c604c5ce842d6f2': `Dopasuj do widoku`,
+'s3d75146004e88b95': `Plik Mermaid używa składni, której schemat blokowy nie może odwzorować.`,
 's40d30619c8d7ef3a': `Wejścia/wyjścia`,
-'s44f386b424330b66': `Pseudokod`,
 's4b10acae683d2978': `Pełny ekran`,
 's4f1565979d2815d9': `Przesunięcie obszaru roboczego`,
 's4f5fcf942bca6be5': `Dodaj podpowiedź`,
+'s53a526d5c80c3e28': `Standardowa`,
 's5be397a47866f7de': `Sprawdź rozwiązanie`,
 's5bffe94b60a5e7d5': `Wybrana ścieżka jest poprawna!`,
 's5e8250fb85d64c23': `Zamknij`,
 's6228ab313e3c8dcf': `Zapisz ścieżkę`,
+'s680650116a0cb908': `Plik Mermaid nie zawiera węzłów.`,
 's69e040d57d5bcc5e': `Ukryj elementy`,
 's70d2c6a9a84180ba': `Wpisz nowy tekst:`,
+'s7e7fbb831139b56a': `Klawisze strzałek wybierają węzeł. Enter edytuje go lub dodaje do ścieżki. A wybiera jego strzałki, C łączy go z innym węzłem. Alt ze strzałkami przesuwa węzeł, Shift ze strzałkami przesuwa widok, + i − zmieniają powiększenie, a 0 dopasowuje schemat do widoku.`,
 's8290d08ab5a49ed0': `Złącze`,
 's85e34dc8cc55f1a3': `Czy na pewno chcesz usunąć wszystko?`,
+'s914cc7fb419008a8': `Wyłącz edycję przez uczniów`,
 's930f77519fda90bb': `Dodaj ścieżkę`,
 's94d0e033f72fca89': `Dodaj zadanie`,
-'s99a474c8e41b56f0': `Język naturalny`,
 's99f110d27e30b289': `Tytuł`,
 's9dcffdd89c8e0f58': `Wskazówka`,
 's9df2887de87a2a6b': `Żadnych podpowiedzi!`,
+'sa30f1981fd1cd441': `Rozmiar czcionki`,
+'saab875d8cfcfe712': `Temat`,
 'sae1c7f13b7c0c47f': `Start`,
 'saf84ec86139d349e': `Komentarz`,
+'sb12a478341aeeaa0': `To nie jest schemat blokowy Mermaid.`,
+'sb3add93f414b025a': `Wyczyść schemat`,
 'sb67b82120563c611': `Wskazówki`,
+'sb6de135cb577ab3b': `Schemat blokowy`,
+'sb83329fe48218739': `Wyłącz przesuwanie przez uczniów`,
 'sbadd7c696d344cfb': `Podprogram`,
 'sbc401e67067321d8': `Zmiany są zapisywane automatycznie.`,
+'sbd0939c338b4cdea': `Times New Roman`,
 'sc797fd9076cc136d': `Zadania`,
+'sc8c4c5c1bda03a7c': `Arial`,
+'sd06702d4cc7f42fa': `Courier New`,
 'sd8f923198e0c5c6a': `Koniec`,
 'sdc673e73b5c13aea': `Usuń`,
 'sed8da8a9b794e4a0': `Wybierz ścieżkę`,
 'sef92ffa038c78883': `Decyzja`,
 'sf01f6e2cc5900cbd': `Pokaż elementy`,
+'sf6586f55cebdc732': `Czarny/Biały`,
+'sf71c79de504af8f7': `Treść interaktywna: otwórz dokument online`,
 'sf755a4987e4c2af1': `Wejście/wyjście`,
 'sfbfc89b3a12052d6': `Sprawdź ścieżkę`,
     };
-  

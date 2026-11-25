@@ -2,8 +2,8 @@
     // Do not modify this file by hand!
     // Re-generate this file by running lit-localize
 
-    
-    
+
+
 
     /* eslint-disable no-irregular-whitespace */
     /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -11,42 +11,61 @@
     export const templates = {
       's012e7772b1fac646': `Bohužel, zvolená trasa je nesprávná!`,
 's03ee3cfb0919c62c': `Úkol`,
+'s079cf7850d9327f0': `Písmo`,
+'s166bd56d19670a72': `Přiblížení`,
 's20b232c96ed539f0': `Obsah...`,
 's275e8941632a9afa': `Proces`,
 's2ceb11be2290bb1b': `Zrušit`,
 's2f2044f2431a32d5': `Nadpis`,
+'s30f853f2943ac1ec': `Pastel`,
 's36480f2f59da17d3': `Žádné úkoly!`,
+'s37c3fbc8adb256ec': `Verdana`,
+'s37edf2aec5ab122a': `Mono`,
+'s3c604c5ce842d6f2': `Přizpůsobit zobrazení`,
+'s3d75146004e88b95': `Soubor Mermaid používá syntaxi, kterou vývojový diagram nedokáže znázornit.`,
 's40d30619c8d7ef3a': `Vstup/výstup`,
-'s44f386b424330b66': `Pseudokód`,
 's4b10acae683d2978': `Celá obrazovka`,
 's4f1565979d2815d9': `Přesunutí plátna`,
 's4f5fcf942bca6be5': `Přidat nápovědu`,
+'s53a526d5c80c3e28': `Standardní`,
 's5be397a47866f7de': `Zkontrolovat řešení`,
 's5bffe94b60a5e7d5': `Vybraná cesta je správná!`,
 's5e8250fb85d64c23': `Zavřít`,
 's6228ab313e3c8dcf': `Uložit cestu`,
+'s680650116a0cb908': `Soubor Mermaid neobsahuje žádné uzly.`,
 's69e040d57d5bcc5e': `Skrýt prvky`,
 's70d2c6a9a84180ba': `Zadejte nový text:`,
+'s7e7fbb831139b56a': `Šipky vybírají uzel. Enter jej upraví nebo přidá do cesty. A vybere jeho šipky, C jej spojí s jiným uzlem. Alt a šipky posunou uzel, Shift a šipky posunou pohled, + a − mění přiblížení a 0 přizpůsobí diagram pohledu.`,
 's8290d08ab5a49ed0': `Konektor`,
 's85e34dc8cc55f1a3': `Jste si jisti, že chcete odstranit vše?`,
+'s914cc7fb419008a8': `Zakázat úpravy studenty`,
 's930f77519fda90bb': `Přidat cestu`,
 's94d0e033f72fca89': `Přidat úkol`,
-'s99a474c8e41b56f0': `Přirozený jazyk`,
 's99f110d27e30b289': `Název`,
 's9dcffdd89c8e0f58': `Nápověda`,
 's9df2887de87a2a6b': `Žádné nápovědy!`,
+'sa30f1981fd1cd441': `Velikost písma`,
+'saab875d8cfcfe712': `Téma`,
 'sae1c7f13b7c0c47f': `Start`,
 'saf84ec86139d349e': `Komentář:`,
+'sb12a478341aeeaa0': `Toto není vývojový diagram Mermaid.`,
+'sb3add93f414b025a': `Vymazat diagram`,
 'sb67b82120563c611': `Nápovědy`,
+'sb6de135cb577ab3b': `Vývojový diagram`,
+'sb83329fe48218739': `Zakázat posun plátna studenty`,
 'sbadd7c696d344cfb': `Podprogram`,
 'sbc401e67067321d8': `Změny se ukládají automaticky.`,
+'sbd0939c338b4cdea': `Times New Roman`,
 'sc797fd9076cc136d': `Úkoly`,
+'sc8c4c5c1bda03a7c': `Arial`,
+'sd06702d4cc7f42fa': `Courier New`,
 'sd8f923198e0c5c6a': `Konec`,
 'sdc673e73b5c13aea': `Odstranit`,
 'sed8da8a9b794e4a0': `Vybrat cestu`,
 'sef92ffa038c78883': `Rozhodnutí`,
 'sf01f6e2cc5900cbd': `Zobrazit prvky`,
+'sf6586f55cebdc732': `Černá/bílá`,
+'sf71c79de504af8f7': `Interaktivní obsah: otevřete dokument online`,
 'sf755a4987e4c2af1': `Vstup/výstup`,
 'sfbfc89b3a12052d6': `Kontrolní cesta`,
     };
-  

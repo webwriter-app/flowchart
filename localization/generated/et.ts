@@ -2,8 +2,8 @@
     // Do not modify this file by hand!
     // Re-generate this file by running lit-localize
 
-    
-    
+
+
 
     /* eslint-disable no-irregular-whitespace */
     /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -11,42 +11,61 @@
     export const templates = {
       's012e7772b1fac646': `Kahjuks on valitud tee vale!`,
 's03ee3cfb0919c62c': `Ülesanne`,
+'s079cf7850d9327f0': `Kirjasort`,
+'s166bd56d19670a72': `Suurendage`,
 's20b232c96ed539f0': `Sisu...`,
 's275e8941632a9afa': `Protsess`,
 's2ceb11be2290bb1b': `Tühista`,
 's2f2044f2431a32d5': `Pealkiri`,
+'s30f853f2943ac1ec': `Pastell`,
 's36480f2f59da17d3': `Ei mingeid ülesandeid!`,
+'s37c3fbc8adb256ec': `Verdana`,
+'s37edf2aec5ab122a': `Mono`,
+'s3c604c5ce842d6f2': `Kohanda vaateväljale`,
+'s3d75146004e88b95': `Mermaidi fail kasutab süntaksit, mida vooskeem ei saa esitada.`,
 's40d30619c8d7ef3a': `I/O`,
-'s44f386b424330b66': `Pseudokood`,
 's4b10acae683d2978': `Täisekraan`,
 's4f1565979d2815d9': `Liigutage lõuendit`,
 's4f5fcf942bca6be5': `Lisa vihje`,
+'s53a526d5c80c3e28': `Standard`,
 's5be397a47866f7de': `Kontrolli lahendust`,
 's5bffe94b60a5e7d5': `Valitud tee on õige!`,
 's5e8250fb85d64c23': `Sulge`,
 's6228ab313e3c8dcf': `Salvesta tee`,
+'s680650116a0cb908': `Mermaidi fail ei sisalda ühtegi sõlme.`,
 's69e040d57d5bcc5e': `Peida elemendid`,
 's70d2c6a9a84180ba': `Sisestage uus tekst:`,
+'s7e7fbb831139b56a': `Nooleklahvid valivad sõlme. Enter muudab seda või lisab selle teele. A valib selle nooled, C ühendab selle teise sõlmega. Alt ja nooleklahvid liigutavad sõlme, Shift ja nooleklahvid nihutavad vaadet, + ja − suumivad ning 0 mahutab skeemi vaatesse.`,
 's8290d08ab5a49ed0': `Pistik`,
 's85e34dc8cc55f1a3': `Kas olete kindel, et soovite kõik kustutada?`,
+'s914cc7fb419008a8': `Keela õpilaste redigeerimine`,
 's930f77519fda90bb': `Lisa tee`,
 's94d0e033f72fca89': `Lisa ülesanne`,
-'s99a474c8e41b56f0': `Looduslik keel`,
 's99f110d27e30b289': `Pealkiri`,
 's9dcffdd89c8e0f58': `Vihje`,
 's9df2887de87a2a6b': `Ei mingeid vihjeid!`,
+'sa30f1981fd1cd441': `Kirjasuurus`,
+'saab875d8cfcfe712': `Teema`,
 'sae1c7f13b7c0c47f': `Start`,
 'saf84ec86139d349e': `Kommentaar`,
+'sb12a478341aeeaa0': `See ei ole Mermaidi vooskeem.`,
+'sb3add93f414b025a': `Tühjenda diagramm`,
 'sb67b82120563c611': `Vihjed`,
+'sb6de135cb577ab3b': `Vooskeem`,
+'sb83329fe48218739': `Keela õpilastel vaate liigutamine`,
 'sbadd7c696d344cfb': `Allprogramm`,
 'sbc401e67067321d8': `Muudatused salvestatakse automaatselt.`,
+'sbd0939c338b4cdea': `Times New Roman`,
 'sc797fd9076cc136d': `Ülesanded`,
+'sc8c4c5c1bda03a7c': `Arial`,
+'sd06702d4cc7f42fa': `Courier New`,
 'sd8f923198e0c5c6a': `End`,
 'sdc673e73b5c13aea': `Kustuta`,
 'sed8da8a9b794e4a0': `Vali tee`,
 'sef92ffa038c78883': `Otsus`,
 'sf01f6e2cc5900cbd': `Näita elemente`,
+'sf6586f55cebdc732': `Must/valge`,
+'sf71c79de504af8f7': `Interaktiivne sisu: ava dokument veebis`,
 'sf755a4987e4c2af1': `Sisend/väljund`,
 'sfbfc89b3a12052d6': `Kontrolli tee`,
     };
-  
