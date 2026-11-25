@@ -1,7 +1,7 @@
 # Flowchart (`@webwriter/flowchart@3.0.0`)
 [License: MIT](LICENSE) | Version: 3.0.0
 
-Create programming flowcharts with interactive tasks. Use standardized Elements such as loops and Branchings.
+Create programming flowcharts with interactive tasks using standardized symbols for steps, loops, and branches.
 
 ## Snippets
 [Snippets](https://webwriter.app/docs/snippets/snippets/) are examples and templates using the package's widgets.
@@ -125,4 +125,4 @@ npm install @webwriter/flowchart
 
 
 ---
-*Generated with @webwriter/build@1.14.0*
+*Generated with @webwriter/build@1.15.0*

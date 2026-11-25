@@ -507,9 +507,7 @@
           },
           "tagName": "webwriter-flowchart",
           "customElement": true,
-          "summary": "Create programming flowcharts with interactive tasks. Use standardized Elements such as loops and Branchings.",
-          "modulePath": "src/widgets/webwriter-flowchart.ts",
-          "definitionPath": "src/widgets/webwriter-flowchart.ts"
+          "summary": "Create programming flowcharts with interactive tasks. Use standardized Elements such as loops and Branchings."
         }
       ],
       "exports": [
