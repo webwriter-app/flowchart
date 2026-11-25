@@ -40,7 +40,7 @@ export class TextPrompt {
 
         if (prompt.type === 'node') {
             const node = host.graphNodes[prompt.index];
-            const text = value || nodeLabel(node.node, (label) => host.msg(label));
+            const text = value || nodeLabel(node.node, host.msg);
             node.text = node.node === 'decision' ? '  ' + text + '  ' : text;
         } else {
             setArrowText(host.arrows[prompt.index], value);

@@ -73,7 +73,7 @@ export function renderNodePalette(host: WebwriterFlowchart) {
     if (!(host.allowStudentEdit || host.isEditable())) return html``;
     const toggleLabel = host.flowMenuOpen ? host.msg('Hide elements') : host.msg('Show elements');
     // The abbreviated button label keeps the palette narrow; the node itself keeps the spelled-out caption.
-    const buttonLabel = (node: NodeType) => (node === 'i/o' ? host.msg('I/O') : nodeLabel(node, (text) => host.msg(text)));
+    const buttonLabel = (node: NodeType) => (node === 'i/o' ? host.msg('I/O') : nodeLabel(node, host.msg));
     return html`
         <div class=${classMap({ 'flowchart-menu': true, collapsed: !host.flowMenuOpen })}>
             <sl-tooltip content="${toggleLabel}" placement="top">
@@ -91,7 +91,7 @@ export function renderNodePalette(host: WebwriterFlowchart) {
                 ${palette.map(
                     (entry) => html`
                         <sl-button
-                            @click="${() => host.addGraphNode(entry.node, newNodeText(entry.node, (text) => host.msg(text)))}"
+                            @click="${() => host.addGraphNode(entry.node, newNodeText(entry.node, host.msg))}"
                             size=${host.fullscreen ? 'medium' : 'small'}
                         >
                             <sl-icon slot="prefix" src=${entry.icon}></sl-icon>

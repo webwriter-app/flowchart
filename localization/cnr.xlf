@@ -161,6 +161,32 @@
 <trans-unit id="s40d30619c8d7ef3a">
   <source>I/O</source>
 <target>U/I</target></trans-unit>
+<trans-unit id="sb12a478341aeeaa0">
+  <source>This is not a Mermaid flowchart.</source>
+</trans-unit>
+<trans-unit id="s3d75146004e88b95">
+  <source>The Mermaid file uses syntax that the flowchart cannot represent.</source>
+</trans-unit>
+<trans-unit id="s680650116a0cb908">
+  <source>The Mermaid file contains no nodes.</source>
+</trans-unit>
+<trans-unit id="sf71c79de504af8f7">
+  <source>Interactive content: open the document online</source>
+<target>Interaktivni sadržaj: otvorite dokument na mreži</target>
+</trans-unit>
+<trans-unit id="s3c604c5ce842d6f2">
+  <source>Fit to view</source>
+<target>Uklopi u prikaz</target>
+</trans-unit>
+<trans-unit id="sb3add93f414b025a">
+  <source>Clear chart</source>
+</trans-unit>
+<trans-unit id="sb6de135cb577ab3b">
+  <source>Flowchart</source>
+</trans-unit>
+<trans-unit id="s7e7fbb831139b56a">
+  <source>Arrow keys select a node. Enter edits it or adds it to the path. A selects its arrows, C connects it to another node, Alt and arrow keys move it, Shift and arrow keys pan, plus and minus zoom, 0 fits the chart.</source>
+</trans-unit>
 </body>
 </file>
 </xliff>

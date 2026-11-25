@@ -100,7 +100,7 @@ export class CanvasKeyboard {
     }
 
     private describe(node: GraphNode): string {
-        const kind = nodeLabel(node.node, (text) => this.host.msg(text));
+        const kind = nodeLabel(node.node, this.host.msg);
         const text = node.text.trim();
         return text && text !== kind ? `${kind}: ${text}` : kind;
     }

@@ -1,7 +1,8 @@
+import type { MsgFn } from '@lit/localize';
 import type { NodeType } from './graph-edit';
 
 /** Default caption of a node type, in the language `msg` answers in. */
-export function nodeLabel(node: string, msg: (text: string) => string): string {
+export function nodeLabel(node: string, msg: MsgFn): string {
    switch (node) {
       case 'start': return msg('Start');
       case 'op': return msg('Process');
@@ -19,7 +20,7 @@ export function nodeLabel(node: string, msg: (text: string) => string): string {
  * Caption of the node placed on the canvas. It differs from the palette button for `decision`,
  * whose caption is padded so the diamond has room, and for `connector`, which carries none.
  */
-export function newNodeText(node: NodeType, msg: (text: string) => string): string {
+export function newNodeText(node: NodeType, msg: MsgFn): string {
    switch (node) {
       case 'decision': return '  ' + nodeLabel(node, msg) + '  ';
       case 'connector': return '';
