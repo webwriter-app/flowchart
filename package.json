@@ -1,6 +1,6 @@
 {
   "name": "@webwriter/flowchart",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "description": "Create programming flowcharts with interactive tasks using standardized symbols for steps, loops, and branches.",
   "repository": "https://github.com/webwriter-app/flowchart",
   "keywords": [
@@ -175,6 +175,7 @@
     "./snippets/Kontextbeispiel.html": "./snippets/Kontextbeispiel.html",
     "./package.json": "./package.json",
     "./icon": "./icon.svg",
+    "./preview": "./assets/preview.mp4",
     "./editing-config.json": "./editing-config.json",
     "./custom-elements.json": "./custom-elements.json"
   },
