@@ -1,5 +1,5 @@
-# Flowchart (`@webwriter/flowchart@3.1.1`)
-[License: MIT](LICENSE) | Version: 3.1.1
+# Flowchart (`@webwriter/flowchart@3.1.2`)
+[License: MIT](LICENSE) | Version: 3.1.2
 
 Create programming flowcharts with interactive tasks using standardized symbols for steps, loops, and branches.
 
